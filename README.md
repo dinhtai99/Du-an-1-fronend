@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Ứng dụng Quản Lý Shop THB
 
 Ứng dụng quản lý cửa hàng điện tử được xây dựng bằng Java + XML trên Android với Room Database.
@@ -108,3 +109,6 @@ Dự án này được phát triển cho mục đích học tập và thương m
 
 
 
+=======
+# Du-an-1-fronend
+>>>>>>> 09504f261ddf5278653b3364ff387f35520e376c
