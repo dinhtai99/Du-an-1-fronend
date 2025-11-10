@@ -54,6 +54,13 @@ dependencies {
     implementation(libs.poi)
     implementation(libs.poi.ooxml)
     
+    // Retrofit & OkHttp for API
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
+    implementation(libs.gson)
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

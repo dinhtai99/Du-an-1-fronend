@@ -1,0 +1,11 @@
+<network-security-config>
+    <!-- Cho phép HTTP (cleartext) tới host máy phát triển -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">10.0.2.2</domain>
+    </domain-config>
+    <!-- Tuỳ chọn: cho phép cả mạng nội bộ 192.168.x.x khi test trên thiết bị thật -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">192.168.0.0</domain>
+        <domain includeSubdomains="true">192.168.1.0</domain>
+    </domain-config>
+</network-security-config>

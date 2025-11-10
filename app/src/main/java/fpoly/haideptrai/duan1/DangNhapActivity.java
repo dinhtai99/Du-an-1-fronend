@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.Spinner;
@@ -15,12 +16,24 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
+import fpoly.haideptrai.duan1.api.ApiClient;
+import fpoly.haideptrai.duan1.api.ApiHelper;
+import fpoly.haideptrai.duan1.api.TokenStore;
+import fpoly.haideptrai.duan1.api.models.LoginRequest;
+import fpoly.haideptrai.duan1.api.models.LoginResponse;
+import fpoly.haideptrai.duan1.api.models.UserInfo;
+import fpoly.haideptrai.duan1.api.services.AuthService;
 import fpoly.haideptrai.duan1.database.AppDatabase;
 import fpoly.haideptrai.duan1.database.entities.NhanVien;
-import fpoly.haideptrai.duan1.utils.PasswordHelper;
 import fpoly.haideptrai.duan1.utils.SessionManager;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DangNhapActivity extends AppCompatActivity {
+
+    private static final String TAG = "LOGIN";
 
     private TextInputEditText edtTaiKhoan, edtMatKhau;
     private TextInputLayout tilTaiKhoan, tilMatKhau;
@@ -31,6 +44,7 @@ public class DangNhapActivity extends AppCompatActivity {
     private SessionManager sessionManager;
     private SharedPreferences prefs;
     private String[] vaiTroArray = {"admin", "nhan_vien"};
+    private AuthService authService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +55,7 @@ public class DangNhapActivity extends AppCompatActivity {
         database = AppDatabase.getInstance(this);
         sessionManager = new SessionManager(this);
         prefs = getSharedPreferences("login_prefs", MODE_PRIVATE);
+        authService = ApiClient.getClient().create(AuthService.class);
 
         // Nhận thông tin từ màn hình đăng ký
         Intent intent = getIntent();
@@ -60,7 +75,7 @@ public class DangNhapActivity extends AppCompatActivity {
         setupVaiTroSpinner();
 
         btnDangNhap.setOnClickListener(v -> handleDangNhap());
-
+        
         // Chuyển sang màn hình đăng ký
         findViewById(R.id.txtDangKy).setOnClickListener(v -> {
             Intent dangKyIntent = new Intent(DangNhapActivity.this, DangKyActivity.class);
@@ -153,50 +168,104 @@ public class DangNhapActivity extends AppCompatActivity {
             return;
         }
 
-        // Tìm nhân viên theo tên đăng nhập
-        NhanVien nhanVien = database.nhanVienDAO().getByTenDangNhap(taiKhoan);
-        
-        if (nhanVien == null) {
-            sessionManager.incrementLoginFailed(taiKhoan);
-            tilTaiKhoan.setError("Tài khoản không tồn tại");
-            Toast.makeText(this, "Đăng nhập thất bại!", Toast.LENGTH_SHORT).show();
-            checkLockStatus(taiKhoan);
-            return;
-        }
+        // Disable button để tránh click nhiều lần
+        btnDangNhap.setEnabled(false);
+        btnDangNhap.setText("Đang đăng nhập...");
 
-        // Xác thực mật khẩu
-        if (PasswordHelper.verifyPassword(matKhau, nhanVien.matKhauHash)) {
-            // Đăng nhập thành công
-            sessionManager.resetLoginFailed(taiKhoan);
-            
-            // Lấy vai trò được chọn từ Spinner
-            String vaiTroChon = vaiTroArray[spnVaiTro.getSelectedItemPosition()];
-            
-            // Tạm thời thay đổi vai trò của nhân viên để điều hướng đúng
-            String vaiTroCu = nhanVien.vaiTro;
-            nhanVien.vaiTro = vaiTroChon;
-            sessionManager.saveSession(nhanVien);
-            // Khôi phục lại vai trò gốc trong database (không lưu vào database)
-            nhanVien.vaiTro = vaiTroCu;
-            
-            // Lưu thông tin nếu checkbox được chọn
-            if (chkLuuMatKhau.isChecked()) {
-                prefs.edit().putString("saved_username", taiKhoan)
-                        .putString("saved_password", matKhau)
-                        .putInt("saved_vai_tro", spnVaiTro.getSelectedItemPosition())
-                        .apply();
-            } else {
-                prefs.edit().remove("saved_username").remove("saved_password").remove("saved_vai_tro").apply();
+        // Lấy vai trò được chọn từ Spinner (hiện server không dùng, vẫn giữ để điều hướng)
+        String vaiTroChon = vaiTroArray[spnVaiTro.getSelectedItemPosition()];
+        
+        // Tạo request để gọi API (khớp server)
+        boolean rememberMe = chkLuuMatKhau.isChecked();
+        LoginRequest loginRequest = new LoginRequest(taiKhoan, matKhau, rememberMe);
+        Log.d(TAG, "Login request username=" + taiKhoan + ", rememberMe=" + rememberMe);
+        
+        // Gọi API đăng nhập
+        Call<LoginResponse> call = authService.login(loginRequest);
+        call.enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                btnDangNhap.setEnabled(true);
+                btnDangNhap.setText("Đăng nhập");
+                
+                if (response.isSuccessful() && response.body() != null) {
+                    LoginResponse loginResponse = response.body();
+                    Log.i(TAG, "HTTP " + response.code() + ", message=" + loginResponse.getMessage());
+                    UserInfo userInfo = loginResponse.getUser();
+                    if (userInfo != null) {
+                        // Lưu token để gọi các API cần xác thực
+                        if (loginResponse.getToken() != null && !loginResponse.getToken().isEmpty()) {
+                            TokenStore.setToken(loginResponse.getToken());
+                        }
+
+                        // Đăng nhập thành công
+                        sessionManager.resetLoginFailed(taiKhoan);
+                        
+                        // Convert UserInfo thành NhanVien để tương thích với SessionManager
+                        NhanVien nhanVien = ApiHelper.convertToNhanVien(userInfo);
+                        // Tạm thời thay đổi vai trò để điều hướng đúng
+                        String vaiTroCu = nhanVien.vaiTro;
+                        nhanVien.vaiTro = vaiTroChon;
+                        sessionManager.saveSession(nhanVien);
+                        nhanVien.vaiTro = vaiTroCu;
+                        
+                        // Lưu thông tin nếu checkbox được chọn
+                        if (chkLuuMatKhau.isChecked()) {
+                            prefs.edit().putString("saved_username", taiKhoan)
+                                    .putString("saved_password", matKhau)
+                                    .putInt("saved_vai_tro", spnVaiTro.getSelectedItemPosition())
+                                    .apply();
+                        } else {
+                            prefs.edit().remove("saved_username").remove("saved_password").remove("saved_vai_tro").apply();
+                        }
+
+                        Toast.makeText(DangNhapActivity.this, loginResponse.getMessage() != null ? loginResponse.getMessage() : "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                        redirectToMainScreen(vaiTroChon);
+                    } else {
+                        String errorMsg = loginResponse.getMessage() != null ? loginResponse.getMessage() : "Đăng nhập thất bại!";
+                        Log.w(TAG, "Success body but user null: " + errorMsg);
+                        Toast.makeText(DangNhapActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                        tilMatKhau.setError(errorMsg);
+                        sessionManager.incrementLoginFailed(taiKhoan);
+                        checkLockStatus(taiKhoan);
+                    }
+                } else {
+                    // Response không thành công
+                    sessionManager.incrementLoginFailed(taiKhoan);
+                    String errorBodyStr = null;
+                    try {
+                        ResponseBody eb = response.errorBody();
+                        errorBodyStr = eb != null ? eb.string() : null;
+                    } catch (Exception ignore) { }
+                    Log.e(TAG, "HTTP " + response.code() + ", errorBody=" + errorBodyStr);
+                    String errorMsg = "Lỗi kết nối server. Vui lòng thử lại!";
+                    if (response.code() == 401) {
+                        errorMsg = "Tài khoản hoặc mật khẩu không đúng!";
+                    } else if (response.code() == 404) {
+                        errorMsg = "Tài khoản không tồn tại!";
+                    } else if (response.code() == 403) {
+                        errorMsg = "Tài khoản đang bị khóa!";
+                    }
+                    Toast.makeText(DangNhapActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                    tilMatKhau.setError(errorMsg);
+                    checkLockStatus(taiKhoan);
+                }
             }
 
-            Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-            redirectToMainScreen(vaiTroChon);
-        } else {
-            sessionManager.incrementLoginFailed(taiKhoan);
-            tilMatKhau.setError("Mật khẩu không đúng");
-            Toast.makeText(this, "Đăng nhập thất bại!", Toast.LENGTH_SHORT).show();
-            checkLockStatus(taiKhoan);
-        }
+            @Override
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                btnDangNhap.setEnabled(true);
+                btnDangNhap.setText("Đăng nhập");
+                
+                sessionManager.incrementLoginFailed(taiKhoan);
+                String errorMsg = "Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng!";
+                Log.e(TAG, "Network failure: " + t.getMessage(), t);
+                Toast.makeText(DangNhapActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                tilTaiKhoan.setError("Lỗi kết nối");
+                checkLockStatus(taiKhoan);
+                
+            }
+        });
     }
     
     private void redirectToMainScreen(String vaiTro) {
