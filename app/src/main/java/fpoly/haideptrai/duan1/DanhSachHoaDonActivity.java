@@ -1,5 +1,6 @@
 package fpoly.haideptrai.duan1;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.SearchView;
@@ -39,6 +40,11 @@ public class DanhSachHoaDonActivity extends AppCompatActivity {
         adapter = new HoaDonAdapter();
         rvHoaDon.setLayoutManager(new LinearLayoutManager(this));
         rvHoaDon.setAdapter(adapter);
+
+        findViewById(R.id.fabThemHoaDon).setOnClickListener(v -> {
+            Intent intent = new Intent(DanhSachHoaDonActivity.this, TaoHoaDonActivity.class);
+            startActivity(intent);
+        });
 
         invoiceService = ApiClient.getClient().create(InvoiceService.class);
         fetchInvoices(null);

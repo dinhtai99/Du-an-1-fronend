@@ -23,6 +23,7 @@ public class SanPhamAdapter extends RecyclerView.Adapter<SanPhamAdapter.ViewHold
 
     private final List<ProductResponse> items = new ArrayList<>();
     private final NumberFormat currency = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+    private OnProductClickListener onProductClickListener;
 
     public void setItems(List<ProductResponse> list) {
         items.clear();
@@ -49,6 +50,20 @@ public class SanPhamAdapter extends RecyclerView.Adapter<SanPhamAdapter.ViewHold
                 .load(url)
                 .placeholder(R.mipmap.ic_launcher)
                 .into(holder.imgSanPham);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (onProductClickListener != null) {
+                onProductClickListener.onClick(p);
+            }
+        });
+
+        holder.itemView.setOnLongClickListener(v -> {
+            if (onProductClickListener != null) {
+                onProductClickListener.onLongClick(p);
+                return true;
+            }
+            return false;
+        });
     }
 
     private String formatPrice(Double price) {
@@ -59,6 +74,15 @@ public class SanPhamAdapter extends RecyclerView.Adapter<SanPhamAdapter.ViewHold
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    public void setOnProductClickListener(OnProductClickListener listener) {
+        this.onProductClickListener = listener;
+    }
+
+    public interface OnProductClickListener {
+        void onClick(ProductResponse product);
+        void onLongClick(ProductResponse product);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

@@ -59,6 +59,13 @@ public class LoaiSanPhamAdapter extends RecyclerView.Adapter<LoaiSanPhamAdapter.
                 onCategoryClickListener.onClick(item);
             }
         });
+        holder.itemView.setOnLongClickListener(v -> {
+            if (onCategoryClickListener != null) {
+                onCategoryClickListener.onLongClick(item);
+                return true;
+            }
+            return false;
+        });
     }
 
     @Override
@@ -80,5 +87,6 @@ public class LoaiSanPhamAdapter extends RecyclerView.Adapter<LoaiSanPhamAdapter.
 
     public interface OnCategoryClickListener {
         void onClick(CategoryResponse category);
+        void onLongClick(CategoryResponse category);
     }
 }

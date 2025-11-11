@@ -18,6 +18,7 @@ import fpoly.haideptrai.duan1.api.models.CustomerResponse;
 public class KhachHangAdapter extends RecyclerView.Adapter<KhachHangAdapter.ViewHolder> {
 
     private final List<CustomerResponse> items = new ArrayList<>();
+    private OnCustomerClickListener onCustomerClickListener;
 
     public void setItems(List<CustomerResponse> list) {
         items.clear();
@@ -38,11 +39,34 @@ public class KhachHangAdapter extends RecyclerView.Adapter<KhachHangAdapter.View
         holder.txtTenKhachHang.setText(c.getName());
         holder.txtSoDienThoaiKhachHang.setText(c.getPhone() != null ? c.getPhone() : "");
         holder.txtHangKhachHang.setText(c.getType() != null ? c.getType() : "");
+
+        holder.itemView.setOnClickListener(v -> {
+            if (onCustomerClickListener != null) {
+                onCustomerClickListener.onClick(c);
+            }
+        });
+
+        holder.itemView.setOnLongClickListener(v -> {
+            if (onCustomerClickListener != null) {
+                onCustomerClickListener.onLongClick(c);
+                return true;
+            }
+            return false;
+        });
     }
 
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    public void setOnCustomerClickListener(OnCustomerClickListener listener) {
+        this.onCustomerClickListener = listener;
+    }
+
+    public interface OnCustomerClickListener {
+        void onClick(CustomerResponse customer);
+        void onLongClick(CustomerResponse customer);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

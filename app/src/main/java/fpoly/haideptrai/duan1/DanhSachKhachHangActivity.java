@@ -1,5 +1,6 @@
 package fpoly.haideptrai.duan1;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.SearchView;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import fpoly.haideptrai.duan1.adapters.KhachHangAdapter;
+import fpoly.haideptrai.duan1.api.models.CustomerResponse;
 import fpoly.haideptrai.duan1.api.ApiClient;
 import fpoly.haideptrai.duan1.api.models.CustomerListResponse;
 import fpoly.haideptrai.duan1.api.models.CustomerResponse;
@@ -39,6 +41,25 @@ public class DanhSachKhachHangActivity extends AppCompatActivity {
         adapter = new KhachHangAdapter();
         rvKhachHang.setLayoutManager(new LinearLayoutManager(this));
         rvKhachHang.setAdapter(adapter);
+
+        adapter.setOnCustomerClickListener(new KhachHangAdapter.OnCustomerClickListener() {
+            @Override
+            public void onClick(CustomerResponse customer) {
+                Intent intent = new Intent(DanhSachKhachHangActivity.this, ThemSuaKhachHangActivity.class);
+                intent.putExtra("customer_id", customer.get_id());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onLongClick(CustomerResponse customer) {
+                // Có thể thêm menu xóa
+            }
+        });
+
+        findViewById(R.id.fabThemKhachHang).setOnClickListener(v -> {
+            Intent intent = new Intent(DanhSachKhachHangActivity.this, ThemSuaKhachHangActivity.class);
+            startActivity(intent);
+        });
 
         customerService = ApiClient.getClient().create(CustomerService.class);
         fetchCustomers(null);

@@ -1,5 +1,6 @@
 package fpoly.haideptrai.duan1;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.SearchView;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import fpoly.haideptrai.duan1.adapters.SanPhamAdapter;
+import fpoly.haideptrai.duan1.api.models.ProductResponse;
 import fpoly.haideptrai.duan1.api.ApiClient;
 import fpoly.haideptrai.duan1.api.models.ProductListResponse;
 import fpoly.haideptrai.duan1.api.models.ProductResponse;
@@ -46,6 +48,25 @@ public class DanhSachSanPhamActivity extends AppCompatActivity {
         adapter = new SanPhamAdapter();
         rvSanPham.setLayoutManager(new LinearLayoutManager(this));
         rvSanPham.setAdapter(adapter);
+
+        adapter.setOnProductClickListener(new SanPhamAdapter.OnProductClickListener() {
+            @Override
+            public void onClick(ProductResponse product) {
+                Intent intent = new Intent(DanhSachSanPhamActivity.this, ThemSuaSanPhamActivity.class);
+                intent.putExtra("product_id", product.get_id());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onLongClick(ProductResponse product) {
+                // Có thể thêm menu xóa/ẩn
+            }
+        });
+
+        findViewById(R.id.fabThemSanPham).setOnClickListener(v -> {
+            Intent intent = new Intent(DanhSachSanPhamActivity.this, ThemSuaSanPhamActivity.class);
+            startActivity(intent);
+        });
 
         if (categoryName != null && !categoryName.isEmpty()) {
             setTitle("Sản phẩm: " + categoryName);

@@ -37,14 +37,30 @@ public class DanhSachLoaiSanPhamActivity extends AppCompatActivity {
         rvLoaiSanPham = findViewById(R.id.rvLoaiSanPham);
         searchView = findViewById(R.id.searchViewLoaiSanPham);
         adapter = new LoaiSanPhamAdapter();
-        adapter.setOnCategoryClickListener(category -> {
-            Intent intent = new Intent(DanhSachLoaiSanPhamActivity.this, DanhSachSanPhamActivity.class);
-            intent.putExtra(DanhSachSanPhamActivity.EXTRA_CATEGORY_ID, category.get_id());
-            intent.putExtra(DanhSachSanPhamActivity.EXTRA_CATEGORY_NAME, category.getName());
-            startActivity(intent);
-        });
         rvLoaiSanPham.setLayoutManager(new LinearLayoutManager(this));
         rvLoaiSanPham.setAdapter(adapter);
+
+        adapter.setOnCategoryClickListener(new LoaiSanPhamAdapter.OnCategoryClickListener() {
+            @Override
+            public void onClick(CategoryResponse category) {
+                Intent intent = new Intent(DanhSachLoaiSanPhamActivity.this, DanhSachSanPhamActivity.class);
+                intent.putExtra(DanhSachSanPhamActivity.EXTRA_CATEGORY_ID, category.get_id());
+                intent.putExtra(DanhSachSanPhamActivity.EXTRA_CATEGORY_NAME, category.getName());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onLongClick(CategoryResponse category) {
+                Intent intent = new Intent(DanhSachLoaiSanPhamActivity.this, ThemSuaLoaiSanPhamActivity.class);
+                intent.putExtra("category_id", category.get_id());
+                startActivity(intent);
+            }
+        });
+
+        findViewById(R.id.fabThemLoaiSanPham).setOnClickListener(v -> {
+            Intent intent = new Intent(DanhSachLoaiSanPhamActivity.this, ThemSuaLoaiSanPhamActivity.class);
+            startActivity(intent);
+        });
 
         categoryService = ApiClient.getClient().create(CategoryService.class);
         fetchCategories();

@@ -60,8 +60,8 @@ public class ManHinhChinhNhanVienActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.menuDoiMatKhau) {
-            // TODO: Mở màn hình đổi mật khẩu
-            Toast.makeText(this, "Chức năng đổi mật khẩu", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, DoiMatKhauActivity.class);
+            startActivity(intent);
             return true;
         } else if (id == R.id.menuDangXuat) {
             showLogoutDialog();
