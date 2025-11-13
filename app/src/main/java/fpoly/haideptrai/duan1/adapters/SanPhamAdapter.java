@@ -46,10 +46,20 @@ public class SanPhamAdapter extends RecyclerView.Adapter<SanPhamAdapter.ViewHold
         holder.txtTonKho.setText("Tồn kho: " + (p.getStock() != null ? p.getStock() : 0));
         holder.badgeCanhBao.setVisibility(p.isLowStockWarning() ? View.VISIBLE : View.GONE);
         String url = p.getImage();
-        Glide.with(holder.imgSanPham.getContext())
-                .load(url)
-                .placeholder(R.mipmap.ic_launcher)
-                .into(holder.imgSanPham);
+        
+        // Validate URL before loading
+        if (url != null && !url.trim().isEmpty() && !url.contains("example.com")) {
+            Glide.with(holder.imgSanPham.getContext())
+                    .load(url)
+                    .placeholder(R.mipmap.ic_launcher)
+                    .error(R.mipmap.ic_launcher)
+                    .into(holder.imgSanPham);
+        } else {
+            // Set placeholder if URL is invalid or empty
+            Glide.with(holder.imgSanPham.getContext())
+                    .load(R.mipmap.ic_launcher)
+                    .into(holder.imgSanPham);
+        }
 
         holder.itemView.setOnClickListener(v -> {
             if (onProductClickListener != null) {

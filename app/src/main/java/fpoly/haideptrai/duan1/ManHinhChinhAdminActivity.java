@@ -33,14 +33,22 @@ public class ManHinhChinhAdminActivity extends AppCompatActivity {
 
         setupClickListeners();
         
+        // Thiết lập nút đổi mật khẩu
+        findViewById(R.id.btnDoiMatKhau).setOnClickListener(v -> {
+            Intent intent = new Intent(this, DoiMatKhauActivity.class);
+            startActivity(intent);
+        });
+        
         // Thiết lập nút đăng xuất
         findViewById(R.id.btnDangXuat).setOnClickListener(v -> showLogoutDialog());
     }
 
     private void setupClickListeners() {
-        findViewById(R.id.cardNhanVien).setOnClickListener(v -> {
-            Intent intent = new Intent(this, DanhSachNhanVienActivity.class);
-            startActivity(intent);
+        // Đơn hàng - TODO: Tạo QuanLyDonHangActivity
+        findViewById(R.id.cardDonHang).setOnClickListener(v -> {
+            Toast.makeText(this, "Tính năng đang phát triển", Toast.LENGTH_SHORT).show();
+            // Intent intent = new Intent(this, QuanLyDonHangActivity.class);
+            // startActivity(intent);
         });
 
         findViewById(R.id.cardLoaiSanPham).setOnClickListener(v -> {
@@ -53,13 +61,13 @@ public class ManHinhChinhAdminActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        findViewById(R.id.cardKhachHang).setOnClickListener(v -> {
-            Intent intent = new Intent(this, DanhSachKhachHangActivity.class);
+        findViewById(R.id.cardHoaDon).setOnClickListener(v -> {
+            Intent intent = new Intent(this, DanhSachHoaDonActivity.class);
             startActivity(intent);
         });
 
-        findViewById(R.id.cardHoaDon).setOnClickListener(v -> {
-            Intent intent = new Intent(this, DanhSachHoaDonActivity.class);
+        findViewById(R.id.cardKhachHang).setOnClickListener(v -> {
+            Intent intent = new Intent(this, DanhSachKhachHangActivity.class);
             startActivity(intent);
         });
 
@@ -95,6 +103,7 @@ public class ManHinhChinhAdminActivity extends AppCompatActivity {
                 .setMessage("Bạn có chắc chắn muốn đăng xuất?")
                 .setPositiveButton("Đăng xuất", (dialog, which) -> {
                     sessionManager.clearSession();
+                    fpoly.haideptrai.duan1.api.TokenStore.clearToken();
                     Intent intent = new Intent(ManHinhChinhAdminActivity.this, DangNhapActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);

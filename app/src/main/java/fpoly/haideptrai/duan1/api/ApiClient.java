@@ -35,7 +35,10 @@ public class ApiClient {
                         Request authed = original.newBuilder()
                                 .addHeader("Authorization", "Bearer " + token)
                                 .build();
+                        android.util.Log.d("ApiClient", "Adding Authorization header with token");
                         return chain.proceed(authed);
+                    } else {
+                        android.util.Log.w("ApiClient", "No token available, request sent without Authorization header");
                     }
                     return chain.proceed(original);
                 }

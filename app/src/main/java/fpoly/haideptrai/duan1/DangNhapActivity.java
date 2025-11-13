@@ -5,9 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,13 +34,10 @@ public class DangNhapActivity extends AppCompatActivity {
 
     private TextInputEditText edtTaiKhoan, edtMatKhau;
     private TextInputLayout tilTaiKhoan, tilMatKhau;
-    private MaterialButton btnDangNhap;
-    private CheckBox chkLuuMatKhau;
-    private Spinner spnVaiTro;
+    private MaterialButton btnDangNhap, btnGoogleLogin, btnFacebookLogin;
     private AppDatabase database;
     private SessionManager sessionManager;
     private SharedPreferences prefs;
-    private String[] vaiTroArray = {"admin", "nhan_vien"};
     private AuthService authService;
 
     @Override
@@ -70,11 +64,18 @@ public class DangNhapActivity extends AppCompatActivity {
 
         // Load thông tin đã lưu nếu có
         loadSavedCredentials();
-        
-        // Setup Spinner vai trò
-        setupVaiTroSpinner();
 
         btnDangNhap.setOnClickListener(v -> handleDangNhap());
+        
+        // Nút đăng nhập Google (placeholder - chưa implement)
+        btnGoogleLogin.setOnClickListener(v -> {
+            Toast.makeText(this, "Tính năng đăng nhập Google đang phát triển", Toast.LENGTH_SHORT).show();
+        });
+        
+        // Nút đăng nhập Facebook (placeholder - chưa implement)
+        btnFacebookLogin.setOnClickListener(v -> {
+            Toast.makeText(this, "Tính năng đăng nhập Facebook đang phát triển", Toast.LENGTH_SHORT).show();
+        });
         
         // Chuyển sang màn hình đăng ký
         findViewById(R.id.txtDangKy).setOnClickListener(v -> {
@@ -82,7 +83,10 @@ public class DangNhapActivity extends AppCompatActivity {
             startActivity(dangKyIntent);
         });
         
-        // Không cần kiểm tra khóa ở đây vì chưa có username
+        // Quên mật khẩu
+        findViewById(R.id.txtQuenMatKhau).setOnClickListener(v -> {
+            Toast.makeText(this, "Tính năng quên mật khẩu đang phát triển", Toast.LENGTH_SHORT).show();
+        });
     }
     
     private void checkLockStatus(String username) {
@@ -112,28 +116,16 @@ public class DangNhapActivity extends AppCompatActivity {
         tilTaiKhoan = findViewById(R.id.tilTaiKhoan);
         tilMatKhau = findViewById(R.id.tilMatKhau);
         btnDangNhap = findViewById(R.id.btnDangNhap);
-        chkLuuMatKhau = findViewById(R.id.chkLuuMatKhau);
-        spnVaiTro = findViewById(R.id.spnVaiTro);
-    }
-    
-    private void setupVaiTroSpinner() {
-        String[] vaiTroDisplay = {"Quản trị viên", "Nhân viên"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, vaiTroDisplay);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spnVaiTro.setAdapter(adapter);
-        // Mặc định chọn Nhân viên (index 1)
-        spnVaiTro.setSelection(1);
+        btnGoogleLogin = findViewById(R.id.btnGoogleLogin);
+        btnFacebookLogin = findViewById(R.id.btnFacebookLogin);
     }
 
     private void loadSavedCredentials() {
         String savedUsername = prefs.getString("saved_username", "");
         String savedPassword = prefs.getString("saved_password", "");
-        int savedVaiTro = prefs.getInt("saved_vai_tro", 1); // Mặc định là nhân viên
         if (!TextUtils.isEmpty(savedUsername) && !TextUtils.isEmpty(savedPassword)) {
             edtTaiKhoan.setText(savedUsername);
             edtMatKhau.setText(savedPassword);
-            spnVaiTro.setSelection(savedVaiTro);
-            chkLuuMatKhau.setChecked(true);
         }
     }
 
@@ -172,11 +164,9 @@ public class DangNhapActivity extends AppCompatActivity {
         btnDangNhap.setEnabled(false);
         btnDangNhap.setText("Đang đăng nhập...");
 
-        // Lấy vai trò được chọn từ Spinner (hiện server không dùng, vẫn giữ để điều hướng)
-        String vaiTroChon = vaiTroArray[spnVaiTro.getSelectedItemPosition()];
-        
         // Tạo request để gọi API (khớp server)
-        boolean rememberMe = chkLuuMatKhau.isChecked();
+        // Mặc định rememberMe = true
+        boolean rememberMe = true;
         LoginRequest loginRequest = new LoginRequest(taiKhoan, matKhau, rememberMe);
         Log.d(TAG, "Login request username=" + taiKhoan + ", rememberMe=" + rememberMe);
         
@@ -203,24 +193,15 @@ public class DangNhapActivity extends AppCompatActivity {
                         
                         // Convert UserInfo thành NhanVien để tương thích với SessionManager
                         NhanVien nhanVien = ApiHelper.convertToNhanVien(userInfo);
-                        // Tạm thời thay đổi vai trò để điều hướng đúng
-                        String vaiTroCu = nhanVien.vaiTro;
-                        nhanVien.vaiTro = vaiTroChon;
                         sessionManager.saveSession(nhanVien);
-                        nhanVien.vaiTro = vaiTroCu;
                         
-                        // Lưu thông tin nếu checkbox được chọn
-                        if (chkLuuMatKhau.isChecked()) {
-                            prefs.edit().putString("saved_username", taiKhoan)
-                                    .putString("saved_password", matKhau)
-                                    .putInt("saved_vai_tro", spnVaiTro.getSelectedItemPosition())
-                                    .apply();
-                        } else {
-                            prefs.edit().remove("saved_username").remove("saved_password").remove("saved_vai_tro").apply();
-                        }
+                        // Lưu thông tin đăng nhập
+                        prefs.edit().putString("saved_username", taiKhoan)
+                                .putString("saved_password", matKhau)
+                                .apply();
 
                         Toast.makeText(DangNhapActivity.this, loginResponse.getMessage() != null ? loginResponse.getMessage() : "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
-                        redirectToMainScreen(vaiTroChon);
+                        redirectToMainScreen(nhanVien.vaiTro);
                     } else {
                         String errorMsg = loginResponse.getMessage() != null ? loginResponse.getMessage() : "Đăng nhập thất bại!";
                         Log.w(TAG, "Success body but user null: " + errorMsg);

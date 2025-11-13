@@ -42,10 +42,17 @@ public class NhanVienAdapter extends RecyclerView.Adapter<NhanVienAdapter.ViewHo
         holder.txtSoDienThoaiNhanVien.setText(user.getSoDienThoai() != null ? user.getSoDienThoai() : "");
         holder.txtVaiTroNhanVien.setText(user.getVaiTro() != null ? (user.getVaiTro().equals("admin") ? "Quản trị viên" : "Nhân viên") : "");
         
-        if (user.getAnhDaiDien() != null && !user.getAnhDaiDien().isEmpty()) {
+        String avatarUrl = user.getAnhDaiDien();
+        if (avatarUrl != null && !avatarUrl.trim().isEmpty() && !avatarUrl.contains("example.com")) {
             Glide.with(holder.imgAvatarNhanVien.getContext())
-                    .load(user.getAnhDaiDien())
+                    .load(avatarUrl)
                     .placeholder(R.mipmap.ic_launcher)
+                    .error(R.mipmap.ic_launcher)
+                    .into(holder.imgAvatarNhanVien);
+        } else {
+            // Set placeholder if URL is invalid or empty
+            Glide.with(holder.imgAvatarNhanVien.getContext())
+                    .load(R.mipmap.ic_launcher)
                     .into(holder.imgAvatarNhanVien);
         }
 

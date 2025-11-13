@@ -36,9 +36,15 @@ public class KhachHangAdapter extends RecyclerView.Adapter<KhachHangAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         CustomerResponse c = items.get(position);
-        holder.txtTenKhachHang.setText(c.getName());
-        holder.txtSoDienThoaiKhachHang.setText(c.getPhone() != null ? c.getPhone() : "");
+        holder.txtTenKhachHang.setText(c.getName() != null ? c.getName() : "");
         holder.txtHangKhachHang.setText(c.getType() != null ? c.getType() : "");
+        
+        // Hiển thị badge CLIENT nếu có type
+        if (c.getType() != null && !c.getType().isEmpty()) {
+            holder.badgeClient.setVisibility(android.view.View.VISIBLE);
+        } else {
+            holder.badgeClient.setVisibility(android.view.View.GONE);
+        }
 
         holder.itemView.setOnClickListener(v -> {
             if (onCustomerClickListener != null) {
@@ -72,14 +78,14 @@ public class KhachHangAdapter extends RecyclerView.Adapter<KhachHangAdapter.View
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imgAvatarKhachHang;
         TextView txtTenKhachHang;
-        TextView txtSoDienThoaiKhachHang;
         TextView txtHangKhachHang;
+        TextView badgeClient;
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             imgAvatarKhachHang = itemView.findViewById(R.id.imgAvatarKhachHang);
             txtTenKhachHang = itemView.findViewById(R.id.txtTenKhachHang);
-            txtSoDienThoaiKhachHang = itemView.findViewById(R.id.txtSoDienThoaiKhachHang);
             txtHangKhachHang = itemView.findViewById(R.id.txtHangKhachHang);
+            badgeClient = itemView.findViewById(R.id.badgeClient);
         }
     }
 }

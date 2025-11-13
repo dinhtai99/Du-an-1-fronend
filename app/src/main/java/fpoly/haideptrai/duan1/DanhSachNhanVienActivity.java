@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fpoly.haideptrai.duan1.adapters.NhanVienAdapter;
@@ -104,25 +105,52 @@ public class DanhSachNhanVienActivity extends AppCompatActivity {
     }
 
     private void fetchUsers(String search) {
+        Log.d(TAG, "Fetching users, search: " + search);
         Call<UserListResponse> call = userService.getUsers(search, null, 1, 50);
         call.enqueue(new Callback<UserListResponse>() {
             @Override
             public void onResponse(Call<UserListResponse> call, Response<UserListResponse> response) {
+                Log.d(TAG, "Response code: " + response.code());
                 if (response.isSuccessful() && response.body() != null) {
-                    List<UserResponse> list = response.body().getUsers();
-                    Log.i(TAG, "Loaded users: " + (list != null ? list.size() : 0));
-                    adapter.setItems(list);
+                    UserListResponse body = response.body();
+                    List<UserResponse> list = body.getUsers();
+                    Log.i(TAG, "Response body - total: " + body.getTotal() + ", users list size: " + (list != null ? list.size() : 0));
+                    
+                    if (list != null && !list.isEmpty()) {
+                        Log.i(TAG, "Loaded " + list.size() + " users");
+                        for (UserResponse user : list) {
+                            Log.d(TAG, "User: " + user.getHoTen() + " (" + user.getTenDangNhap() + ")");
+                        }
+                        adapter.setItems(list);
+                    } else {
+                        Log.w(TAG, "Users list is null or empty");
+                        adapter.setItems(new ArrayList<>());
+                        Toast.makeText(DanhSachNhanVienActivity.this, "Không có nhân viên nào", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     String msg = "Không tải được nhân viên (" + response.code() + ")";
                     Log.e(TAG, msg);
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorBody = response.errorBody().string();
+                            Log.e(TAG, "Error body: " + errorBody);
+                        } catch (Exception e) {
+                            Log.e(TAG, "Error reading error body", e);
+                        }
+                    }
+                    if (response.code() == 401) {
+                        msg = "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!";
+                    }
                     Toast.makeText(DanhSachNhanVienActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    adapter.setItems(new ArrayList<>());
                 }
             }
 
             @Override
             public void onFailure(Call<UserListResponse> call, Throwable t) {
                 Log.e(TAG, "API error: " + t.getMessage(), t);
-                Toast.makeText(DanhSachNhanVienActivity.this, "Lỗi kết nối server", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DanhSachNhanVienActivity.this, "Lỗi kết nối server: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                adapter.setItems(new ArrayList<>());
             }
         });
     }

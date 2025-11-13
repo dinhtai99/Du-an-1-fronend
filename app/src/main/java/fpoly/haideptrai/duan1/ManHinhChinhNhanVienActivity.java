@@ -76,6 +76,7 @@ public class ManHinhChinhNhanVienActivity extends AppCompatActivity {
                 .setMessage("Bạn có chắc chắn muốn đăng xuất?")
                 .setPositiveButton("Đăng xuất", (dialog, which) -> {
                     sessionManager.clearSession();
+                    fpoly.haideptrai.duan1.api.TokenStore.clearToken();
                     Intent intent = new Intent(ManHinhChinhNhanVienActivity.this, DangNhapActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);

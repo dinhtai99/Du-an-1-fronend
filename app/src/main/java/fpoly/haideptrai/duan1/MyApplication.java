@@ -15,6 +15,8 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        // Khởi tạo TokenStore để load token từ SharedPreferences khi app khởi động
+        fpoly.haideptrai.duan1.api.TokenStore.initialize(this);
         DatabaseInitializer.initialize(this);
         pingApi();
     }

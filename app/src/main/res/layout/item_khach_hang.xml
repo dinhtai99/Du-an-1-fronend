@@ -8,7 +8,7 @@
     app:cardElevation="2dp"
     android:clickable="true"
     android:focusable="true"
-    app:rippleColor="@android:color/holo_blue_light">
+    app:rippleColor="@color/primary_blue_light">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,16 +17,37 @@
         android:padding="16dp"
         android:gravity="center_vertical">
 
-        <ImageView
-            android:id="@+id/imgAvatarKhachHang"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:src="@mipmap/ic_launcher"
-            android:contentDescription="Avatar"
-            android:scaleType="centerCrop"
-            android:background="@android:drawable/dialog_holo_light_frame"
-            android:padding="4dp" />
+        <!-- Avatar với badge CLIENT -->
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
 
+            <ImageView
+                android:id="@+id/imgAvatarKhachHang"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:src="@mipmap/ic_launcher"
+                android:contentDescription="Avatar"
+                android:scaleType="centerCrop"
+                android:background="@drawable/circle_background"
+                android:padding="4dp" />
+
+            <!-- Badge CLIENT (có thể ẩn/hiện) -->
+            <TextView
+                android:id="@+id/badgeClient"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:text="CLIENT"
+                android:textSize="8sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:background="@color/primary_blue"
+                android:padding="2dp"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <!-- Thông tin khách hàng -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -39,50 +60,21 @@
                 android:id="@+id/txtTenKhachHang"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nguyễn Văn B"
+                android:text="Henry Smith"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@android:color/black" />
-
-            <TextView
-                android:id="@+id/txtSoDienThoaiKhachHang"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="0987654321"
-                android:textSize="14sp"
-                android:textColor="@android:color/darker_gray" />
+                android:textColor="@color/text_primary" />
 
             <TextView
                 android:id="@+id/txtHangKhachHang"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="VIP"
-                android:textSize="12sp"
-                android:textColor="@android:color/holo_orange_dark"
-                android:textStyle="bold"
-                android:background="@android:color/holo_orange_light"
-                android:padding="4dp" />
+                android:text="Operator"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary" />
         </LinearLayout>
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@android:drawable/ic_menu_more"
-            android:contentDescription="Xem chi tiết"
-            app:tint="@android:color/darker_gray" />
 
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>
-
-
-
-
-
-
-
-
-
-
