@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:fillViewport="true"
-    tools:context=".DangKyActivity">
+    tools:context=".DangKyKhachHangActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,8 +23,7 @@
             android:layout_gravity="start"
             android:src="@android:drawable/ic_menu_revert"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Quay lại"
-            app:tint="@color/text_primary" />
+            android:contentDescription="Quay lại" />
 
         <!-- Tiêu đề -->
         <TextView
@@ -55,7 +54,7 @@
 
             <!-- Tên đầy đủ -->
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilHoTen"
+                android:id="@+id/tilTenDayDu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Tên đầy đủ"
@@ -64,7 +63,7 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edtHoTen"
+                    android:id="@+id/edtTenDayDu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPersonName"
@@ -203,3 +202,4 @@
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
+

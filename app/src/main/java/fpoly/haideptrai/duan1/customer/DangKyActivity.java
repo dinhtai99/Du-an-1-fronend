@@ -1,4 +1,4 @@
-package fpoly.haideptrai.duan1;
+package fpoly.haideptrai.duan1.customer;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import fpoly.haideptrai.duan1.R;
 import fpoly.haideptrai.duan1.api.ApiClient;
 import fpoly.haideptrai.duan1.api.models.ApiResponse;
 import fpoly.haideptrai.duan1.api.models.RegisterRequest;
@@ -212,3 +213,4 @@ public class DangKyActivity extends AppCompatActivity {
         });
     }
 }
+

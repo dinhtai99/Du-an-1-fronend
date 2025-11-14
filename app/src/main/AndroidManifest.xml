@@ -26,8 +26,9 @@
         <activity
             android:name=".MainActivity"
             android:exported="false" />
+        <!-- Customer Activities -->
         <activity
-            android:name=".DangNhapActivity"
+            android:name=".customer.DangNhapActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,31 +37,51 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DangKyActivity"
+            android:name=".customer.DangKyActivity"
+            android:exported="false" />
+        
+        <!-- Admin Activities -->
+        <activity
+            android:name=".admin.ManHinhChinhAdminActivity"
             android:exported="false" />
         <activity
-            android:name=".ManHinhChinhAdminActivity"
+            android:name=".admin.ManHinhChinhNhanVienActivity"
             android:exported="false" />
         <activity
-            android:name=".ManHinhChinhNhanVienActivity"
+            android:name=".admin.DanhSachNhanVienActivity"
             android:exported="false" />
         <activity
-            android:name=".DanhSachNhanVienActivity"
+            android:name=".admin.DanhSachLoaiSanPhamActivity"
             android:exported="false" />
         <activity
-            android:name=".DanhSachLoaiSanPhamActivity"
+            android:name=".admin.DanhSachSanPhamActivity"
             android:exported="false" />
         <activity
-            android:name=".DanhSachSanPhamActivity"
+            android:name=".admin.DanhSachKhachHangActivity"
             android:exported="false" />
         <activity
-            android:name=".DanhSachKhachHangActivity"
+            android:name=".admin.DanhSachHoaDonActivity"
             android:exported="false" />
         <activity
-            android:name=".DanhSachHoaDonActivity"
+            android:name=".admin.ThongKeActivity"
             android:exported="false" />
         <activity
-            android:name=".ThongKeActivity"
+            android:name=".admin.ThemSuaSanPhamActivity"
+            android:exported="false" />
+        <activity
+            android:name=".admin.ThemSuaLoaiSanPhamActivity"
+            android:exported="false" />
+        <activity
+            android:name=".admin.ThemSuaKhachHangActivity"
+            android:exported="false" />
+        <activity
+            android:name=".admin.ThemSuaNhanVienActivity"
+            android:exported="false" />
+        <activity
+            android:name=".admin.TaoHoaDonActivity"
+            android:exported="false" />
+        <activity
+            android:name=".admin.DoiMatKhauActivity"
             android:exported="false" />
     </application>
 
