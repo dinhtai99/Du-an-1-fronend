@@ -18,14 +18,40 @@
             android:padding="16dp">
 
             <!-- Header -->
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Chi tiết đơn hàng"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black"
-                android:layout_marginBottom="24dp" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="24dp">
+
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@android:drawable/ic_menu_revert"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Quay lại" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Chi tiết đơn hàng"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"
+                    android:gravity="center_vertical"
+                    android:layout_marginStart="16dp" />
+
+                <ImageButton
+                    android:id="@+id/btnMenu"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@android:drawable/ic_menu_more"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Menu" />
+            </LinearLayout>
 
             <!-- Order Summary Card -->
             <com.google.android.material.card.MaterialCardView
@@ -33,7 +59,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
                 app:cardCornerRadius="8dp"
-                app:cardElevation="2dp">
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/primary_blue_light">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -96,10 +123,9 @@
                         android:layout_marginBottom="8dp">
 
                         <TextView
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Gửi từ:"
+                            android:text="Gửi từ"
                             android:textSize="14sp"
                             android:textColor="@color/text_secondary" />
 
@@ -119,10 +145,9 @@
                         android:layout_marginBottom="8dp">
 
                         <TextView
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Điểm đến:"
+                            android:text="Điểm đến"
                             android:textSize="14sp"
                             android:textColor="@color/text_secondary" />
 
@@ -142,10 +167,9 @@
                         android:layout_marginBottom="8dp">
 
                         <TextView
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Đơn vị vận chuyển:"
+                            android:text="Đơn vị vận chuyển"
                             android:textSize="14sp"
                             android:textColor="@color/text_secondary" />
 
@@ -153,7 +177,7 @@
                             android:id="@+id/txtDonViVanChuyen"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="J&amp;E Express"
+                            android:text="JnE Express"
                             android:textSize="14sp"
                             android:textColor="@android:color/black" />
                     </LinearLayout>
@@ -164,10 +188,9 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Cân nặng:"
+                            android:text="Cân nặng"
                             android:textSize="14sp"
                             android:textColor="@color/text_secondary" />
 
@@ -224,4 +247,5 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
 

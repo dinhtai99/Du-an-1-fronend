@@ -42,6 +42,19 @@
                 android:padding="4dp"
                 android:layout_margin="8dp"
                 android:visibility="gone" />
+
+            <!-- Icon yêu thích -->
+            <ImageButton
+                android:id="@+id/btnYeuThich"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="top|start"
+                android:src="@android:drawable/btn_star_big_off"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:backgroundTint="@color/white"
+                android:contentDescription="Yêu thích"
+                android:layout_margin="8dp"
+                android:padding="4dp" />
         </FrameLayout>
 
         <!-- Thông tin sản phẩm -->

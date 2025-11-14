@@ -15,7 +15,11 @@ import com.google.android.material.button.MaterialButton;
 
 import fpoly.haideptrai.duan1.R;
 import fpoly.haideptrai.duan1.api.ApiClient;
+import fpoly.haideptrai.duan1.api.models.ApiResponse;
+import fpoly.haideptrai.duan1.api.models.InvoiceListResponse;
 import fpoly.haideptrai.duan1.api.models.UserInfo;
+import fpoly.haideptrai.duan1.api.models.UserResponse;
+import fpoly.haideptrai.duan1.api.services.InvoiceService;
 import fpoly.haideptrai.duan1.api.services.UserService;
 import fpoly.haideptrai.duan1.utils.SessionManager;
 import retrofit2.Call;
@@ -30,6 +34,7 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigation;
     
     private UserService userService;
+    private InvoiceService invoiceService;
     private SessionManager sessionManager;
 
     @Override
@@ -41,7 +46,9 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
         setupBottomNavigation();
         sessionManager = new SessionManager(this);
         userService = ApiClient.getClient().create(UserService.class);
+        invoiceService = ApiClient.getClient().create(InvoiceService.class);
         loadUserInfo();
+        loadOrderCount();
     }
 
     private void initViews() {
@@ -91,13 +98,60 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
             return;
         }
 
-        // TODO: Use actual API to get user info
-        // For now, use session data
+        // Load từ session trước (fallback)
         txtHoTen.setText(sessionManager.getHoTen());
-        txtEmail.setText(sessionManager.getUsername() + "@example.com");
-        txtSoDienThoai.setText("0966686868");
-        txtSoDonHang.setText("0");
-        txtDiaChi.setText("Hà Nội");
+        txtEmail.setText(sessionManager.getUsername());
+        txtSoDienThoai.setText("");
+        txtDiaChi.setText("");
+
+        // Gọi API để lấy thông tin chi tiết
+        Call<UserResponse> call = userService.getById(String.valueOf(userId));
+        call.enqueue(new Callback<UserResponse>() {
+            @Override
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    UserResponse user = response.body();
+                    txtHoTen.setText(user.getHoTen() != null ? user.getHoTen() : sessionManager.getHoTen());
+                    txtEmail.setText(user.getTenDangNhap() != null ? user.getTenDangNhap() : sessionManager.getUsername());
+                    txtSoDienThoai.setText(user.getSoDienThoai() != null ? user.getSoDienThoai() : "");
+                    // UserResponse không có address field, có thể thêm sau
+                    txtDiaChi.setText("");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                // Silent fail, sử dụng session data
+            }
+        });
+    }
+
+    private void loadOrderCount() {
+        int userId = sessionManager.getUserId();
+        if (userId == -1) {
+            txtSoDonHang.setText("0");
+            return;
+        }
+
+        String customerId = String.valueOf(userId);
+        Call<InvoiceListResponse> call = invoiceService.getInvoices(null, customerId, null, null, null, null, null, 1, 1000);
+        call.enqueue(new Callback<InvoiceListResponse>() {
+            @Override
+            public void onResponse(Call<InvoiceListResponse> call, Response<InvoiceListResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    InvoiceListResponse invoiceList = response.body();
+                    int count = invoiceList.getInvoices() != null ? invoiceList.getInvoices().size() : 0;
+                    txtSoDonHang.setText(String.valueOf(count));
+                } else {
+                    txtSoDonHang.setText("0");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<InvoiceListResponse> call, Throwable t) {
+                txtSoDonHang.setText("0");
+            }
+        });
     }
 
     @Override

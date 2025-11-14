@@ -35,23 +35,35 @@
             android:orientation="vertical"
             android:layout_marginStart="12dp">
 
-            <TextView
-                android:id="@+id/txtMaDonHang"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="DH1"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/txtTrangThai"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Đã giao"
-                android:textSize="14sp"
-                android:textColor="@color/green"
-                android:layout_marginTop="4dp" />
+                <TextView
+                    android:id="@+id/txtMaDonHang"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="ĐH1"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black" />
+
+                <TextView
+                    android:id="@+id/txtTrangThai"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Đã giao"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:background="@drawable/badge_background"
+                    android:backgroundTint="@color/green"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/txtKhachHang"
@@ -66,17 +78,16 @@
                 android:id="@+id/txtTongTien"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="300.000 vnđ"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/primary_blue"
+                android:text="Số tiền: 300.000 vnd"
+                android:textSize="12sp"
+                android:textColor="@color/text_secondary"
                 android:layout_marginTop="4dp" />
 
             <TextView
                 android:id="@+id/txtPhuongThucThanhToan"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Trực tiếp khi nhận hàng"
+                android:text="Phương thức thanh toán: Trực tiếp khi nhận hàng"
                 android:textSize="12sp"
                 android:textColor="@color/text_secondary"
                 android:layout_marginTop="4dp" />

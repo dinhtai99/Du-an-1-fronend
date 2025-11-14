@@ -14,8 +14,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import fpoly.haideptrai.duan1.R;
-import fpoly.haideptrai.duan1.admin.ManHinhChinhAdminActivity;
-import fpoly.haideptrai.duan1.admin.ManHinhChinhNhanVienActivity;
 import fpoly.haideptrai.duan1.api.ApiClient;
 import fpoly.haideptrai.duan1.api.ApiHelper;
 import fpoly.haideptrai.duan1.api.TokenStore;
@@ -253,12 +251,8 @@ public class DangNhapActivity extends AppCompatActivity {
     }
     
     private void redirectToMainScreen(String vaiTro) {
-        Intent intent;
-        if ("admin".equals(vaiTro)) {
-            intent = new Intent(DangNhapActivity.this, ManHinhChinhAdminActivity.class);
-        } else {
-            intent = new Intent(DangNhapActivity.this, ManHinhChinhNhanVienActivity.class);
-        }
+        // Chỉ redirect đến HomeActivity cho khách hàng
+        Intent intent = new Intent(DangNhapActivity.this, HomeActivity.class);
         startActivity(intent);
         finish();
     }

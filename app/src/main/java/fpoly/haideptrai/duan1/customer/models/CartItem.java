@@ -7,6 +7,10 @@ public class CartItem {
     private int quantity;
     private double price;
 
+    // Constructor không tham số cho Gson
+    public CartItem() {
+    }
+
     public CartItem(ProductResponse product, int quantity, double price) {
         this.product = product;
         this.quantity = quantity;

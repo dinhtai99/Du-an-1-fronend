@@ -22,6 +22,7 @@ import java.util.Locale;
 import fpoly.haideptrai.duan1.R;
 import fpoly.haideptrai.duan1.customer.adapters.CartAdapter;
 import fpoly.haideptrai.duan1.customer.models.CartItem;
+import fpoly.haideptrai.duan1.utils.CartManager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,6 +36,7 @@ public class GioHangActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigation;
     
     private CartAdapter cartAdapter;
+    private CartManager cartManager;
     private List<CartItem> cartItems = new ArrayList<>();
     private NumberFormat currency = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
 
@@ -45,6 +47,7 @@ public class GioHangActivity extends AppCompatActivity {
 
         initViews();
         setupBottomNavigation();
+        cartManager = new CartManager(this);
         setupRecyclerView();
         loadCartItems();
     }
@@ -97,20 +100,22 @@ public class GioHangActivity extends AppCompatActivity {
         rvGioHang.setAdapter(cartAdapter);
 
         cartAdapter.setOnCartItemChangeListener(() -> {
+            // Lưu giỏ hàng khi có thay đổi
+            cartManager.saveCart(cartItems);
+            cartAdapter.notifyDataSetChanged();
             updateTotal();
         });
 
         cartAdapter.setOnRemoveItemListener(item -> {
             cartItems.remove(item);
+            cartManager.saveCart(cartItems);
             cartAdapter.notifyDataSetChanged();
             updateTotal();
         });
     }
 
     private void loadCartItems() {
-        // TODO: Load from SharedPreferences or API
-        // For now, using empty list
-        cartItems.clear();
+        cartItems = cartManager.loadCart();
         cartAdapter.notifyDataSetChanged();
         updateTotal();
     }

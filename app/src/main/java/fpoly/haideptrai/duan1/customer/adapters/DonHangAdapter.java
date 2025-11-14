@@ -18,6 +18,7 @@ import java.util.Locale;
 
 import fpoly.haideptrai.duan1.R;
 import fpoly.haideptrai.duan1.api.models.InvoiceResponse;
+import android.graphics.Color;
 
 public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.ViewHolder> {
 
@@ -41,15 +42,34 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         InvoiceResponse invoice = items.get(position);
-        holder.txtMaDonHang.setText(invoice.getInvoiceNumber() != null ? invoice.getInvoiceNumber() : invoice.get_id());
-        holder.txtTrangThai.setText(getStatusLabel(invoice.getStatus()));
-        holder.txtTongTien.setText(formatPrice(invoice.getTotal()));
+        String invoiceNumber = invoice.getInvoiceNumber() != null ? invoice.getInvoiceNumber() : invoice.get_id();
+        // Format: ĐH1, ĐH2, etc. - lấy số cuối cùng
+        if (invoiceNumber != null && !invoiceNumber.isEmpty()) {
+            // Tìm số cuối cùng trong chuỗi
+            String number = invoiceNumber.replaceAll("[^0-9]", "");
+            if (!number.isEmpty()) {
+                holder.txtMaDonHang.setText("ĐH" + number.substring(number.length() - 1));
+            } else {
+                holder.txtMaDonHang.setText("ĐH" + invoiceNumber.substring(Math.max(0, invoiceNumber.length() - 1)));
+            }
+        } else {
+            holder.txtMaDonHang.setText("ĐH");
+        }
+        
+        // Set status với màu badge
+        String status = invoice.getStatus();
+        String statusLabel = getStatusLabel(status);
+        holder.txtTrangThai.setText(statusLabel);
+        setStatusBadgeColor(holder.txtTrangThai, status);
+        
+        holder.txtTongTien.setText("Số tiền: " + formatPrice(invoice.getTotal()));
         
         if (invoice.getCustomer() != null) {
             holder.txtKhachHang.setText("Khách hàng: " + invoice.getCustomer().getName());
         }
         
-        holder.txtPhuongThucThanhToan.setText(getPaymentMethodLabel(invoice.getPaymentMethod()));
+        // InvoiceResponse không có paymentMethod field, có thể thêm sau
+        holder.txtPhuongThucThanhToan.setText("Phương thức thanh toán: Trực tiếp khi nhận hàng");
 
         // Load product image if available
         if (invoice.getItems() != null && !invoice.getItems().isEmpty() && 
@@ -99,8 +119,26 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.ViewHold
     }
 
     private String formatPrice(Double price) {
-        if (price == null) return "0 vnđ";
-        return currency.format(price).replace("₫", "vnđ");
+        if (price == null) return "0 vnd";
+        return currency.format(price).replace("₫", "vnd");
+    }
+
+    private void setStatusBadgeColor(TextView textView, String status) {
+        int colorRes;
+        if (status == null) {
+            colorRes = R.color.text_secondary;
+        } else if ("completed".equals(status) || "delivered".equals(status)) {
+            colorRes = R.color.green;
+        } else if ("shipping".equals(status) || "processing".equals(status) || "pending".equals(status)) {
+            colorRes = R.color.orange;
+        } else if ("cancelled".equals(status)) {
+            colorRes = R.color.red;
+        } else {
+            colorRes = R.color.text_secondary;
+        }
+        textView.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+            textView.getContext().getResources().getColor(colorRes, null)
+        ));
     }
 
     @Override

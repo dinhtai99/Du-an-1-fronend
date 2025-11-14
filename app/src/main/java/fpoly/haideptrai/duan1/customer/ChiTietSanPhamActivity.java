@@ -20,6 +20,8 @@ import fpoly.haideptrai.duan1.R;
 import fpoly.haideptrai.duan1.api.ApiClient;
 import fpoly.haideptrai.duan1.api.models.ProductResponse;
 import fpoly.haideptrai.duan1.api.services.ProductService;
+import fpoly.haideptrai.duan1.customer.models.CartItem;
+import fpoly.haideptrai.duan1.utils.CartManager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,6 +34,7 @@ public class ChiTietSanPhamActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigation;
     
     private ProductService productService;
+    private CartManager cartManager;
     private String productId;
     private ProductResponse product;
     private NumberFormat currency = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
@@ -51,6 +54,7 @@ public class ChiTietSanPhamActivity extends AppCompatActivity {
         initViews();
         setupBottomNavigation();
         productService = ApiClient.getClient().create(ProductService.class);
+        cartManager = new CartManager(this);
         loadProductDetails();
     }
 
@@ -66,8 +70,7 @@ public class ChiTietSanPhamActivity extends AppCompatActivity {
 
         btnThemVaoGioHang.setOnClickListener(v -> {
             if (product != null) {
-                // TODO: Add to cart
-                Toast.makeText(this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                addToCart();
             }
         });
     }
@@ -147,6 +150,25 @@ public class ChiTietSanPhamActivity extends AppCompatActivity {
     private String formatPrice(Double price) {
         if (price == null) return "0 vnđ";
         return currency.format(price).replace("₫", "vnđ");
+    }
+
+    private void addToCart() {
+        if (product == null) {
+            Toast.makeText(this, "Không thể thêm sản phẩm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Kiểm tra tồn kho
+        if (product.getStock() != null && product.getStock() <= 0) {
+            Toast.makeText(this, "Sản phẩm đã hết hàng", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        double price = product.getPrice() != null ? product.getPrice() : 0;
+        CartItem cartItem = new CartItem(product, 1, price);
+        cartManager.addToCart(cartItem);
+
+        Toast.makeText(this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
     }
 }
 

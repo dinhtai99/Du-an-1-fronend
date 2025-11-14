@@ -69,7 +69,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Tổng tiền:"
+                    android:text="Total"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@android:color/black" />
@@ -78,7 +78,7 @@
                     android:id="@+id/txtTongTien"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="0 ₫"
+                    android:text="0₫"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@color/primary_blue" />
@@ -88,7 +88,7 @@
                 android:id="@+id/btnThanhToan"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Thanh toán"
+                android:text="Mua ngay"
                 android:textSize="16sp"
                 app:backgroundTint="@color/primary_blue" />
         </LinearLayout>

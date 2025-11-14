@@ -69,50 +69,6 @@
         <activity
             android:name=".customer.QuanLyVoucherActivity"
             android:exported="false" />
-        
-        <!-- Admin Activities -->
-        <activity
-            android:name=".admin.ManHinhChinhAdminActivity"
-            android:exported="false" />
-        <activity
-            android:name=".admin.ManHinhChinhNhanVienActivity"
-            android:exported="false" />
-        <activity
-            android:name=".admin.DanhSachNhanVienActivity"
-            android:exported="false" />
-        <activity
-            android:name=".admin.DanhSachLoaiSanPhamActivity"
-            android:exported="false" />
-        <activity
-            android:name=".admin.DanhSachSanPhamActivity"
-            android:exported="false" />
-        <activity
-            android:name=".admin.DanhSachKhachHangActivity"
-            android:exported="false" />
-        <activity
-            android:name=".admin.DanhSachHoaDonActivity"
-            android:exported="false" />
-        <activity
-            android:name=".admin.ThongKeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".admin.ThemSuaSanPhamActivity"
-            android:exported="false" />
-        <activity
-            android:name=".admin.ThemSuaLoaiSanPhamActivity"
-            android:exported="false" />
-        <activity
-            android:name=".admin.ThemSuaKhachHangActivity"
-            android:exported="false" />
-        <activity
-            android:name=".admin.ThemSuaNhanVienActivity"
-            android:exported="false" />
-        <activity
-            android:name=".admin.TaoHoaDonActivity"
-            android:exported="false" />
-        <activity
-            android:name=".admin.DoiMatKhauActivity"
-            android:exported="false" />
     </application>
 
 </manifest>
