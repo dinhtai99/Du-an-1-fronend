@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:gravity="center_vertical">
+
+    <!-- Timeline dot -->
+    <View
+        android:id="@+id/viewDot"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:background="@drawable/circle_background"
+        android:backgroundTint="@color/primary_blue" />
+
+    <!-- Timeline line -->
+    <View
+        android:id="@+id/viewLine"
+        android:layout_width="2dp"
+        android:layout_height="40dp"
+        android:background="@color/primary_blue"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="16dp"
+        android:visibility="gone" />
+
+    <!-- Content -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Xác nhận đơn hàng"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:id="@+id/txtDateTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="22/11/2021 12:30pm"
+            android:textSize="12sp"
+            android:textColor="@color/text_secondary"
+            android:layout_marginTop="4dp" />
+    </LinearLayout>
+</LinearLayout>
+

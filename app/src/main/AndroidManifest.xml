@@ -39,6 +39,36 @@
         <activity
             android:name=".customer.DangKyActivity"
             android:exported="false" />
+        <activity
+            android:name=".customer.HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".customer.ChiTietSanPhamActivity"
+            android:exported="false" />
+        <activity
+            android:name=".customer.GioHangActivity"
+            android:exported="false" />
+        <activity
+            android:name=".customer.ThanhToanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".customer.DonHangActivity"
+            android:exported="false" />
+        <activity
+            android:name=".customer.TheoDoiDonHangActivity"
+            android:exported="false" />
+        <activity
+            android:name=".customer.ThongTinCaNhanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".customer.SuaThongTinActivity"
+            android:exported="false" />
+        <activity
+            android:name=".customer.ChamSocKhachHangActivity"
+            android:exported="false" />
+        <activity
+            android:name=".customer.QuanLyVoucherActivity"
+            android:exported="false" />
         
         <!-- Admin Activities -->
         <activity

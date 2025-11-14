@@ -9,6 +9,7 @@ public class SessionManager {
     private static final String PREF_NAME = "session_prefs";
     private static final String KEY_USER_ID = "user_id";
     private static final String KEY_USERNAME = "username";
+    private static final String KEY_HO_TEN = "ho_ten";
     private static final String KEY_VAI_TRO = "vai_tro";
     private static final String KEY_LOGIN_FAILED_COUNT_PREFIX = "login_failed_count_";
     private static final String KEY_LOCKED_UNTIL_PREFIX = "locked_until_";
@@ -24,6 +25,7 @@ public class SessionManager {
     public void saveSession(NhanVien nhanVien) {
         editor.putInt(KEY_USER_ID, nhanVien.id);
         editor.putString(KEY_USERNAME, nhanVien.tenDangNhap);
+        editor.putString(KEY_HO_TEN, nhanVien.hoTen);
         editor.putString(KEY_VAI_TRO, nhanVien.vaiTro);
         // Reset login failed count cho user này khi đăng nhập thành công
         editor.putInt(KEY_LOGIN_FAILED_COUNT_PREFIX + nhanVien.tenDangNhap, 0);
@@ -37,6 +39,10 @@ public class SessionManager {
     
     public String getUsername() {
         return sharedPreferences.getString(KEY_USERNAME, "");
+    }
+    
+    public String getHoTen() {
+        return sharedPreferences.getString(KEY_HO_TEN, "");
     }
     
     public String getVaiTro() {
