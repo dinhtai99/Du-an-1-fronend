@@ -171,16 +171,16 @@ public class DangKyActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.w(TAG, "Could not convert date format, using original: " + ngaySinh);
         }
-        
+
         // Validate tất cả các trường trước khi gửi
-        if (TextUtils.isEmpty(hoTen) || TextUtils.isEmpty(email) || TextUtils.isEmpty(ngaySinhFormatted) || 
-            TextUtils.isEmpty(soDienThoai) || TextUtils.isEmpty(matKhau)) {
+        if (TextUtils.isEmpty(hoTen) || TextUtils.isEmpty(email) || TextUtils.isEmpty(ngaySinhFormatted) ||
+                TextUtils.isEmpty(soDienThoai) || TextUtils.isEmpty(matKhau)) {
             Toast.makeText(this, "Vui lòng điền đầy đủ tất cả các trường!", Toast.LENGTH_SHORT).show();
             btnDangKy.setEnabled(true);
             btnDangKy.setText("Đăng ký");
             return;
         }
-        
+
         // Tạo request - map field names theo backend schema
         RegisterRequest request = new RegisterRequest();
         request.setUsername(email.trim()); // Dùng email làm username
@@ -218,7 +218,7 @@ public class DangKyActivity extends AppCompatActivity {
                     ApiResponse<UserInfo> apiResponse = response.body();
                     if (apiResponse.isSuccess()) {
                         Toast.makeText(DangKyActivity.this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
-                        
+
                         // Chuyển về màn hình đăng nhập và truyền thông tin
                         Intent intent = new Intent(DangKyActivity.this, DangNhapActivity.class);
                         intent.putExtra("username", email);
@@ -237,7 +237,7 @@ public class DangKyActivity extends AppCompatActivity {
                         if (errorBody != null) {
                             String errorBodyStr = errorBody.string();
                             Log.e(TAG, "Error response: " + errorBodyStr);
-                            
+
                             // Parse JSON error response
                             Gson gson = new Gson();
                             ApiResponse<?> errorResponse = gson.fromJson(errorBodyStr, ApiResponse.class);
@@ -257,7 +257,7 @@ public class DangKyActivity extends AppCompatActivity {
                     } catch (Exception e) {
                         Log.e(TAG, "Error parsing error response: " + e.getMessage());
                     }
-                    
+
                     // Fallback messages based on status code
                     if (response.code() == 400 && errorMsg.equals("Thông tin không hợp lệ!")) {
                         errorMsg = "Vui lòng kiểm tra lại thông tin đã nhập!";
@@ -266,7 +266,7 @@ public class DangKyActivity extends AppCompatActivity {
                     } else if (response.code() == 500) {
                         errorMsg = "Lỗi server. Vui lòng thử lại sau!";
                     }
-                    
+
                     Toast.makeText(DangKyActivity.this, errorMsg, Toast.LENGTH_LONG).show();
                     Log.e(TAG, "Register failed: " + errorMsg);
                 }
@@ -276,7 +276,7 @@ public class DangKyActivity extends AppCompatActivity {
             public void onFailure(Call<ApiResponse<UserInfo>> call, Throwable t) {
                 btnDangKy.setEnabled(true);
                 btnDangKy.setText("Đăng ký");
-                
+
                 String errorMsg = "Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng!";
                 Log.e(TAG, "Network failure: " + t.getMessage(), t);
                 Toast.makeText(DangKyActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
