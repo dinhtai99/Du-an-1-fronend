@@ -64,21 +64,21 @@ public class DonHangActivity extends AppCompatActivity {
         // Backend sẽ tự lấy customer ID từ JWT token
         // Không cần gửi customer ID trong query parameter
         // Nếu backend yêu cầu, có thể gửi null hoặc không gửi parameter này
-        
+
         android.util.Log.d("DonHangActivity", "=== LOADING ORDERS ===");
         android.util.Log.d("DonHangActivity", "User ID from session: " + sessionManager.getUserId());
         android.util.Log.d("DonHangActivity", "MongoDB User ID from session: " + sessionManager.getMongoUserId());
         android.util.Log.d("DonHangActivity", "Username: " + sessionManager.getUsername());
-        
+
         // Gửi null để backend tự lấy từ JWT token (recommended)
         // Hoặc có thể gửi customerId nếu có MongoDB ID
         String customerId = null; // Backend sẽ tự lấy từ JWT token
-        
+
         // Nếu muốn gửi customer ID, uncomment dòng sau:
-        // String customerId = sessionManager.getMongoUserId();
-        
+// String customerId = sessionManager.getMongoUserId();
+
         android.util.Log.d("DonHangActivity", "Calling API: GET /api/invoices?customer=" + customerId);
-        
+
         Call<InvoiceListResponse> call = invoiceService.getInvoices(null, customerId, null, null, null, null, null, 1, 50);
         call.enqueue(new Callback<InvoiceListResponse>() {
             @Override
@@ -86,33 +86,33 @@ public class DonHangActivity extends AppCompatActivity {
                 android.util.Log.d("DonHangActivity", "=== API RESPONSE ===");
                 android.util.Log.d("DonHangActivity", "Response code: " + response.code());
                 android.util.Log.d("DonHangActivity", "Response successful: " + response.isSuccessful());
-                
+
                 if (response.isSuccessful() && response.body() != null) {
                     InvoiceListResponse invoiceList = response.body();
-                    
+
                     // Log raw response để debug
                     android.util.Log.d("DonHangActivity", "Raw response JSON: " + new com.google.gson.Gson().toJson(invoiceList));
                     android.util.Log.d("DonHangActivity", "Has data field: " + (invoiceList.getData() != null));
                     android.util.Log.d("DonHangActivity", "Has invoices field: " + (invoiceList.getInvoices() != null));
                     android.util.Log.d("DonHangActivity", "Data size: " + (invoiceList.getData() != null ? invoiceList.getData().size() : 0));
                     android.util.Log.d("DonHangActivity", "Invoices size: " + (invoiceList.getInvoices() != null ? invoiceList.getInvoices().size() : 0));
-                    
+
                     List<InvoiceResponse> orders = invoiceList.getInvoices();
-                    
+
                     android.util.Log.d("DonHangActivity", "Total invoices: " + invoiceList.getTotal());
                     android.util.Log.d("DonHangActivity", "Orders list size: " + (orders != null ? orders.size() : 0));
-                    
+
                     if (orders != null && !orders.isEmpty()) {
                         android.util.Log.d("DonHangActivity", "✅ Found " + orders.size() + " orders");
                         // Log một vài đơn hàng để debug
                         for (int i = 0; i < Math.min(3, orders.size()); i++) {
                             InvoiceResponse order = orders.get(i);
-                            android.util.Log.d("DonHangActivity", "Order " + (i + 1) + ": ID=" + order.get_id() + 
-                                ", Number=" + order.getInvoiceNumber() + 
-                                ", Status=" + order.getStatus() +
-                                ", Customer=" + (order.getCustomer() != null ? order.getCustomer().get_id() : "null"));
+                            android.util.Log.d("DonHangActivity", "Order " + (i + 1) + ": ID=" + order.get_id() +
+                                    ", Number=" + order.getInvoiceNumber() +
+                                    ", Status=" + order.getStatus() +
+                                    ", Customer=" + (order.getCustomer() != null ? order.getCustomer().get_id() : "null"));
                         }
-                        
+
                         adapter.setItems(orders);
                         rvDonHang.setVisibility(android.view.View.VISIBLE);
                         emptyState.setVisibility(android.view.View.GONE);
@@ -129,7 +129,7 @@ public class DonHangActivity extends AppCompatActivity {
                         if (response.errorBody() != null) {
                             errorBody = response.errorBody().string();
                             android.util.Log.e("DonHangActivity", "Error response body: " + errorBody);
-                            
+
                             // Thử parse JSON error
                             try {
                                 com.google.gson.Gson gson = new com.google.gson.Gson();
@@ -147,10 +147,10 @@ public class DonHangActivity extends AppCompatActivity {
                     } catch (Exception e) {
                         android.util.Log.e("DonHangActivity", "Error parsing error body: " + e.getMessage());
                     }
-                    
+
                     android.util.Log.e("DonHangActivity", "❌ Error loading orders: " + errorMsg);
                     android.util.Log.e("DonHangActivity", "Response code: " + response.code());
-                    
+
                     Toast.makeText(DonHangActivity.this, errorMsg, Toast.LENGTH_LONG).show();
                     rvDonHang.setVisibility(android.view.View.GONE);
                     emptyState.setVisibility(android.view.View.VISIBLE);
@@ -167,4 +167,3 @@ public class DonHangActivity extends AppCompatActivity {
         });
     }
 }
-
