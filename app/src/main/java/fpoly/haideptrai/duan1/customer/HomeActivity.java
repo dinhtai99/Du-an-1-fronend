@@ -43,7 +43,7 @@ public class HomeActivity extends AppCompatActivity {
     private ImageView imgBanner;
     private RecyclerView rvDanhMuc, rvSanPham;
     private BottomNavigationView bottomNavigation;
-    
+
     private CategoryHomeAdapter categoryAdapter;
     private ProductHomeAdapter productAdapter;
     private CategoryService categoryService;
