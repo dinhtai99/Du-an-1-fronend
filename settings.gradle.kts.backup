@@ -1,0 +1,22 @@
+// Backup file - Nếu cần rollback
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+        // ZaloPay SDK repository - COMMENT TẠM THỜI NẾU LỖI
+        // maven { url = uri("https://repo.zalopay.vn/repository/maven-public/") }
+    }
+}
+
+rootProject.name = "DuAn1"
+include(":app")
+

@@ -33,7 +33,7 @@
                 android:layout_width="120dp"
                 android:layout_height="120dp"
                 android:layout_gravity="center_horizontal"
-                android:src="@mipmap/ic_launcher"
+                android:src="@drawable/logo"
                 android:scaleType="centerCrop"
                 android:background="@drawable/circle_background"
                 android:contentDescription="Avatar"
@@ -192,6 +192,30 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Nút đơn hàng của tôi -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDonHangCuaToi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Đơn hàng của tôi"
+                android:textSize="16sp"
+                android:layout_marginTop="24dp"
+                app:backgroundTint="@color/primary_blue"
+                android:drawableStart="@android:drawable/ic_menu_recent_history"
+                android:drawablePadding="8dp" />
+
+            <!-- Nút sản phẩm yêu thích -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSanPhamYeuThich"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sản phẩm yêu thích"
+                android:textSize="16sp"
+                android:layout_marginTop="12dp"
+                app:backgroundTint="@color/primary_blue"
+                android:drawableStart="@drawable/ic_heart_outline"
+                android:drawablePadding="8dp" />
+
             <!-- Nút sửa thông tin -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSuaThongTin"
@@ -199,7 +223,7 @@
                 android:layout_height="wrap_content"
                 android:text="Sửa thông tin"
                 android:textSize="16sp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="12dp"
                 app:backgroundTint="@color/primary_blue" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

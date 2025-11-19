@@ -8,6 +8,7 @@ import fpoly.haideptrai.duan1.database.entities.NhanVien;
 public class SessionManager {
     private static final String PREF_NAME = "session_prefs";
     private static final String KEY_USER_ID = "user_id";
+    private static final String KEY_MONGO_USER_ID = "mongo_user_id"; // MongoDB ObjectId
     private static final String KEY_USERNAME = "username";
     private static final String KEY_HO_TEN = "ho_ten";
     private static final String KEY_VAI_TRO = "vai_tro";
@@ -33,6 +34,21 @@ public class SessionManager {
         editor.apply();
     }
     
+    /**
+     * Lưu MongoDB ObjectId (dùng cho API calls)
+     */
+    public void saveMongoUserId(String mongoUserId) {
+        editor.putString(KEY_MONGO_USER_ID, mongoUserId);
+        editor.apply();
+    }
+    
+    /**
+     * Lấy MongoDB ObjectId (dùng cho API calls)
+     */
+    public String getMongoUserId() {
+        return sharedPreferences.getString(KEY_MONGO_USER_ID, null);
+    }
+    
     public int getUserId() {
         return sharedPreferences.getInt(KEY_USER_ID, -1);
     }
@@ -43,6 +59,16 @@ public class SessionManager {
     
     public String getHoTen() {
         return sharedPreferences.getString(KEY_HO_TEN, "");
+    }
+    
+    public void setHoTen(String hoTen) {
+        editor.putString(KEY_HO_TEN, hoTen);
+        editor.apply();
+    }
+    
+    public void setUsername(String username) {
+        editor.putString(KEY_USERNAME, username);
+        editor.apply();
     }
     
     public String getVaiTro() {

@@ -196,6 +196,11 @@ public class DangNhapActivity extends AppCompatActivity {
                         NhanVien nhanVien = ApiHelper.convertToNhanVien(userInfo);
                         sessionManager.saveSession(nhanVien);
                         
+                        // Lưu MongoDB ObjectId để dùng cho API calls
+                        if (userInfo.getId() != null && !userInfo.getId().isEmpty()) {
+                            sessionManager.saveMongoUserId(userInfo.getId());
+                        }
+                        
                         // Lưu thông tin đăng nhập
                         prefs.edit().putString("saved_username", taiKhoan)
                                 .putString("saved_password", matKhau)

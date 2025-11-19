@@ -24,7 +24,7 @@
                 android:id="@+id/imgSanPham"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@mipmap/ic_launcher"
+                android:src="@drawable/logo"
                 android:scaleType="centerCrop"
                 android:contentDescription="Hình ảnh sản phẩm" />
 
@@ -49,9 +49,10 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:layout_gravity="top|start"
-                android:src="@android:drawable/btn_star_big_off"
+                android:src="@drawable/ic_heart_outline"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:backgroundTint="@color/white"
+                android:tint="@color/text_secondary"
                 android:contentDescription="Yêu thích"
                 android:layout_margin="8dp"
                 android:padding="4dp" />

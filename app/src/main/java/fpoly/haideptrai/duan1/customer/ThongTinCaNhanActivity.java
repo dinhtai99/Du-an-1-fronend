@@ -30,7 +30,7 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
 
     private ImageView imgAvatar;
     private TextView txtHoTen, txtEmail, txtSoDienThoai, txtSoDonHang, txtDiaChi;
-    private MaterialButton btnSuaThongTin;
+    private MaterialButton btnSuaThongTin, btnDonHangCuaToi, btnSanPhamYeuThich;
     private BottomNavigationView bottomNavigation;
     
     private UserService userService;
@@ -59,10 +59,28 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
         txtSoDonHang = findViewById(R.id.txtSoDonHang);
         txtDiaChi = findViewById(R.id.txtDiaChi);
         btnSuaThongTin = findViewById(R.id.btnSuaThongTin);
+        btnDonHangCuaToi = findViewById(R.id.btnDonHangCuaToi);
+        btnSanPhamYeuThich = findViewById(R.id.btnSanPhamYeuThich);
         bottomNavigation = findViewById(R.id.bottomNavigation);
 
         btnSuaThongTin.setOnClickListener(v -> {
             Intent intent = new Intent(this, SuaThongTinActivity.class);
+            startActivityForResult(intent, 100); // Request code 100
+        });
+
+        btnDonHangCuaToi.setOnClickListener(v -> {
+            Intent intent = new Intent(this, DonHangActivity.class);
+            startActivity(intent);
+        });
+        
+        btnSanPhamYeuThich.setOnClickListener(v -> {
+            Intent intent = new Intent(this, SanPhamYeuThichActivity.class);
+            startActivity(intent);
+        });
+
+        // Click vào số đơn hàng cũng mở danh sách đơn hàng
+        txtSoDonHang.setOnClickListener(v -> {
+            Intent intent = new Intent(this, DonHangActivity.class);
             startActivity(intent);
         });
     }
@@ -75,8 +93,13 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 return true;
+            } else if (itemId == R.id.nav_support) {
+                Intent intent = new Intent(this, ChamSocKhachHangActivity.class);
+                startActivity(intent);
+                return true;
             } else if (itemId == R.id.nav_discount) {
-                Toast.makeText(this, "Khuyến mãi", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, QuanLyVoucherActivity.class);
+                startActivity(intent);
                 return true;
             } else if (itemId == R.id.nav_cart) {
                 Intent intent = new Intent(this, GioHangActivity.class);
@@ -158,6 +181,15 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         loadUserInfo();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100 && resultCode == RESULT_OK) {
+            // Refresh user info sau khi sửa thông tin thành công
+            loadUserInfo();
+        }
     }
 }
 

@@ -32,7 +32,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Quản lí vocher"
+                android:text="Danh sách voucher"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/black"
@@ -55,7 +55,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Quản lí voucher"
+                    android:text="Voucher khả dụng"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@android:color/black"
@@ -64,10 +64,18 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="danh sách voucher"
+                    android:text="Danh sách voucher hiện có"
                     android:textSize="14sp"
                     android:textColor="@color/text_secondary"
                     android:layout_marginBottom="16dp" />
+
+                <!-- Progress Bar -->
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="gone" />
 
                 <!-- Danh sách voucher -->
                 <androidx.recyclerview.widget.RecyclerView
@@ -77,14 +85,15 @@
                     android:nestedScrollingEnabled="false"
                     tools:listitem="@layout/item_voucher_customer" />
 
-                <!-- Buttons -->
+                <!-- Buttons - Ẩn cho khách hàng vì không cần chức năng thêm/sửa voucher -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnThemVoucher"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Thêm vouvcher"
+                    android:text="Làm mới"
                     android:textSize="16sp"
                     android:layout_marginTop="16dp"
+                    android:visibility="gone"
                     app:backgroundTint="@color/primary_blue" />
 
                 <com.google.android.material.button.MaterialButton
@@ -94,6 +103,7 @@
                     android:text="Chỉnh sửa voucher"
                     android:textSize="16sp"
                     android:layout_marginTop="8dp"
+                    android:visibility="gone"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

@@ -23,9 +23,11 @@ import fpoly.haideptrai.duan1.api.models.ApiResponse;
 import fpoly.haideptrai.duan1.api.models.RegisterRequest;
 import fpoly.haideptrai.duan1.api.models.UserInfo;
 import fpoly.haideptrai.duan1.api.services.AuthService;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import com.google.gson.Gson;
 
 public class DangKyActivity extends AppCompatActivity {
 
@@ -154,18 +156,55 @@ public class DangKyActivity extends AppCompatActivity {
         btnDangKy.setEnabled(false);
         btnDangKy.setText("Đang xử lý...");
 
-        // Tạo request
+        // Convert ngaySinh từ dd/MM/yyyy sang yyyy-MM-dd (ISO format) nếu cần
+        String ngaySinhFormatted = ngaySinh;
+        try {
+            if (ngaySinh.contains("/")) {
+                // Parse từ dd/MM/yyyy
+                SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                java.util.Date date = inputFormat.parse(ngaySinh);
+                if (date != null) {
+                    ngaySinhFormatted = outputFormat.format(date);
+                }
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Could not convert date format, using original: " + ngaySinh);
+        }
+        
+        // Validate tất cả các trường trước khi gửi
+        if (TextUtils.isEmpty(hoTen) || TextUtils.isEmpty(email) || TextUtils.isEmpty(ngaySinhFormatted) || 
+            TextUtils.isEmpty(soDienThoai) || TextUtils.isEmpty(matKhau)) {
+            Toast.makeText(this, "Vui lòng điền đầy đủ tất cả các trường!", Toast.LENGTH_SHORT).show();
+            btnDangKy.setEnabled(true);
+            btnDangKy.setText("Đăng ký");
+            return;
+        }
+        
+        // Tạo request - map field names theo backend schema
         RegisterRequest request = new RegisterRequest();
-        request.setHoTen(hoTen);
-        request.setEmail(email);
-        request.setNgaySinh(ngaySinh);
-        request.setSoDienThoai(soDienThoai);
-        request.setTenDangNhap(email); // Dùng email làm tên đăng nhập
-        request.setMatKhau(matKhau);
-        request.setGioiTinh("");
-        request.setVaiTro("khach_hang"); // Vai trò khách hàng
+        request.setUsername(email.trim()); // Dùng email làm username
+        request.setPassword(matKhau);
+        request.setEmail(email.trim());
+        request.setFullName(hoTen.trim());
+        request.setGender("other"); // Map "Không xác định" -> "other" (enum: male, female, other)
+        request.setDateOfBirth(ngaySinhFormatted.trim()); // Format: yyyy-MM-dd
+        request.setPhone(soDienThoai.trim());
+        request.setRole("customer"); // Map "khach_hang" -> "customer" (enum: admin, staff, customer)
 
-        Log.d(TAG, "Register request: " + email);
+        // Log request để debug
+        Gson gson = new Gson();
+        String requestJson = gson.toJson(request);
+        Log.d(TAG, "=== REGISTER REQUEST ===");
+        Log.d(TAG, "Request JSON: " + requestJson);
+        Log.d(TAG, "hoTen: '" + hoTen + "' (length: " + hoTen.length() + ")");
+        Log.d(TAG, "email: '" + email + "' (length: " + email.length() + ")");
+        Log.d(TAG, "tenDangNhap: '" + email + "' (length: " + email.length() + ")");
+        Log.d(TAG, "matKhau: '" + matKhau + "' (length: " + matKhau.length() + ")");
+        Log.d(TAG, "ngaySinh: '" + ngaySinhFormatted + "'");
+        Log.d(TAG, "soDienThoai: '" + soDienThoai + "'");
+        Log.d(TAG, "gioiTinh: 'Không xác định'");
+        Log.d(TAG, "vaiTro: 'khach_hang'");
 
         // Gọi API đăng ký
         Call<ApiResponse<UserInfo>> call = authService.register(request);
@@ -191,13 +230,45 @@ public class DangKyActivity extends AppCompatActivity {
                         Toast.makeText(DangKyActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    String errorMsg = "Lỗi kết nối server. Vui lòng thử lại!";
-                    if (response.code() == 400) {
-                        errorMsg = "Thông tin không hợp lệ!";
+                    // Parse error response body để lấy message từ API
+                    String errorMsg = "Thông tin không hợp lệ!";
+                    try {
+                        ResponseBody errorBody = response.errorBody();
+                        if (errorBody != null) {
+                            String errorBodyStr = errorBody.string();
+                            Log.e(TAG, "Error response: " + errorBodyStr);
+                            
+                            // Parse JSON error response
+                            Gson gson = new Gson();
+                            ApiResponse<?> errorResponse = gson.fromJson(errorBodyStr, ApiResponse.class);
+                            if (errorResponse != null && errorResponse.getMessage() != null) {
+                                errorMsg = errorResponse.getMessage();
+                            } else {
+                                // Try to parse simple message format
+                                if (errorBodyStr.contains("\"message\"")) {
+                                    int start = errorBodyStr.indexOf("\"message\"") + 10;
+                                    int end = errorBodyStr.indexOf("\"", start);
+                                    if (end > start) {
+                                        errorMsg = errorBodyStr.substring(start, end);
+                                    }
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error parsing error response: " + e.getMessage());
+                    }
+                    
+                    // Fallback messages based on status code
+                    if (response.code() == 400 && errorMsg.equals("Thông tin không hợp lệ!")) {
+                        errorMsg = "Vui lòng kiểm tra lại thông tin đã nhập!";
                     } else if (response.code() == 409) {
                         errorMsg = "Email đã được sử dụng!";
+                    } else if (response.code() == 500) {
+                        errorMsg = "Lỗi server. Vui lòng thử lại sau!";
                     }
-                    Toast.makeText(DangKyActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                    
+                    Toast.makeText(DangKyActivity.this, errorMsg, Toast.LENGTH_LONG).show();
+                    Log.e(TAG, "Register failed: " + errorMsg);
                 }
             }
 

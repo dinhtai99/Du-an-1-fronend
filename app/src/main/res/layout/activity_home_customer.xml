@@ -73,16 +73,18 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Banner -->
+            <!-- Logo -->
             <ImageView
                 android:id="@+id/imgBanner"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:scaleType="centerCrop"
-                android:background="@color/primary_blue"
-                android:contentDescription="Banner"
+                android:scaleType="fitCenter"
+                android:src="@drawable/logo"
+                android:background="@color/background_light"
+                android:contentDescription="Logo"
                 android:layout_margin="16dp"
-                android:layout_marginTop="8dp" />
+                android:layout_marginTop="8dp"
+                android:padding="16dp" />
 
             <!-- Section: Sản phẩm -->
             <LinearLayout

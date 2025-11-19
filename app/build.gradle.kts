@@ -60,6 +60,26 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging)
     implementation(libs.gson)
+
+
+    // ZaloPay SDK từ libs folder
+    implementation(files("libs/zpdk-release-v3.1.aar"))
+
+
+    // Google Play Services Location
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+    
+    // ZaloPay SDK - COMMENT TẠM THỜI VÌ KHÔNG TẢI ĐƯỢC TỪ REPOSITORY
+    // TODO: Tải SDK thủ công hoặc tìm repository khác
+    // implementation("vn.zalopay.sdk:zp-sdk:3.1.0")
+    
+    // MoMo Payment SDK
+    // Thử version 1.0.6 trước, nếu không được thì tải SDK thủ công
+    // Exclude Support Library để tránh xung đột với AndroidX
+    implementation("com.github.momo-wallet:mobile-sdk:1.0.6") {
+        exclude(group = "com.android.support", module = "support-compat")
+        exclude(group = "com.android.support", module = "support-v4")
+    }
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

@@ -79,7 +79,7 @@
                             android:id="@+id/imgSanPham"
                             android:layout_width="80dp"
                             android:layout_height="80dp"
-                            android:src="@mipmap/ic_launcher"
+                            android:src="@drawable/logo"
                             android:scaleType="centerCrop"
                             android:contentDescription="Sản phẩm"
                             android:background="@android:drawable/dialog_holo_light_frame" />

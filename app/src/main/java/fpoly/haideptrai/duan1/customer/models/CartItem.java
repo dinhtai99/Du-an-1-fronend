@@ -6,6 +6,7 @@ public class CartItem {
     private ProductResponse product;
     private int quantity;
     private double price;
+    private boolean selected = true; // Mặc định được chọn
 
     // Constructor không tham số cho Gson
     public CartItem() {
@@ -15,6 +16,7 @@ public class CartItem {
         this.product = product;
         this.quantity = quantity;
         this.price = price;
+        this.selected = true; // Mặc định được chọn
     }
 
     public ProductResponse getProduct() {
@@ -39,6 +41,14 @@ public class CartItem {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
 }
 

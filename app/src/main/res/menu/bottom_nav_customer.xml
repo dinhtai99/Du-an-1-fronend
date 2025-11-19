@@ -5,6 +5,10 @@
         android:icon="@android:drawable/ic_menu_view"
         android:title="Trang chủ" />
     <item
+        android:id="@+id/nav_support"
+        android:icon="@android:drawable/ic_menu_help"
+        android:title="Chăm sóc" />
+    <item
         android:id="@+id/nav_discount"
         android:icon="@android:drawable/ic_menu_agenda"
         android:title="Khuyến mãi" />

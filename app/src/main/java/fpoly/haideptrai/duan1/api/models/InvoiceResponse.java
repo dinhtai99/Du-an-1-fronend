@@ -12,6 +12,37 @@ public class InvoiceResponse {
     private Double discount;
     private Double total;
     private String status;
+    private String paymentMethod;
+    private ShippingAddress shippingAddress;
+    private String createdAt;
+    private String updatedAt;
+
+    public static class ShippingAddress {
+        private String fullName;
+        private String phone;
+        private String address;
+        private String ward;
+        private String district;
+        private String city;
+
+        public String getFullName() { return fullName; }
+        public void setFullName(String fullName) { this.fullName = fullName; }
+
+        public String getPhone() { return phone; }
+        public void setPhone(String phone) { this.phone = phone; }
+
+        public String getAddress() { return address; }
+        public void setAddress(String address) { this.address = address; }
+
+        public String getWard() { return ward; }
+        public void setWard(String ward) { this.ward = ward; }
+
+        public String getDistrict() { return district; }
+        public void setDistrict(String district) { this.district = district; }
+
+        public String getCity() { return city; }
+        public void setCity(String city) { this.city = city; }
+    }
 
     public static class Item {
         private ProductResponse product;
@@ -49,4 +80,12 @@ public class InvoiceResponse {
     public void setTotal(Double total) { this.total = total; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public String getPaymentMethod() { return paymentMethod; }
+    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
+    public ShippingAddress getShippingAddress() { return shippingAddress; }
+    public void setShippingAddress(ShippingAddress shippingAddress) { this.shippingAddress = shippingAddress; }
+    public String getCreatedAt() { return createdAt; }
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
+    public String getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
 }

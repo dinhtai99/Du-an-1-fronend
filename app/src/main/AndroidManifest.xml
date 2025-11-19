@@ -10,6 +10,10 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.CAMERA" />
 
+    <!-- Location permissions -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -22,7 +26,8 @@
         android:theme="@style/Theme.DuAn1"
         android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true"
-        android:networkSecurityConfig="@xml/network_security_config">
+        android:networkSecurityConfig="@xml/network_security_config"
+        tools:replace="android:theme">
         <activity
             android:name=".MainActivity"
             android:exported="false" />
@@ -50,6 +55,22 @@
             android:exported="false" />
         <activity
             android:name=".customer.ThanhToanActivity"
+            android:launchMode="singleTop"
+            android:exported="false">
+            <!-- ZaloPay Deep Link -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="demozpdk" android:host="app" />
+            </intent-filter>
+        </activity>
+        <!-- MoMo Payment Activity -->
+        <activity
+            android:name="vn.momo.momo_partner.MoMoPaymentActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="false" />
         <activity
             android:name=".customer.DonHangActivity"
@@ -68,6 +89,12 @@
             android:exported="false" />
         <activity
             android:name=".customer.QuanLyVoucherActivity"
+            android:exported="false" />
+        <activity
+            android:name=".customer.TimKiemSanPhamActivity"
+            android:exported="false" />
+        <activity
+            android:name=".customer.SanPhamYeuThichActivity"
             android:exported="false" />
     </application>
 

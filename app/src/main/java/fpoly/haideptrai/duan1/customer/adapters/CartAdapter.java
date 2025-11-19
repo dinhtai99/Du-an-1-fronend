@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,6 +26,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     private final NumberFormat currency = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
     private OnCartItemChangeListener onCartItemChangeListener;
     private OnRemoveItemListener onRemoveItemListener;
+    private OnSelectionChangeListener onSelectionChangeListener;
 
     public CartAdapter(List<CartItem> items) {
         this.items = items;
@@ -43,6 +45,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         holder.txtTenSanPham.setText(item.getProduct().getName());
         holder.txtGiaSanPham.setText(formatPrice(item.getPrice()));
         holder.txtSoLuong.setText(String.valueOf(item.getQuantity()));
+        
+        // Set checkbox state (tắt listener tạm thời để tránh trigger khi bind)
+        holder.checkboxSelected.setOnCheckedChangeListener(null);
+        holder.checkboxSelected.setChecked(item.isSelected());
 
         // Load image
         String imageUrl = item.getProduct().getImage();
@@ -81,6 +87,14 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                 onRemoveItemListener.onRemove(item);
             }
         });
+
+        // Xử lý checkbox chọn/bỏ chọn
+        holder.checkboxSelected.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            item.setSelected(isChecked);
+            if (onSelectionChangeListener != null) {
+                onSelectionChangeListener.onSelectionChange();
+            }
+        });
     }
 
     private String formatPrice(Double price) {
@@ -101,6 +115,10 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         this.onRemoveItemListener = listener;
     }
 
+    public void setOnSelectionChangeListener(OnSelectionChangeListener listener) {
+        this.onSelectionChangeListener = listener;
+    }
+
     public interface OnCartItemChangeListener {
         void onChange();
     }
@@ -109,7 +127,12 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         void onRemove(CartItem item);
     }
 
+    public interface OnSelectionChangeListener {
+        void onSelectionChange();
+    }
+
     static class ViewHolder extends RecyclerView.ViewHolder {
+        CheckBox checkboxSelected;
         ImageView imgSanPham;
         TextView txtTenSanPham, txtGiaSanPham, txtSoLuong;
         Button btnTang, btnGiam;
@@ -117,6 +140,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
+            checkboxSelected = itemView.findViewById(R.id.checkboxSelected);
             imgSanPham = itemView.findViewById(R.id.imgSanPham);
             txtTenSanPham = itemView.findViewById(R.id.txtTenSanPham);
             txtGiaSanPham = itemView.findViewById(R.id.txtGiaSanPham);

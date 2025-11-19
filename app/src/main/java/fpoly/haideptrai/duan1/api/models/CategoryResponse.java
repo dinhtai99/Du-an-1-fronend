@@ -5,6 +5,7 @@ public class CategoryResponse {
     private String name;
     private String description;
     private Integer status; // 1 active, 0 inactive (if provided)
+    private String image; // Image URL for category icon
 
     public String get_id() { return _id; }
     public void set_id(String _id) { this._id = _id; }
@@ -17,4 +18,7 @@ public class CategoryResponse {
 
     public Integer getStatus() { return status; }
     public void setStatus(Integer status) { this.status = status; }
+
+    public String getImage() { return image; }
+    public void setImage(String image) { this.image = image; }
 }

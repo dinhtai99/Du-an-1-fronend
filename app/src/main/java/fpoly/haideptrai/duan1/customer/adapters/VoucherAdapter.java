@@ -16,9 +16,18 @@ import fpoly.haideptrai.duan1.customer.models.Voucher;
 public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.ViewHolder> {
 
     private final List<Voucher> items;
+    private OnVoucherClickListener listener;
+
+    public interface OnVoucherClickListener {
+        void onVoucherClick(int position);
+    }
 
     public VoucherAdapter(List<Voucher> items) {
         this.items = items;
+    }
+    
+    public void setOnVoucherClickListener(OnVoucherClickListener listener) {
+        this.listener = listener;
     }
 
     @NonNull
@@ -36,6 +45,13 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.ViewHold
         holder.txtDieuKien.setText(voucher.getDieuKien());
         holder.txtSoLuong.setText("Số lượng: " + voucher.getSoLuong());
         holder.txtTrangThai.setText("Trạng thái: " + voucher.getTrangThai());
+        
+        // Thêm click listener cho item
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onVoucherClick(position);
+            }
+        });
     }
 
     @Override

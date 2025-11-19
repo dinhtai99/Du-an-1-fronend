@@ -1,6 +1,7 @@
 package fpoly.haideptrai.duan1.customer;
 
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +30,7 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
     private ImageView imgSanPham;
     private TextView txtTenSanPham, txtDiemGui, txtDiemDen, txtDonViVanChuyen, txtCanNang;
     private RecyclerView rvTimeline;
+    private ImageButton btnBack, btnMenu;
     private TimelineAdapter timelineAdapter;
     private InvoiceService invoiceService;
     private String invoiceId;
@@ -58,6 +60,13 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
         txtDonViVanChuyen = findViewById(R.id.txtDonViVanChuyen);
         txtCanNang = findViewById(R.id.txtCanNang);
         rvTimeline = findViewById(R.id.rvTimeline);
+        btnBack = findViewById(R.id.btnBack);
+        btnMenu = findViewById(R.id.btnMenu);
+
+        btnBack.setOnClickListener(v -> finish());
+        btnMenu.setOnClickListener(v -> {
+            // TODO: Show menu options
+        });
 
         timelineAdapter = new TimelineAdapter();
         rvTimeline.setLayoutManager(new LinearLayoutManager(this));
@@ -103,9 +112,58 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
             }
         }
 
-        // Hiển thị thông tin vận chuyển (nếu có)
-        if (invoice.getCustomer() != null && invoice.getCustomer().getAddress() != null) {
-            txtDiemDen.setText(invoice.getCustomer().getAddress());
+        // Hiển thị thông tin vận chuyển
+        // Điểm gửi - mặc định hoặc từ staff/store
+        txtDiemGui.setText("Hà Nội"); // Có thể lấy từ store info nếu có
+        
+        // Điểm đến - từ customer address hoặc shipping address
+        String address = null;
+        InvoiceResponse.ShippingAddress shippingAddress = invoice.getShippingAddress();
+        if (shippingAddress != null) {
+            // Format địa chỉ từ object
+            StringBuilder addressBuilder = new StringBuilder();
+            if (shippingAddress.getAddress() != null && !shippingAddress.getAddress().isEmpty()) {
+                addressBuilder.append(shippingAddress.getAddress());
+            }
+            if (shippingAddress.getWard() != null && !shippingAddress.getWard().isEmpty()) {
+                if (addressBuilder.length() > 0) addressBuilder.append(", ");
+                addressBuilder.append(shippingAddress.getWard());
+            }
+            if (shippingAddress.getDistrict() != null && !shippingAddress.getDistrict().isEmpty()) {
+                if (addressBuilder.length() > 0) addressBuilder.append(", ");
+                addressBuilder.append(shippingAddress.getDistrict());
+            }
+            if (shippingAddress.getCity() != null && !shippingAddress.getCity().isEmpty()) {
+                if (addressBuilder.length() > 0) addressBuilder.append(", ");
+                addressBuilder.append(shippingAddress.getCity());
+            }
+            address = addressBuilder.toString();
+        }
+        if (address == null || address.isEmpty()) {
+            if (invoice.getCustomer() != null && invoice.getCustomer().getAddress() != null) {
+                address = invoice.getCustomer().getAddress();
+            }
+        }
+        if (address != null && !address.isEmpty()) {
+            txtDiemDen.setText(address);
+        } else {
+            txtDiemDen.setText("Chưa cập nhật");
+        }
+        
+        // Đơn vị vận chuyển - mặc định
+        txtDonViVanChuyen.setText("JnE Express");
+        
+        // Cân nặng - tính từ items
+        if (invoice.getItems() != null && !invoice.getItems().isEmpty()) {
+            int totalQuantity = 0;
+            for (var item : invoice.getItems()) {
+                if (item.getQuantity() != null) {
+                    totalQuantity += item.getQuantity();
+                }
+            }
+            txtCanNang.setText(totalQuantity + " sản phẩm");
+        } else {
+            txtCanNang.setText("1Kg");
         }
         
         // Tạo timeline từ status
@@ -116,26 +174,67 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
     private List<TimelineItem> createTimelineFromInvoice(InvoiceResponse invoice) {
         List<TimelineItem> timeline = new ArrayList<>();
         String status = invoice.getStatus();
+        
+        // Sử dụng thời gian từ API nếu có
+        String createdAt = invoice.getCreatedAt();
+        String updatedAt = invoice.getUpdatedAt();
         String currentTime = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault()).format(new java.util.Date());
         
-        // Timeline mặc định dựa trên status
+        if (createdAt != null && !createdAt.isEmpty()) {
+            try {
+                // Parse ISO date format nếu có
+                java.text.SimpleDateFormat inputFormat = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.getDefault());
+                java.util.Date date = inputFormat.parse(createdAt);
+                java.text.SimpleDateFormat outputFormat = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault());
+                currentTime = outputFormat.format(date);
+            } catch (Exception e) {
+                // Nếu parse lỗi, dùng thời gian hiện tại
+            }
+        }
+        
+        // Timeline dựa trên status
         if (status == null || "pending".equals(status)) {
             timeline.add(new TimelineItem("Xác nhận đơn hàng", currentTime, true));
-        } else if ("processing".equals(status) || "shipped".equals(status)) {
+            timeline.add(new TimelineItem("Đưa hàng cho đơn vị vận chuyển", "", false));
+            timeline.add(new TimelineItem("Đến kho chung chuyển", "", false));
+            timeline.add(new TimelineItem("Giao thành công", "", false));
+        } else if ("processing".equals(status) || "confirmed".equals(status)) {
             timeline.add(new TimelineItem("Xác nhận đơn hàng", currentTime, true));
-            timeline.add(new TimelineItem("Đưa hàng cho đơn vị vận chuyển", currentTime, true));
-            timeline.add(new TimelineItem("Đến kho chung chuyển", currentTime, false));
+            timeline.add(new TimelineItem("Đưa hàng cho đơn vị vận chuyển", updatedAt != null ? formatDate(updatedAt) : "", true));
+            timeline.add(new TimelineItem("Đến kho chung chuyển", "", false));
+            timeline.add(new TimelineItem("Giao thành công", "", false));
+        } else if ("shipping".equals(status) || "shipped".equals(status)) {
+            timeline.add(new TimelineItem("Xác nhận đơn hàng", currentTime, true));
+            timeline.add(new TimelineItem("Đưa hàng cho đơn vị vận chuyển", formatDate(createdAt), true));
+            timeline.add(new TimelineItem("Đến kho chung chuyển", updatedAt != null ? formatDate(updatedAt) : "", true));
+            timeline.add(new TimelineItem("Giao thành công", "", false));
         } else if ("completed".equals(status) || "delivered".equals(status)) {
             timeline.add(new TimelineItem("Xác nhận đơn hàng", currentTime, true));
-            timeline.add(new TimelineItem("Đưa hàng cho đơn vị vận chuyển", currentTime, true));
-            timeline.add(new TimelineItem("Đến kho chung chuyển", currentTime, true));
-            timeline.add(new TimelineItem("Giao thành công", currentTime, true));
+            timeline.add(new TimelineItem("Đưa hàng cho đơn vị vận chuyển", formatDate(createdAt), true));
+            timeline.add(new TimelineItem("Đến kho chung chuyển", formatDate(updatedAt), true));
+            timeline.add(new TimelineItem("Giao thành công", updatedAt != null ? formatDate(updatedAt) : currentTime, true));
+        } else if ("cancelled".equals(status)) {
+            timeline.add(new TimelineItem("Đơn hàng đã hủy", currentTime, true));
         } else {
             // Fallback
             timeline.add(new TimelineItem("Xác nhận đơn hàng", currentTime, true));
         }
         
         return timeline;
+    }
+    
+    private String formatDate(String dateString) {
+        if (dateString == null || dateString.isEmpty()) {
+            return "";
+        }
+        try {
+            java.text.SimpleDateFormat inputFormat = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.getDefault());
+            java.util.Date date = inputFormat.parse(dateString);
+            java.text.SimpleDateFormat outputFormat = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault());
+            return outputFormat.format(date);
+        } catch (Exception e) {
+            return dateString;
+        }
     }
 }
 

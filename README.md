@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Ứng dụng Quản Lý Shop THB
 
 Ứng dụng quản lý cửa hàng điện tử được xây dựng bằng Java + XML trên Android với Room Database.
@@ -81,7 +80,7 @@ app/src/main/java/fpoly/haideptrai/duan1/
 - Xuất PDF/Excel
 - Biểu đồ thống kê
 
-Xem file `IMPLEMENTATION_GUIDE.md` để biết chi tiết cách tiếp tục phát triển.
+Xem file `docs/guides/IMPLEMENTATION_GUIDE.md` để biết chi tiết cách tiếp tục phát triển.
 
 ## 📚 Tài liệu tham khảo
 
@@ -90,10 +89,30 @@ Xem file `IMPLEMENTATION_GUIDE.md` để biết chi tiết cách tiếp tục ph
 - [Apache POI](https://poi.apache.org/)
 - [Glide](https://github.com/bumptech/glide)
 
+## 📂 Tài liệu dự án
+
+### Hướng dẫn phát triển
+- [Hướng dẫn triển khai](docs/guides/IMPLEMENTATION_GUIDE.md)
+- [Cấu trúc mã nguồn](docs/guides/CODE_STRUCTURE.md)
+- [Đánh giá dự án](docs/guides/PROJECT_REVIEW.md)
+
+### Tích hợp thanh toán
+- [Tích hợp ZaloPay](docs/integration/ZALOPAY_INTEGRATION.md)
+- [Tích hợp Momo](docs/integration/MOMO_INTEGRATION.md)
+
+### Báo cáo & Phân tích
+- [Kiểm tra màn hình](docs/reports/CHECK_SCREEMS.md)
+- [Phân tích tính năng khách hàng](docs/reports/CUSTOMER_FEATURES_CHECK.md)
+
+### API
+- [Tình trạng kết nối API](docs/api/API_CONNECTION_STATUS.md)
+- [Báo cáo sẵn sàng API](docs/api/API_READINESS_REPORT.md)
+- [Hướng dẫn thiết lập API](docs/api/API_SETUP.md)
+
 ## 👨‍💻 Phát triển
 
 Để tiếp tục phát triển, hãy tham khảo:
-1. File `IMPLEMENTATION_GUIDE.md` - Hướng dẫn chi tiết
+1. File `docs/guides/IMPLEMENTATION_GUIDE.md` - Hướng dẫn chi tiết
 2. Code của `DangNhapActivity` - Ví dụ sử dụng Room và SessionManager
 3. Các DAO đã có sẵn - Sử dụng trực tiếp để thao tác database
 

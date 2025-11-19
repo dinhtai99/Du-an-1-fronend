@@ -91,6 +91,7 @@ public class HomeActivity extends AppCompatActivity {
 
         rvSanPham.setLayoutManager(new GridLayoutManager(this, 2));
         productAdapter = new ProductHomeAdapter();
+        productAdapter.setContext(this);
         rvSanPham.setAdapter(productAdapter);
     }
 
@@ -101,8 +102,8 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         btnSearch.setOnClickListener(v -> {
-            // TODO: Open search screen
-            Toast.makeText(this, "Tìm kiếm", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(this, TimKiemSanPhamActivity.class);
+            startActivity(intent);
         });
 
         txtXemTatCa.setOnClickListener(v -> {
@@ -128,9 +129,13 @@ public class HomeActivity extends AppCompatActivity {
             if (itemId == R.id.nav_home) {
                 // Already on home
                 return true;
+            } else if (itemId == R.id.nav_support) {
+                Intent intent = new Intent(this, ChamSocKhachHangActivity.class);
+                startActivity(intent);
+                return true;
             } else if (itemId == R.id.nav_discount) {
-                // TODO: Navigate to discount/voucher
-                Toast.makeText(this, "Khuyến mãi", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, QuanLyVoucherActivity.class);
+                startActivity(intent);
                 return true;
             } else if (itemId == R.id.nav_cart) {
                 Intent intent = new Intent(this, GioHangActivity.class);

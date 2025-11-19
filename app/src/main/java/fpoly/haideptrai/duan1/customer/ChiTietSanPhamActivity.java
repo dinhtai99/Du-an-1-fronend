@@ -83,8 +83,13 @@ public class ChiTietSanPhamActivity extends AppCompatActivity {
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 return true;
+            } else if (itemId == R.id.nav_support) {
+                Intent intent = new Intent(this, ChamSocKhachHangActivity.class);
+                startActivity(intent);
+                return true;
             } else if (itemId == R.id.nav_discount) {
-                Toast.makeText(this, "Khuyến mãi", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(this, QuanLyVoucherActivity.class);
+                startActivity(intent);
                 return true;
             } else if (itemId == R.id.nav_cart) {
                 Intent intent = new Intent(this, GioHangActivity.class);

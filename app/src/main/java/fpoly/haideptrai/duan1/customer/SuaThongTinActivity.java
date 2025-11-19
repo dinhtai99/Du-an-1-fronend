@@ -55,11 +55,48 @@ public class SuaThongTinActivity extends AppCompatActivity {
     }
 
     private void loadUserInfo() {
-        // TODO: Load from API
+        int userId = sessionManager.getUserId();
+        if (userId == -1) {
+            // Fallback to session data if no user ID
+            edtHoTen.setText(sessionManager.getHoTen());
+            edtEmail.setText(sessionManager.getUsername());
+            return;
+        }
+
+        // Load from session first (fallback)
         edtHoTen.setText(sessionManager.getHoTen());
-        edtEmail.setText(sessionManager.getUsername() + "@example.com");
-        edtSoDienThoai.setText("0966686868");
-        edtDiaChi.setText("Hà Nội");
+        edtEmail.setText(sessionManager.getUsername());
+        edtSoDienThoai.setText("");
+        edtDiaChi.setText("");
+
+        // Call API to get detailed information
+        Call<UserResponse> call = userService.getById(String.valueOf(userId));
+        call.enqueue(new Callback<UserResponse>() {
+            @Override
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    UserResponse user = response.body();
+                    edtHoTen.setText(user.getHoTen() != null ? user.getHoTen() : sessionManager.getHoTen());
+                    edtEmail.setText(user.getTenDangNhap() != null ? user.getTenDangNhap() : sessionManager.getUsername());
+                    edtSoDienThoai.setText(user.getSoDienThoai() != null ? user.getSoDienThoai() : "");
+                    // UserResponse doesn't have address field, can be added later
+                    edtDiaChi.setText("");
+                    
+                    // Load avatar if available
+                    if (user.getAnhDaiDien() != null && !user.getAnhDaiDien().isEmpty()) {
+                        Glide.with(SuaThongTinActivity.this)
+                                .load(user.getAnhDaiDien())
+                                .placeholder(R.drawable.ic_launcher_background)
+                                .into(imgAvatar);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                // Silent fail, using session data
+            }
+        });
     }
 
     private void handleSave() {
@@ -68,6 +105,7 @@ public class SuaThongTinActivity extends AppCompatActivity {
         String soDienThoai = edtSoDienThoai.getText().toString().trim();
         String diaChi = edtDiaChi.getText().toString().trim();
 
+        // Validation
         if (TextUtils.isEmpty(hoTen)) {
             edtHoTen.setError("Vui lòng nhập họ tên");
             edtHoTen.requestFocus();
@@ -80,21 +118,41 @@ public class SuaThongTinActivity extends AppCompatActivity {
             return;
         }
 
+        // Validate email format
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            edtEmail.setError("Email không hợp lệ");
+            edtEmail.requestFocus();
+            return;
+        }
+
+        // Validate phone format (nếu có)
+        if (!TextUtils.isEmpty(soDienThoai) && soDienThoai.length() < 10) {
+            edtSoDienThoai.setError("Số điện thoại phải có ít nhất 10 số");
+            edtSoDienThoai.requestFocus();
+            return;
+        }
+
         btnLuuThongTin.setEnabled(false);
         btnLuuThongTin.setText("Đang lưu...");
 
         int userId = sessionManager.getUserId();
         if (userId == -1) {
-            Toast.makeText(this, "Không tìm thấy thông tin người dùng", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại.", Toast.LENGTH_SHORT).show();
             btnLuuThongTin.setEnabled(true);
             btnLuuThongTin.setText("Lưu thông tin");
             return;
         }
 
+        // Tạo request
         UserRequest request = new UserRequest();
         request.setFullName(hoTen);
         request.setPhone(soDienThoai);
-        // TODO: Add address field to UserRequest if needed
+        request.setUsername(email); // Backend có thể cần username
+        // Không set password để không thay đổi password
+        // Không set role để giữ nguyên role
+
+        android.util.Log.d("UpdateUser", "Updating user ID: " + userId);
+        android.util.Log.d("UpdateUser", "Request: " + new com.google.gson.Gson().toJson(request));
 
         Call<ApiResponse<UserResponse>> call = userService.updateUser(String.valueOf(userId), request);
         call.enqueue(new Callback<ApiResponse<UserResponse>>() {
@@ -103,11 +161,67 @@ public class SuaThongTinActivity extends AppCompatActivity {
                 btnLuuThongTin.setEnabled(true);
                 btnLuuThongTin.setText("Lưu thông tin");
 
+                android.util.Log.d("UpdateUser", "Response code: " + response.code());
+                android.util.Log.d("UpdateUser", "Response successful: " + response.isSuccessful());
+
                 if (response.isSuccessful() && response.body() != null) {
-                    Toast.makeText(SuaThongTinActivity.this, "Cập nhật thông tin thành công", Toast.LENGTH_SHORT).show();
-                    finish();
+                    ApiResponse<UserResponse> apiResponse = response.body();
+                    
+                    if (apiResponse.isSuccess() && apiResponse.getData() != null) {
+                        UserResponse updatedUser = apiResponse.getData();
+                        
+                        // Cập nhật session với thông tin mới
+                        sessionManager.setHoTen(updatedUser.getHoTen() != null ? updatedUser.getHoTen() : hoTen);
+                        if (updatedUser.getTenDangNhap() != null) {
+                            sessionManager.setUsername(updatedUser.getTenDangNhap());
+                        }
+                        
+                        android.util.Log.d("UpdateUser", "User updated successfully");
+                        Toast.makeText(SuaThongTinActivity.this, 
+                            apiResponse.getMessage() != null ? apiResponse.getMessage() : "Cập nhật thông tin thành công", 
+                            Toast.LENGTH_SHORT).show();
+                        
+                        // Trả về kết quả để màn hình trước có thể refresh
+                        setResult(RESULT_OK);
+                        finish();
+                    } else {
+                        // Lỗi từ server
+                        String errorMsg = apiResponse.getMessage() != null ? 
+                            apiResponse.getMessage() : "Cập nhật thất bại";
+                        android.util.Log.e("UpdateUser", "Server error: " + errorMsg);
+                        Toast.makeText(SuaThongTinActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(SuaThongTinActivity.this, "Cập nhật thất bại", Toast.LENGTH_SHORT).show();
+                    // Parse error response
+                    String errorMsg = "Cập nhật thất bại";
+                    try {
+                        if (response.errorBody() != null) {
+                            String errorBody = response.errorBody().string();
+                            android.util.Log.e("UpdateUser", "Error response code: " + response.code());
+                            android.util.Log.e("UpdateUser", "Error response body: " + errorBody);
+                            
+                            // Thử parse JSON error
+                            try {
+                                com.google.gson.Gson gson = new com.google.gson.Gson();
+                                ApiResponse<?> errorResponse = gson.fromJson(errorBody, ApiResponse.class);
+                                if (errorResponse != null && errorResponse.getMessage() != null) {
+                                    errorMsg = errorResponse.getMessage();
+                                }
+                            } catch (Exception jsonEx) {
+                                // Không phải JSON, kiểm tra nếu là HTML (404, 500, etc)
+                                if (errorBody.contains("Cannot PUT") || errorBody.contains("<!DOCTYPE html>")) {
+                                    errorMsg = "Endpoint không tồn tại. Vui lòng kiểm tra backend server!\n" +
+                                              "Đảm bảo route PUT /api/users/:id đã được đăng ký.";
+                                } else if (errorBody.length() < 200) {
+                                    errorMsg = errorBody;
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        android.util.Log.e("UpdateUser", "Error parsing error body", e);
+                    }
+                    
+                    Toast.makeText(SuaThongTinActivity.this, errorMsg, Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -115,7 +229,11 @@ public class SuaThongTinActivity extends AppCompatActivity {
             public void onFailure(Call<ApiResponse<UserResponse>> call, Throwable t) {
                 btnLuuThongTin.setEnabled(true);
                 btnLuuThongTin.setText("Lưu thông tin");
-                Toast.makeText(SuaThongTinActivity.this, "Lỗi kết nối server", Toast.LENGTH_SHORT).show();
+                
+                android.util.Log.e("UpdateUser", "Network error: " + t.getMessage(), t);
+                Toast.makeText(SuaThongTinActivity.this, 
+                    "Lỗi kết nối: " + t.getMessage() + "\nVui lòng kiểm tra kết nối mạng và thử lại.", 
+                    Toast.LENGTH_LONG).show();
             }
         });
     }

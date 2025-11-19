@@ -14,12 +14,20 @@
         android:padding="12dp"
         android:gravity="center_vertical">
 
+        <!-- Checkbox chọn sản phẩm -->
+        <CheckBox
+            android:id="@+id/checkboxSelected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:layout_marginEnd="8dp" />
+
         <!-- Hình ảnh sản phẩm -->
         <ImageView
             android:id="@+id/imgSanPham"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:src="@mipmap/ic_launcher"
+            android:src="@drawable/logo"
             android:scaleType="centerCrop"
             android:contentDescription="Hình ảnh sản phẩm"
             android:background="@android:drawable/dialog_holo_light_frame" />

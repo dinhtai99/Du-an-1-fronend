@@ -22,7 +22,7 @@
             android:id="@+id/imgSanPham"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:src="@mipmap/ic_launcher"
+            android:src="@drawable/logo"
             android:scaleType="centerCrop"
             android:contentDescription="Hình ảnh sản phẩm"
             android:background="@android:drawable/dialog_holo_light_frame" />
@@ -46,15 +46,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="ĐH1"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/black" />
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black" />
 
-                <TextView
-                    android:id="@+id/txtTrangThai"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Đã giao"
+            <TextView
+                android:id="@+id/txtTrangThai"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Đã giao"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     android:textColor="@color/white"
@@ -66,10 +66,10 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/txtKhachHang"
+                android:id="@+id/txtSoLuongSanPham"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Khách hàng: Trần Đình Tài"
+                android:text="1 sản phẩm"
                 android:textSize="12sp"
                 android:textColor="@color/text_secondary"
                 android:layout_marginTop="4dp" />
@@ -78,19 +78,29 @@
                 android:id="@+id/txtTongTien"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Số tiền: 300.000 vnd"
-                android:textSize="12sp"
-                android:textColor="@color/text_secondary"
+                android:text="Tổng tiền: 300.000 vnd"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
                 android:layout_marginTop="4dp" />
 
             <TextView
                 android:id="@+id/txtPhuongThucThanhToan"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Phương thức thanh toán: Trực tiếp khi nhận hàng"
+                android:text="Thanh toán: Tiền mặt (COD)"
                 android:textSize="12sp"
                 android:textColor="@color/text_secondary"
                 android:layout_marginTop="4dp" />
+
+            <TextView
+                android:id="@+id/txtNgayTao"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="17/11/2025 15:41"
+                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:layout_marginTop="2dp" />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

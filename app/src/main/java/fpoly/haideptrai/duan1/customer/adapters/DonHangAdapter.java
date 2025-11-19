@@ -42,16 +42,15 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         InvoiceResponse invoice = items.get(position);
-        String invoiceNumber = invoice.getInvoiceNumber() != null ? invoice.getInvoiceNumber() : invoice.get_id();
-        // Format: ĐH1, ĐH2, etc. - lấy số cuối cùng
+        
+        // Format mã đơn hàng
+        String invoiceNumber = invoice.getInvoiceNumber();
         if (invoiceNumber != null && !invoiceNumber.isEmpty()) {
-            // Tìm số cuối cùng trong chuỗi
-            String number = invoiceNumber.replaceAll("[^0-9]", "");
-            if (!number.isEmpty()) {
-                holder.txtMaDonHang.setText("ĐH" + number.substring(number.length() - 1));
-            } else {
-                holder.txtMaDonHang.setText("ĐH" + invoiceNumber.substring(Math.max(0, invoiceNumber.length() - 1)));
-            }
+            holder.txtMaDonHang.setText(invoiceNumber);
+        } else if (invoice.get_id() != null && !invoice.get_id().isEmpty()) {
+            // Fallback: lấy 8 ký tự cuối của _id
+            String id = invoice.get_id();
+            holder.txtMaDonHang.setText("ĐH" + id.substring(Math.max(0, id.length() - 8)));
         } else {
             holder.txtMaDonHang.setText("ĐH");
         }
@@ -62,14 +61,33 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.ViewHold
         holder.txtTrangThai.setText(statusLabel);
         setStatusBadgeColor(holder.txtTrangThai, status);
         
-        holder.txtTongTien.setText("Số tiền: " + formatPrice(invoice.getTotal()));
+        // Tổng tiền
+        holder.txtTongTien.setText("Tổng tiền: " + formatPrice(invoice.getTotal()));
         
-        if (invoice.getCustomer() != null) {
-            holder.txtKhachHang.setText("Khách hàng: " + invoice.getCustomer().getName());
+        // Số lượng sản phẩm
+        int itemCount = 0;
+        if (invoice.getItems() != null) {
+            for (InvoiceResponse.Item item : invoice.getItems()) {
+                if (item.getQuantity() != null) {
+                    itemCount += item.getQuantity();
+                }
+            }
         }
+        holder.txtSoLuongSanPham.setText(itemCount + " sản phẩm");
         
-        // InvoiceResponse không có paymentMethod field, có thể thêm sau
-        holder.txtPhuongThucThanhToan.setText("Phương thức thanh toán: Trực tiếp khi nhận hàng");
+        // Phương thức thanh toán
+        String paymentMethod = invoice.getPaymentMethod();
+        String paymentLabel = getPaymentMethodLabel(paymentMethod);
+        holder.txtPhuongThucThanhToan.setText("Thanh toán: " + paymentLabel);
+        
+        // Ngày tạo đơn
+        String createdAt = invoice.getCreatedAt();
+        if (createdAt != null && !createdAt.isEmpty()) {
+            String formattedDate = formatDate(createdAt);
+            holder.txtNgayTao.setText(formattedDate);
+        } else {
+            holder.txtNgayTao.setText("");
+        }
 
         // Load product image if available
         if (invoice.getItems() != null && !invoice.getItems().isEmpty() && 
@@ -107,14 +125,45 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.ViewHold
     }
 
     private String getPaymentMethodLabel(String method) {
-        if (method == null) return "";
-        switch (method) {
-            case "cash": return "Trực tiếp khi nhận hàng";
-            case "transfer": return "Chuyển khoản";
-            case "card": return "Thẻ";
-            case "visa": return "VISA";
-            case "mastercard": return "Mastercard";
-            default: return method;
+        if (method == null) return "Chưa xác định";
+        switch (method.toLowerCase()) {
+            case "cod":
+            case "cash": 
+                return "Tiền mặt (COD)";
+            case "zalopay": 
+                return "ZaloPay";
+            case "momo": 
+                return "MoMo";
+            case "transfer": 
+                return "Chuyển khoản";
+            case "card": 
+                return "Thẻ";
+            case "visa": 
+                return "VISA";
+            case "mastercard": 
+                return "Mastercard";
+            default: 
+                return method;
+        }
+    }
+    
+    private String formatDate(String dateString) {
+        try {
+            // Parse ISO 8601 format: "2025-11-17T15:41:40.507Z"
+            java.text.SimpleDateFormat inputFormat = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.getDefault());
+            java.text.SimpleDateFormat outputFormat = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault());
+            
+            // Remove milliseconds and timezone if present
+            String cleanDate = dateString.split("\\.")[0];
+            if (cleanDate.contains("Z")) {
+                cleanDate = cleanDate.replace("Z", "");
+            }
+            
+            java.util.Date date = inputFormat.parse(cleanDate);
+            return outputFormat.format(date);
+        } catch (Exception e) {
+            // Fallback: return original string
+            return dateString;
         }
     }
 
@@ -156,16 +205,17 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.ViewHold
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imgSanPham;
-        TextView txtMaDonHang, txtTrangThai, txtKhachHang, txtTongTien, txtPhuongThucThanhToan;
+        TextView txtMaDonHang, txtTrangThai, txtTongTien, txtPhuongThucThanhToan, txtSoLuongSanPham, txtNgayTao;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             imgSanPham = itemView.findViewById(R.id.imgSanPham);
             txtMaDonHang = itemView.findViewById(R.id.txtMaDonHang);
             txtTrangThai = itemView.findViewById(R.id.txtTrangThai);
-            txtKhachHang = itemView.findViewById(R.id.txtKhachHang);
             txtTongTien = itemView.findViewById(R.id.txtTongTien);
             txtPhuongThucThanhToan = itemView.findViewById(R.id.txtPhuongThucThanhToan);
+            txtSoLuongSanPham = itemView.findViewById(R.id.txtSoLuongSanPham);
+            txtNgayTao = itemView.findViewById(R.id.txtNgayTao);
         }
     }
 }

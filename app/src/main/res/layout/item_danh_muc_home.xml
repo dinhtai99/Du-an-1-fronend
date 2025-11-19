@@ -14,7 +14,7 @@
         android:id="@+id/imgDanhMuc"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:src="@mipmap/ic_launcher"
+        android:src="@drawable/logo"
         android:scaleType="centerCrop"
         android:background="@drawable/circle_background"
         android:contentDescription="Danh mục" />

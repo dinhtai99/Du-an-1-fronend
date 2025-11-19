@@ -33,6 +33,7 @@ public class CartManager {
         String json = gson.toJson(cartItems);
         sharedPreferences.edit().putString(KEY_CART_ITEMS, json).apply();
         Log.d(TAG, "Cart saved: " + cartItems.size() + " items");
+        Log.d(TAG, "Cart JSON: " + json);
     }
     
     /**
@@ -40,7 +41,9 @@ public class CartManager {
      */
     public List<CartItem> loadCart() {
         String json = sharedPreferences.getString(KEY_CART_ITEMS, null);
+        Log.d(TAG, "Loading cart, JSON: " + (json != null ? json.substring(0, Math.min(200, json.length())) + "..." : "null"));
         if (json == null || json.isEmpty()) {
+            Log.d(TAG, "Cart is empty (no JSON found)");
             return new ArrayList<>();
         }
         
@@ -48,9 +51,13 @@ public class CartManager {
             Type type = new TypeToken<List<CartItem>>(){}.getType();
             List<CartItem> items = gson.fromJson(json, type);
             Log.d(TAG, "Cart loaded: " + (items != null ? items.size() : 0) + " items");
+            if (items != null && !items.isEmpty()) {
+                Log.d(TAG, "First item product ID: " + items.get(0).getProduct().get_id());
+                Log.d(TAG, "First item product name: " + items.get(0).getProduct().getName());
+            }
             return items != null ? items : new ArrayList<>();
         } catch (Exception e) {
-            Log.e(TAG, "Error loading cart: " + e.getMessage());
+            Log.e(TAG, "Error loading cart: " + e.getMessage(), e);
             return new ArrayList<>();
         }
     }

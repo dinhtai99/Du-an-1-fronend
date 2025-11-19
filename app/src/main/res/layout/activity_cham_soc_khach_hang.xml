@@ -65,13 +65,25 @@
         </LinearLayout>
 
         <!-- Chat messages -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvMessages"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:padding="16dp"
-            tools:listitem="@layout/item_message" />
+            android:layout_weight="1">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvMessages"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="16dp"
+                tools:listitem="@layout/item_message" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+        </FrameLayout>
 
         <!-- Input box -->
         <LinearLayout

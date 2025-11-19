@@ -1,23 +1,48 @@
 package fpoly.haideptrai.duan1.api.models;
 
+import com.google.gson.annotations.SerializedName;
+
 public class RegisterRequest {
-    private String hoTen;
+    @SerializedName("username")
+    private String username;
+    
+    @SerializedName("password")
+    private String password;
+    
+    @SerializedName("email")
     private String email;
-    private String ngaySinh;
-    private String soDienThoai;
-    private String tenDangNhap;
-    private String matKhau;
-    private String gioiTinh;
-    private String vaiTro;
+    
+    @SerializedName("fullName")
+    private String fullName;
+    
+    @SerializedName("gender")
+    private String gender;
+    
+    @SerializedName("dateOfBirth")
+    private String dateOfBirth;
+    
+    @SerializedName("phone")
+    private String phone;
+    
+    @SerializedName("role")
+    private String role;
     
     public RegisterRequest() {}
     
-    public String getHoTen() {
-        return hoTen;
+    public String getUsername() {
+        return username;
     }
     
-    public void setHoTen(String hoTen) {
-        this.hoTen = hoTen;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    
+    public String getPassword() {
+        return password;
+    }
+    
+    public void setPassword(String password) {
+        this.password = password;
     }
     
     public String getEmail() {
@@ -28,52 +53,44 @@ public class RegisterRequest {
         this.email = email;
     }
     
-    public String getNgaySinh() {
-        return ngaySinh;
+    public String getFullName() {
+        return fullName;
     }
     
-    public void setNgaySinh(String ngaySinh) {
-        this.ngaySinh = ngaySinh;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
     
-    public String getSoDienThoai() {
-        return soDienThoai;
+    public String getGender() {
+        return gender;
     }
     
-    public void setSoDienThoai(String soDienThoai) {
-        this.soDienThoai = soDienThoai;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
     
-    public String getTenDangNhap() {
-        return tenDangNhap;
+    public String getDateOfBirth() {
+        return dateOfBirth;
     }
     
-    public void setTenDangNhap(String tenDangNhap) {
-        this.tenDangNhap = tenDangNhap;
+    public void setDateOfBirth(String dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
     
-    public String getMatKhau() {
-        return matKhau;
+    public String getPhone() {
+        return phone;
     }
     
-    public void setMatKhau(String matKhau) {
-        this.matKhau = matKhau;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
     
-    public String getGioiTinh() {
-        return gioiTinh;
+    public String getRole() {
+        return role;
     }
     
-    public void setGioiTinh(String gioiTinh) {
-        this.gioiTinh = gioiTinh;
-    }
-    
-    public String getVaiTro() {
-        return vaiTro;
-    }
-    
-    public void setVaiTro(String vaiTro) {
-        this.vaiTro = vaiTro;
+    public void setRole(String role) {
+        this.role = role;
     }
 }
 
