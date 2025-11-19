@@ -145,14 +145,19 @@ public class SuaThongTinActivity extends AppCompatActivity {
 
         // Tạo request
         UserRequest request = new UserRequest();
+        // Backend có thể cần fullName hoặc hoTen - thử cả hai
         request.setFullName(hoTen);
         request.setPhone(soDienThoai);
-        request.setUsername(email); // Backend có thể cần username
+        request.setUsername(email); // Backend có thể cần username (email)
         // Không set password để không thay đổi password
         // Không set role để giữ nguyên role
 
-        android.util.Log.d("UpdateUser", "Updating user ID: " + userId);
-        android.util.Log.d("UpdateUser", "Request: " + new com.google.gson.Gson().toJson(request));
+        android.util.Log.d("UpdateUser", "=== UPDATE USER REQUEST ===");
+        android.util.Log.d("UpdateUser", "User ID: " + userId);
+        android.util.Log.d("UpdateUser", "Họ tên: " + hoTen);
+        android.util.Log.d("UpdateUser", "Email: " + email);
+        android.util.Log.d("UpdateUser", "Số điện thoại: " + soDienThoai);
+        android.util.Log.d("UpdateUser", "Request JSON: " + new com.google.gson.Gson().toJson(request));
 
         Call<ApiResponse<UserResponse>> call = userService.updateUser(String.valueOf(userId), request);
         call.enqueue(new Callback<ApiResponse<UserResponse>>() {
@@ -161,22 +166,36 @@ public class SuaThongTinActivity extends AppCompatActivity {
                 btnLuuThongTin.setEnabled(true);
                 btnLuuThongTin.setText("Lưu thông tin");
 
+                android.util.Log.d("UpdateUser", "=== UPDATE USER RESPONSE ===");
                 android.util.Log.d("UpdateUser", "Response code: " + response.code());
                 android.util.Log.d("UpdateUser", "Response successful: " + response.isSuccessful());
 
                 if (response.isSuccessful() && response.body() != null) {
                     ApiResponse<UserResponse> apiResponse = response.body();
+                    android.util.Log.d("UpdateUser", "Response success: " + apiResponse.isSuccess());
+                    android.util.Log.d("UpdateUser", "Response message: " + apiResponse.getMessage());
                     
                     if (apiResponse.isSuccess() && apiResponse.getData() != null) {
                         UserResponse updatedUser = apiResponse.getData();
+                        android.util.Log.d("UpdateUser", "Updated user data: " + new com.google.gson.Gson().toJson(updatedUser));
                         
                         // Cập nhật session với thông tin mới
-                        sessionManager.setHoTen(updatedUser.getHoTen() != null ? updatedUser.getHoTen() : hoTen);
-                        if (updatedUser.getTenDangNhap() != null) {
-                            sessionManager.setUsername(updatedUser.getTenDangNhap());
+                        if (updatedUser.getHoTen() != null && !updatedUser.getHoTen().isEmpty()) {
+                            sessionManager.setHoTen(updatedUser.getHoTen());
+                        } else {
+                            sessionManager.setHoTen(hoTen);
                         }
                         
-                        android.util.Log.d("UpdateUser", "User updated successfully");
+                        if (updatedUser.getTenDangNhap() != null && !updatedUser.getTenDangNhap().isEmpty()) {
+                            sessionManager.setUsername(updatedUser.getTenDangNhap());
+                        } else {
+                            sessionManager.setUsername(email);
+                        }
+                        
+                        android.util.Log.d("UpdateUser", "✅ User updated successfully");
+                        android.util.Log.d("UpdateUser", "Session updated - Họ tên: " + sessionManager.getHoTen());
+                        android.util.Log.d("UpdateUser", "Session updated - Username: " + sessionManager.getUsername());
+                        
                         Toast.makeText(SuaThongTinActivity.this, 
                             apiResponse.getMessage() != null ? apiResponse.getMessage() : "Cập nhật thông tin thành công", 
                             Toast.LENGTH_SHORT).show();
@@ -188,8 +207,9 @@ public class SuaThongTinActivity extends AppCompatActivity {
                         // Lỗi từ server
                         String errorMsg = apiResponse.getMessage() != null ? 
                             apiResponse.getMessage() : "Cập nhật thất bại";
-                        android.util.Log.e("UpdateUser", "Server error: " + errorMsg);
-                        Toast.makeText(SuaThongTinActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
+                        android.util.Log.e("UpdateUser", "❌ Server error: " + errorMsg);
+                        android.util.Log.e("UpdateUser", "Response body: " + new com.google.gson.Gson().toJson(apiResponse));
+                        Toast.makeText(SuaThongTinActivity.this, errorMsg, Toast.LENGTH_LONG).show();
                     }
                 } else {
                     // Parse error response
@@ -197,6 +217,7 @@ public class SuaThongTinActivity extends AppCompatActivity {
                     try {
                         if (response.errorBody() != null) {
                             String errorBody = response.errorBody().string();
+                            android.util.Log.e("UpdateUser", "❌ ERROR RESPONSE ===");
                             android.util.Log.e("UpdateUser", "Error response code: " + response.code());
                             android.util.Log.e("UpdateUser", "Error response body: " + errorBody);
                             
@@ -206,19 +227,24 @@ public class SuaThongTinActivity extends AppCompatActivity {
                                 ApiResponse<?> errorResponse = gson.fromJson(errorBody, ApiResponse.class);
                                 if (errorResponse != null && errorResponse.getMessage() != null) {
                                     errorMsg = errorResponse.getMessage();
+                                    android.util.Log.e("UpdateUser", "Parsed error message: " + errorMsg);
                                 }
                             } catch (Exception jsonEx) {
+                                android.util.Log.e("UpdateUser", "Cannot parse JSON error: " + jsonEx.getMessage());
                                 // Không phải JSON, kiểm tra nếu là HTML (404, 500, etc)
                                 if (errorBody.contains("Cannot PUT") || errorBody.contains("<!DOCTYPE html>")) {
                                     errorMsg = "Endpoint không tồn tại. Vui lòng kiểm tra backend server!\n" +
-                                              "Đảm bảo route PUT /api/users/:id đã được đăng ký.";
+                                              "Đảm bảo route PUT /api/users/:id đã được đăng ký.\n" +
+                                              "Hoặc có thể cần dùng endpoint khác như PUT /api/auth/me";
                                 } else if (errorBody.length() < 200) {
                                     errorMsg = errorBody;
                                 }
                             }
+                        } else {
+                            android.util.Log.e("UpdateUser", "Error body is null");
                         }
                     } catch (Exception e) {
-                        android.util.Log.e("UpdateUser", "Error parsing error body", e);
+                        android.util.Log.e("UpdateUser", "Error parsing error body: " + e.getMessage(), e);
                     }
                     
                     Toast.makeText(SuaThongTinActivity.this, errorMsg, Toast.LENGTH_LONG).show();
