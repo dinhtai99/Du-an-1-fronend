@@ -1,93 +1,108 @@
-<!--<?xml version="1.0" encoding="utf-8"?>-->
-<!--<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
-<!--    xmlns:tools="http://schemas.android.com/tools"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="match_parent"-->
-<!--    android:background="@color/background_light">-->
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_light">
 
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:orientation="vertical">-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-<!--        &lt;!&ndash; Header &ndash;&gt;-->
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="horizontal"-->
-<!--            android:padding="16dp"-->
-<!--            android:background="@color/white"-->
-<!--            android:gravity="center_vertical"-->
-<!--            android:elevation="4dp">-->
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:elevation="4dp">
 
-<!--            <ImageButton-->
-<!--                android:id="@+id/btnBack"-->
-<!--                android:layout_width="48dp"-->
-<!--                android:layout_height="48dp"-->
-<!--                android:src="@android:drawable/ic_menu_revert"-->
-<!--                android:background="?attr/selectableItemBackgroundBorderless"-->
-<!--                android:contentDescription="Quay lại" />-->
+            <ImageButton
+                android:id="@+id/btnBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@android:drawable/ic_menu_revert"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Quay lại" />
 
-<!--            <TextView-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="1"-->
-<!--                android:text="Đơn hàng của bạn"-->
-<!--                android:textSize="20sp"-->
-<!--                android:textStyle="bold"-->
-<!--                android:textColor="@android:color/black"-->
-<!--                android:gravity="center_vertical" />-->
-<!--        </LinearLayout>-->
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Giỏ hàng"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:gravity="center_vertical" />
+        </LinearLayout>
 
-<!--        &lt;!&ndash; Container cho danh sách và empty state &ndash;&gt;-->
-<!--        <FrameLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent">-->
+        <!-- Danh sách sản phẩm -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvGioHang"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:padding="8dp"
+            tools:listitem="@layout/item_cart_customer" />
 
-<!--        &lt;!&ndash; Danh sách đơn hàng &ndash;&gt;-->
-<!--        <androidx.recyclerview.widget.RecyclerView-->
-<!--            android:id="@+id/rvDonHang"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:padding="8dp"-->
-<!--            tools:listitem="@layout/item_don_hang_customer" />-->
+        <!-- Tổng tiền và nút thanh toán -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/white"
+            android:elevation="8dp"
+            android:padding="16dp"
+            android:layout_marginBottom="64dp">
 
-<!--            &lt;!&ndash; Empty state &ndash;&gt;-->
-<!--            <LinearLayout-->
-<!--                android:id="@+id/emptyState"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="match_parent"-->
-<!--                android:orientation="vertical"-->
-<!--                android:gravity="center"-->
-<!--                android:visibility="gone"-->
-<!--                android:padding="32dp">-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
 
-<!--                <ImageView-->
-<!--                    android:layout_width="120dp"-->
-<!--                    android:layout_height="120dp"-->
-<!--                    android:src="@android:drawable/ic_menu_recent_history"-->
-<!--                    android:alpha="0.3"-->
-<!--                    android:contentDescription="Không có đơn hàng" />-->
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Total"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black" />
 
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Chưa có đơn hàng nào"-->
-<!--                    android:textSize="18sp"-->
-<!--                    android:textStyle="bold"-->
-<!--                    android:textColor="@color/text_secondary"-->
-<!--                    android:layout_marginTop="16dp" />-->
+                <TextView
+                    android:id="@+id/txtTongTien"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0₫"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary_blue" />
+            </LinearLayout>
 
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Các đơn hàng của bạn sẽ hiển thị ở đây"-->
-<!--                    android:textSize="14sp"-->
-<!--                    android:textColor="@color/text_secondary"-->
-<!--                    android:layout_marginTop="8dp" />-->
-<!--            </LinearLayout>-->
-<!--        </FrameLayout>-->
-<!--    </LinearLayout>-->
-<!--</androidx.coordinatorlayout.widget.CoordinatorLayout>-->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnThanhToan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mua ngay"
+                android:textSize="16sp"
+                app:backgroundTint="@color/primary_blue" />
+        </LinearLayout>
+    </LinearLayout>
 
+    <!-- Bottom Navigation Bar -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:menu="@menu/bottom_nav_customer"
+        app:itemIconTint="@color/bottom_nav_selected"
+        app:itemTextColor="@color/bottom_nav_selected" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

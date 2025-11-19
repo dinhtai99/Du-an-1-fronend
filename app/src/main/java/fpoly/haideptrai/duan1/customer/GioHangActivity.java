@@ -34,7 +34,7 @@ public class GioHangActivity extends AppCompatActivity {
     private TextView txtTongTien;
     private MaterialButton btnThanhToan;
     private BottomNavigationView bottomNavigation;
-    
+
     private CartAdapter cartAdapter;
     private CartManager cartManager;
     private List<CartItem> cartItems = new ArrayList<>();
@@ -63,23 +63,23 @@ public class GioHangActivity extends AppCompatActivity {
         btnThanhToan.setOnClickListener(v -> {
             // Lấy danh sách sản phẩm đã chọn
             List<CartItem> selectedItems = getSelectedItems();
-            
+
             if (selectedItems.isEmpty()) {
                 Toast.makeText(this, "Vui lòng chọn ít nhất một sản phẩm để thanh toán", Toast.LENGTH_SHORT).show();
                 return;
             }
-            
+
             if (cartItems.isEmpty()) {
                 Toast.makeText(this, "Giỏ hàng trống", Toast.LENGTH_SHORT).show();
                 return;
             }
-            
+
             // Lưu giỏ hàng trước khi chuyển màn hình
             cartManager.saveCart(cartItems);
-            
+
             // Gửi danh sách sản phẩm đã chọn sang màn hình thanh toán
             Intent intent = new Intent(this, ThanhToanActivity.class);
-            // Lưu danh sách đã chọn vào SharedPreferences tạm thời
+// Lưu danh sách đã chọn vào SharedPreferences tạm thời
             android.content.SharedPreferences prefs = getSharedPreferences("temp_cart", MODE_PRIVATE);
             String selectedItemsJson = new com.google.gson.Gson().toJson(selectedItems);
             prefs.edit().putString("selected_items", selectedItemsJson).apply();
@@ -150,13 +150,12 @@ public class GioHangActivity extends AppCompatActivity {
         android.util.Log.d("GioHangActivity", "Cart items list now has " + cartItems.size() + " items");
         cartAdapter.notifyDataSetChanged();
         updateTotal();
-        
-        // Hiển thị empty state nếu giỏ hàng trống
+// Hiển thị empty state nếu giỏ hàng trống
         if (cartItems.isEmpty()) {
             android.util.Log.d("GioHangActivity", "Cart is empty");
         }
     }
-    
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -188,4 +187,3 @@ public class GioHangActivity extends AppCompatActivity {
         return selectedItems;
     }
 }
-
