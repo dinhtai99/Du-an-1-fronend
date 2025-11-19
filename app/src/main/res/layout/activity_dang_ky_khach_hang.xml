@@ -1,205 +1,205 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    android:fillViewport="true"
-    tools:context=".DangKyKhachHangActivity">
+<!--<?xml version="1.0" encoding="utf-8"?>-->
+<!--<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:background="@color/white"-->
+<!--    android:fillViewport="true"-->
+<!--    tools:context=".DangKyKhachHangActivity">-->
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp"
-        android:gravity="center">
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:orientation="vertical"-->
+<!--        android:padding="24dp"-->
+<!--        android:gravity="center">-->
 
-        <!-- Nút quay lại -->
-        <ImageButton
-            android:id="@+id/btnBack"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="start"
-            android:src="@android:drawable/ic_menu_revert"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Quay lại" />
+<!--        &lt;!&ndash; Nút quay lại &ndash;&gt;-->
+<!--        <ImageButton-->
+<!--            android:id="@+id/btnBack"-->
+<!--            android:layout_width="48dp"-->
+<!--            android:layout_height="48dp"-->
+<!--            android:layout_gravity="start"-->
+<!--            android:src="@android:drawable/ic_menu_revert"-->
+<!--            android:background="?attr/selectableItemBackgroundBorderless"-->
+<!--            android:contentDescription="Quay lại" />-->
 
-        <!-- Tiêu đề -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Đăng ký"
-            android:textColor="@color/text_primary"
-            android:textSize="28sp"
-            android:textStyle="bold" />
+<!--        &lt;!&ndash; Tiêu đề &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="16dp"-->
+<!--            android:text="Đăng ký"-->
+<!--            android:textColor="@color/text_primary"-->
+<!--            android:textSize="28sp"-->
+<!--            android:textStyle="bold" />-->
 
-        <!-- Hướng dẫn -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Tạo tài khoản để tiếp tục"
-            android:textColor="@color/text_secondary"
-            android:textSize="14sp"
-            android:gravity="center" />
+<!--        &lt;!&ndash; Hướng dẫn &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="8dp"-->
+<!--            android:text="Tạo tài khoản để tiếp tục"-->
+<!--            android:textColor="@color/text_secondary"-->
+<!--            android:textSize="14sp"-->
+<!--            android:gravity="center" />-->
 
-        <!-- Form đăng ký -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:orientation="vertical">
+<!--        &lt;!&ndash; Form đăng ký &ndash;&gt;-->
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="32dp"-->
+<!--            android:orientation="vertical">-->
 
-            <!-- Tên đầy đủ -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilTenDayDu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Tên đầy đủ"
-                app:boxStrokeColor="@color/primary_blue"
-                app:hintTextColor="@color/primary_blue"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+<!--            &lt;!&ndash; Tên đầy đủ &ndash;&gt;-->
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:id="@+id/tilTenDayDu"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:hint="Tên đầy đủ"-->
+<!--                app:boxStrokeColor="@color/primary_blue"-->
+<!--                app:hintTextColor="@color/primary_blue"-->
+<!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">-->
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edtTenDayDu"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPersonName"
-                    android:maxLines="1"
-                    android:textSize="16sp" />
-            </com.google.android.material.textfield.TextInputLayout>
+<!--                <com.google.android.material.textfield.TextInputEditText-->
+<!--                    android:id="@+id/edtTenDayDu"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:inputType="textPersonName"-->
+<!--                    android:maxLines="1"-->
+<!--                    android:textSize="16sp" />-->
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
 
-            <!-- Email -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="Email"
-                app:boxStrokeColor="@color/primary_blue"
-                app:hintTextColor="@color/primary_blue"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+<!--            &lt;!&ndash; Email &ndash;&gt;-->
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:id="@+id/tilEmail"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="16dp"-->
+<!--                android:hint="Email"-->
+<!--                app:boxStrokeColor="@color/primary_blue"-->
+<!--                app:hintTextColor="@color/primary_blue"-->
+<!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">-->
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edtEmail"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"
-                    android:maxLines="1"
-                    android:textSize="16sp" />
-            </com.google.android.material.textfield.TextInputLayout>
+<!--                <com.google.android.material.textfield.TextInputEditText-->
+<!--                    android:id="@+id/edtEmail"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:inputType="textEmailAddress"-->
+<!--                    android:maxLines="1"-->
+<!--                    android:textSize="16sp" />-->
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
 
-            <!-- Ngày sinh -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilNgaySinh"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="Ngày sinh"
-                app:boxStrokeColor="@color/primary_blue"
-                app:hintTextColor="@color/primary_blue"
-                app:endIconMode="custom"
-                app:endIconDrawable="@android:drawable/ic_menu_today"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+<!--            &lt;!&ndash; Ngày sinh &ndash;&gt;-->
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:id="@+id/tilNgaySinh"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="16dp"-->
+<!--                android:hint="Ngày sinh"-->
+<!--                app:boxStrokeColor="@color/primary_blue"-->
+<!--                app:hintTextColor="@color/primary_blue"-->
+<!--                app:endIconMode="custom"-->
+<!--                app:endIconDrawable="@android:drawable/ic_menu_today"-->
+<!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">-->
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edtNgaySinh"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="date"
-                    android:maxLines="1"
-                    android:textSize="16sp"
-                    android:focusable="false"
-                    android:clickable="true" />
-            </com.google.android.material.textfield.TextInputLayout>
+<!--                <com.google.android.material.textfield.TextInputEditText-->
+<!--                    android:id="@+id/edtNgaySinh"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:inputType="date"-->
+<!--                    android:maxLines="1"-->
+<!--                    android:textSize="16sp"-->
+<!--                    android:focusable="false"-->
+<!--                    android:clickable="true" />-->
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
 
-            <!-- Số điện thoại -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilSoDienThoai"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="Số điện thoại"
-                app:boxStrokeColor="@color/primary_blue"
-                app:hintTextColor="@color/primary_blue"
-                app:startIconDrawable="@android:drawable/ic_menu_call"
-                app:startIconTint="@color/primary_blue"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+<!--            &lt;!&ndash; Số điện thoại &ndash;&gt;-->
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:id="@+id/tilSoDienThoai"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="16dp"-->
+<!--                android:hint="Số điện thoại"-->
+<!--                app:boxStrokeColor="@color/primary_blue"-->
+<!--                app:hintTextColor="@color/primary_blue"-->
+<!--                app:startIconDrawable="@android:drawable/ic_menu_call"-->
+<!--                app:startIconTint="@color/primary_blue"-->
+<!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">-->
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edtSoDienThoai"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="phone"
-                    android:maxLines="1"
-                    android:textSize="16sp" />
-            </com.google.android.material.textfield.TextInputLayout>
+<!--                <com.google.android.material.textfield.TextInputEditText-->
+<!--                    android:id="@+id/edtSoDienThoai"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:inputType="phone"-->
+<!--                    android:maxLines="1"-->
+<!--                    android:textSize="16sp" />-->
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
 
-            <!-- Mật khẩu -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilMatKhau"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="Mật khẩu"
-                app:boxStrokeColor="@color/primary_blue"
-                app:hintTextColor="@color/primary_blue"
-                app:passwordToggleEnabled="true"
-                app:passwordToggleTint="@color/primary_blue"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+<!--            &lt;!&ndash; Mật khẩu &ndash;&gt;-->
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:id="@+id/tilMatKhau"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="16dp"-->
+<!--                android:hint="Mật khẩu"-->
+<!--                app:boxStrokeColor="@color/primary_blue"-->
+<!--                app:hintTextColor="@color/primary_blue"-->
+<!--                app:passwordToggleEnabled="true"-->
+<!--                app:passwordToggleTint="@color/primary_blue"-->
+<!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">-->
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edtMatKhau"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPassword"
-                    android:maxLines="1"
-                    android:textSize="16sp" />
-            </com.google.android.material.textfield.TextInputLayout>
+<!--                <com.google.android.material.textfield.TextInputEditText-->
+<!--                    android:id="@+id/edtMatKhau"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:inputType="textPassword"-->
+<!--                    android:maxLines="1"-->
+<!--                    android:textSize="16sp" />-->
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
 
-            <!-- Nút Đăng ký -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnDangKy"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="24dp"
-                android:backgroundTint="@color/primary_blue"
-                android:text="Đăng ký"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:cornerRadius="8dp" />
+<!--            &lt;!&ndash; Nút Đăng ký &ndash;&gt;-->
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:id="@+id/btnDangKy"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="56dp"-->
+<!--                android:layout_marginTop="24dp"-->
+<!--                android:backgroundTint="@color/primary_blue"-->
+<!--                android:text="Đăng ký"-->
+<!--                android:textColor="@color/white"-->
+<!--                android:textSize="16sp"-->
+<!--                android:textStyle="bold"-->
+<!--                app:cornerRadius="8dp" />-->
 
-            <!-- Đăng nhập -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:gravity="center"
-                android:orientation="horizontal">
+<!--            &lt;!&ndash; Đăng nhập &ndash;&gt;-->
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="24dp"-->
+<!--                android:gravity="center"-->
+<!--                android:orientation="horizontal">-->
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Đã có tài khoản? "
-                    android:textColor="@color/text_secondary"
-                    android:textSize="14sp" />
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Đã có tài khoản? "-->
+<!--                    android:textColor="@color/text_secondary"-->
+<!--                    android:textSize="14sp" />-->
 
-                <TextView
-                    android:id="@+id/txtDangNhap"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:padding="4dp"
-                    android:text="Đăng nhập ngay"
-                    android:textColor="@color/primary_blue"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+<!--                <TextView-->
+<!--                    android:id="@+id/txtDangNhap"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:clickable="true"-->
+<!--                    android:focusable="true"-->
+<!--                    android:padding="4dp"-->
+<!--                    android:text="Đăng nhập ngay"-->
+<!--                    android:textColor="@color/primary_blue"-->
+<!--                    android:textSize="14sp"-->
+<!--                    android:textStyle="bold" />-->
+<!--            </LinearLayout>-->
+<!--        </LinearLayout>-->
+<!--    </LinearLayout>-->
+<!--</ScrollView>-->
 
