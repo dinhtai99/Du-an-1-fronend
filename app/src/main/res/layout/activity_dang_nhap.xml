@@ -1,204 +1,204 @@
-<!--<?xml version="1.0" encoding="utf-8"?>-->
-<!--<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
-<!--    xmlns:tools="http://schemas.android.com/tools"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="match_parent"-->
-<!--    android:background="@color/white"-->
-<!--    android:fillViewport="true"-->
-<!--    tools:context=".DangNhapActivity">-->
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:fillViewport="true"
+    tools:context=".DangNhapActivity">
 
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="vertical"-->
-<!--        android:padding="24dp"-->
-<!--        android:gravity="center">-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center">
 
-<!--        &lt;!&ndash; Tiêu đề &ndash;&gt;-->
-<!--        <TextView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="60dp"-->
-<!--            android:text="Đăng nhập"-->
-<!--            android:textColor="@color/text_primary"-->
-<!--            android:textSize="28sp"-->
-<!--            android:textStyle="bold" />-->
+        <!-- Tiêu đề -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="60dp"
+            android:text="Đăng nhập"
+            android:textColor="@color/text_primary"
+            android:textSize="28sp"
+            android:textStyle="bold" />
 
-<!--        &lt;!&ndash; Hướng dẫn &ndash;&gt;-->
-<!--        <TextView-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="8dp"-->
-<!--            android:text="Nhập email và mật khẩu của bạn để tiếp tục"-->
-<!--            android:textColor="@color/text_secondary"-->
-<!--            android:textSize="14sp"-->
-<!--            android:gravity="center" />-->
+        <!-- Hướng dẫn -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Nhập email và mật khẩu của bạn để tiếp tục"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:gravity="center" />
 
-<!--        &lt;!&ndash; Form đăng nhập &ndash;&gt;-->
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="32dp"-->
-<!--            android:orientation="vertical">-->
+        <!-- Form đăng nhập -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:orientation="vertical">
 
-<!--            &lt;!&ndash; Email &ndash;&gt;-->
-<!--            <com.google.android.material.textfield.TextInputLayout-->
-<!--                android:id="@+id/tilTaiKhoan"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:hint="Email"-->
-<!--                app:boxStrokeColor="@color/primary_blue"-->
-<!--                app:hintTextColor="@color/primary_blue"-->
-<!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">-->
+            <!-- Email -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilTaiKhoan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Email"
+                app:boxStrokeColor="@color/primary_blue"
+                app:hintTextColor="@color/primary_blue"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-<!--                <com.google.android.material.textfield.TextInputEditText-->
-<!--                    android:id="@+id/edtTaiKhoan"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:inputType="textEmailAddress"-->
-<!--                    android:maxLines="1"-->
-<!--                    android:textSize="16sp" />-->
-<!--            </com.google.android.material.textfield.TextInputLayout>-->
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtTaiKhoan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:maxLines="1"
+                    android:textSize="16sp" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-<!--            &lt;!&ndash; Mật khẩu &ndash;&gt;-->
-<!--            <com.google.android.material.textfield.TextInputLayout-->
-<!--                android:id="@+id/tilMatKhau"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginTop="16dp"-->
-<!--                android:hint="Mật khẩu"-->
-<!--                app:boxStrokeColor="@color/primary_blue"-->
-<!--                app:hintTextColor="@color/primary_blue"-->
-<!--                app:passwordToggleEnabled="true"-->
-<!--                app:passwordToggleTint="@color/primary_blue"-->
-<!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">-->
+            <!-- Mật khẩu -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilMatKhau"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Mật khẩu"
+                app:boxStrokeColor="@color/primary_blue"
+                app:hintTextColor="@color/primary_blue"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="@color/primary_blue"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-<!--                <com.google.android.material.textfield.TextInputEditText-->
-<!--                    android:id="@+id/edtMatKhau"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:inputType="textPassword"-->
-<!--                    android:maxLines="1"-->
-<!--                    android:textSize="16sp" />-->
-<!--            </com.google.android.material.textfield.TextInputLayout>-->
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtMatKhau"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:textSize="16sp" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-<!--            &lt;!&ndash; Quên mật khẩu &ndash;&gt;-->
-<!--            <TextView-->
-<!--                android:id="@+id/txtQuenMatKhau"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_gravity="end"-->
-<!--                android:layout_marginTop="8dp"-->
-<!--                android:clickable="true"-->
-<!--                android:focusable="true"-->
-<!--                android:padding="8dp"-->
-<!--                android:text="Quên mật khẩu ?"-->
-<!--                android:textColor="@color/primary_blue"-->
-<!--                android:textSize="14sp" />-->
+            <!-- Quên mật khẩu -->
+            <TextView
+                android:id="@+id/txtQuenMatKhau"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="8dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="8dp"
+                android:text="Quên mật khẩu ?"
+                android:textColor="@color/primary_blue"
+                android:textSize="14sp" />
 
-<!--            &lt;!&ndash; Nút Đăng nhập &ndash;&gt;-->
-<!--            <com.google.android.material.button.MaterialButton-->
-<!--                android:id="@+id/btnDangNhap"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="56dp"-->
-<!--                android:layout_marginTop="24dp"-->
-<!--                android:backgroundTint="@color/primary_blue"-->
-<!--                android:text="Đăng nhập"-->
-<!--                android:textColor="@color/white"-->
-<!--                android:textSize="16sp"-->
-<!--                android:textStyle="bold"-->
-<!--                app:cornerRadius="8dp" />-->
+            <!-- Nút Đăng nhập -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDangNhap"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="@color/primary_blue"
+                android:text="Đăng nhập"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:cornerRadius="8dp" />
 
-<!--            &lt;!&ndash; Dòng phân cách "Hoặc" &ndash;&gt;-->
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginTop="24dp"-->
-<!--                android:gravity="center_vertical"-->
-<!--                android:orientation="horizontal">-->
+            <!-- Dòng phân cách "Hoặc" -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-<!--                <View-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="1dp"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:background="@color/divider" />-->
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/divider" />
 
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginStart="16dp"-->
-<!--                    android:layout_marginEnd="16dp"-->
-<!--                    android:text="Hoặc"-->
-<!--                    android:textColor="@color/text_secondary"-->
-<!--                    android:textSize="14sp" />-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="Hoặc"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
 
-<!--                <View-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="1dp"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:background="@color/divider" />-->
-<!--            </LinearLayout>-->
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:background="@color/divider" />
+            </LinearLayout>
 
-<!--            &lt;!&ndash; Nút đăng nhập với Google &ndash;&gt;-->
-<!--            <com.google.android.material.button.MaterialButton-->
-<!--                android:id="@+id/btnGoogleLogin"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="56dp"-->
-<!--                android:layout_marginTop="24dp"-->
-<!--                android:backgroundTint="@color/white"-->
-<!--                android:text="Đăng nhập với Google"-->
-<!--                android:textColor="@color/text_primary"-->
-<!--                android:textSize="16sp"-->
-<!--                app:cornerRadius="8dp"-->
-<!--                app:strokeColor="@color/divider"-->
-<!--                app:strokeWidth="1dp"-->
-<!--                app:icon="@android:drawable/ic_menu_search"-->
-<!--                app:iconTint="@color/text_primary" />-->
+            <!-- Nút đăng nhập với Google -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnGoogleLogin"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="@color/white"
+                android:text="Đăng nhập với Google"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                app:cornerRadius="8dp"
+                app:strokeColor="@color/divider"
+                app:strokeWidth="1dp"
+                app:icon="@android:drawable/ic_menu_search"
+                app:iconTint="@color/text_primary" />
 
-<!--            &lt;!&ndash; Nút đăng nhập với Facebook &ndash;&gt;-->
-<!--            <com.google.android.material.button.MaterialButton-->
-<!--                android:id="@+id/btnFacebookLogin"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="56dp"-->
-<!--                android:layout_marginTop="12dp"-->
-<!--                android:backgroundTint="@color/white"-->
-<!--                android:text="Đăng nhập với Facebook"-->
-<!--                android:textColor="@color/text_primary"-->
-<!--                android:textSize="16sp"-->
-<!--                app:cornerRadius="8dp"-->
-<!--                app:strokeColor="@color/divider"-->
-<!--                app:strokeWidth="1dp"-->
-<!--                app:icon="@android:drawable/ic_menu_search"-->
-<!--                app:iconTint="@color/text_primary" />-->
+            <!-- Nút đăng nhập với Facebook -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFacebookLogin"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="12dp"
+                android:backgroundTint="@color/white"
+                android:text="Đăng nhập với Facebook"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                app:cornerRadius="8dp"
+                app:strokeColor="@color/divider"
+                app:strokeWidth="1dp"
+                app:icon="@android:drawable/ic_menu_search"
+                app:iconTint="@color/text_primary" />
 
-<!--            &lt;!&ndash; Đăng ký &ndash;&gt;-->
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginTop="24dp"-->
-<!--                android:gravity="center"-->
-<!--                android:orientation="horizontal">-->
+            <!-- Đăng ký -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:text="Chưa có tài khoản? "-->
-<!--                    android:textColor="@color/text_secondary"-->
-<!--                    android:textSize="14sp" />-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Chưa có tài khoản? "
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp" />
 
-<!--                <TextView-->
-<!--                    android:id="@+id/txtDangKy"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:clickable="true"-->
-<!--                    android:focusable="true"-->
-<!--                    android:padding="4dp"-->
-<!--                    android:text="Đăng ký ngay"-->
-<!--                    android:textColor="@color/primary_blue"-->
-<!--                    android:textSize="14sp"-->
-<!--                    android:textStyle="bold" />-->
-<!--            </LinearLayout>-->
-<!--        </LinearLayout>-->
-<!--    </LinearLayout>-->
-<!--</ScrollView>-->
+                <TextView
+                    android:id="@+id/txtDangKy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="4dp"
+                    android:text="Đăng ký ngay"
+                    android:textColor="@color/primary_blue"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

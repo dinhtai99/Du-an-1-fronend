@@ -67,29 +67,29 @@ public class DangNhapActivity extends AppCompatActivity {
         loadSavedCredentials();
 
         btnDangNhap.setOnClickListener(v -> handleDangNhap());
-        
+
         // Nút đăng nhập Google (placeholder - chưa implement)
         btnGoogleLogin.setOnClickListener(v -> {
             Toast.makeText(this, "Tính năng đăng nhập Google đang phát triển", Toast.LENGTH_SHORT).show();
         });
-        
+
         // Nút đăng nhập Facebook (placeholder - chưa implement)
         btnFacebookLogin.setOnClickListener(v -> {
             Toast.makeText(this, "Tính năng đăng nhập Facebook đang phát triển", Toast.LENGTH_SHORT).show();
         });
-        
+
         // Chuyển sang màn hình đăng ký
         findViewById(R.id.txtDangKy).setOnClickListener(v -> {
             Intent dangKyIntent = new Intent(DangNhapActivity.this, DangKyActivity.class);
             startActivity(dangKyIntent);
         });
-        
+
         // Quên mật khẩu
         findViewById(R.id.txtQuenMatKhau).setOnClickListener(v -> {
             Toast.makeText(this, "Tính năng quên mật khẩu đang phát triển", Toast.LENGTH_SHORT).show();
         });
     }
-    
+
     private void checkLockStatus(String username) {
         if (username == null || username.isEmpty()) {
             return;
@@ -100,7 +100,7 @@ public class DangNhapActivity extends AppCompatActivity {
             int seconds = (int) ((remaining % 60000) / 1000);
             btnDangNhap.setEnabled(false);
             Toast.makeText(this, "Tài khoản \"" + username + "\" bị khóa. Vui lòng thử lại sau " + minutes + " phút " + seconds + " giây", Toast.LENGTH_LONG).show();
-            
+
             // Enable lại sau khi hết thời gian khóa
             new android.os.Handler().postDelayed(() -> {
                 sessionManager.resetLoginFailed(username);
@@ -170,7 +170,7 @@ public class DangNhapActivity extends AppCompatActivity {
         boolean rememberMe = true;
         LoginRequest loginRequest = new LoginRequest(taiKhoan, matKhau, rememberMe);
         Log.d(TAG, "Login request username=" + taiKhoan + ", rememberMe=" + rememberMe);
-        
+
         // Gọi API đăng nhập
         Call<LoginResponse> call = authService.login(loginRequest);
         call.enqueue(new Callback<LoginResponse>() {
@@ -178,7 +178,7 @@ public class DangNhapActivity extends AppCompatActivity {
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 btnDangNhap.setEnabled(true);
                 btnDangNhap.setText("Đăng nhập");
-                
+
                 if (response.isSuccessful() && response.body() != null) {
                     LoginResponse loginResponse = response.body();
                     Log.i(TAG, "HTTP " + response.code() + ", message=" + loginResponse.getMessage());
@@ -191,16 +191,16 @@ public class DangNhapActivity extends AppCompatActivity {
 
                         // Đăng nhập thành công
                         sessionManager.resetLoginFailed(taiKhoan);
-                        
+
                         // Convert UserInfo thành NhanVien để tương thích với SessionManager
                         NhanVien nhanVien = ApiHelper.convertToNhanVien(userInfo);
                         sessionManager.saveSession(nhanVien);
-                        
+
                         // Lưu MongoDB ObjectId để dùng cho API calls
                         if (userInfo.getId() != null && !userInfo.getId().isEmpty()) {
                             sessionManager.saveMongoUserId(userInfo.getId());
                         }
-                        
+
                         // Lưu thông tin đăng nhập
                         prefs.edit().putString("saved_username", taiKhoan)
                                 .putString("saved_password", matKhau)
@@ -243,25 +243,25 @@ public class DangNhapActivity extends AppCompatActivity {
             public void onFailure(Call<LoginResponse> call, Throwable t) {
                 btnDangNhap.setEnabled(true);
                 btnDangNhap.setText("Đăng nhập");
-                
+
                 sessionManager.incrementLoginFailed(taiKhoan);
                 String errorMsg = "Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng!";
                 Log.e(TAG, "Network failure: " + t.getMessage(), t);
                 Toast.makeText(DangNhapActivity.this, errorMsg, Toast.LENGTH_SHORT).show();
                 tilTaiKhoan.setError("Lỗi kết nối");
                 checkLockStatus(taiKhoan);
-                
+
             }
         });
     }
-    
+
     private void redirectToMainScreen(String vaiTro) {
         // Chỉ redirect đến HomeActivity cho khách hàng
         Intent intent = new Intent(DangNhapActivity.this, HomeActivity.class);
         startActivity(intent);
         finish();
     }
-    
+
     private void redirectToMainScreen() {
         redirectToMainScreen(sessionManager.getVaiTro());
     }
