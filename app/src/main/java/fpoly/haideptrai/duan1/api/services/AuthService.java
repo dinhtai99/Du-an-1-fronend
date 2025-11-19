@@ -6,6 +6,7 @@ import fpoly.haideptrai.duan1.api.models.LoginRequest;
 import fpoly.haideptrai.duan1.api.models.LoginResponse;
 import fpoly.haideptrai.duan1.api.models.RegisterRequest;
 import fpoly.haideptrai.duan1.api.models.UserInfo;
+import fpoly.haideptrai.duan1.api.models.UserRequest;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -27,5 +28,12 @@ public interface AuthService {
 
     @GET("api/auth/me")
     Call<UserInfo> getMe();
+
+    /**
+     * Cập nhật thông tin profile của chính mình (customer có thể dùng)
+     * PUT /api/auth/me
+     */
+    @PUT("api/auth/me")
+    Call<ApiResponse<UserInfo>> updateProfile(@Body UserRequest request);
 }
 

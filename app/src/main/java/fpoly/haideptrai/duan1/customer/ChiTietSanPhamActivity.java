@@ -29,7 +29,7 @@ import retrofit2.Response;
 public class ChiTietSanPhamActivity extends AppCompatActivity {
 
     private ImageView imgSanPham;
-    private TextView txtTenSanPham, txtLoaiSanPham, txtGiaNhap, txtGiaBan, txtSoLuong;
+    private TextView txtTenSanPham, txtLoaiSanPham, txtGiaBan, txtMoTa;
     private MaterialButton btnThemVaoGioHang;
     private BottomNavigationView bottomNavigation;
     
@@ -62,9 +62,8 @@ public class ChiTietSanPhamActivity extends AppCompatActivity {
         imgSanPham = findViewById(R.id.imgSanPham);
         txtTenSanPham = findViewById(R.id.txtTenSanPham);
         txtLoaiSanPham = findViewById(R.id.txtLoaiSanPham);
-        txtGiaNhap = findViewById(R.id.txtGiaNhap);
         txtGiaBan = findViewById(R.id.txtGiaBan);
-        txtSoLuong = findViewById(R.id.txtSoLuong);
+        txtMoTa = findViewById(R.id.txtMoTa);
         btnThemVaoGioHang = findViewById(R.id.btnThemVaoGioHang);
         bottomNavigation = findViewById(R.id.bottomNavigation);
 
@@ -127,15 +126,26 @@ public class ChiTietSanPhamActivity extends AppCompatActivity {
     }
 
     private void displayProduct(ProductResponse product) {
+        // Tên sản phẩm
         txtTenSanPham.setText(product.getName());
         
+        // Loại sản phẩm
         if (product.getCategory() != null) {
             txtLoaiSanPham.setText(product.getCategory().getName());
+        } else {
+            txtLoaiSanPham.setText("Chưa phân loại");
         }
         
-        txtGiaNhap.setText(formatPrice(product.getImportPrice()));
+        // Giá bán (chỉ hiển thị giá bán, không hiển thị giá nhập)
         txtGiaBan.setText(formatPrice(product.getPrice()));
-        txtSoLuong.setText(String.valueOf(product.getStock() != null ? product.getStock() : 0));
+        
+        // Mô tả sản phẩm (nếu có)
+        if (product.getDescription() != null && !product.getDescription().trim().isEmpty()) {
+            txtMoTa.setText(product.getDescription());
+            txtMoTa.setVisibility(android.view.View.VISIBLE);
+        } else {
+            txtMoTa.setVisibility(android.view.View.GONE);
+        }
 
         // Load image
         String imageUrl = product.getImage();

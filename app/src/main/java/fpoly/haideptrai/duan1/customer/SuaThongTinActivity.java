@@ -30,6 +30,7 @@ public class SuaThongTinActivity extends AppCompatActivity {
     private MaterialButton btnLuuThongTin;
     
     private UserService userService;
+    private fpoly.haideptrai.duan1.api.services.AuthService authService;
     private SessionManager sessionManager;
 
     @Override
@@ -40,6 +41,7 @@ public class SuaThongTinActivity extends AppCompatActivity {
         initViews();
         sessionManager = new SessionManager(this);
         userService = ApiClient.getClient().create(UserService.class);
+        authService = ApiClient.getClient().create(fpoly.haideptrai.duan1.api.services.AuthService.class);
         loadUserInfo();
     }
 
@@ -159,10 +161,12 @@ public class SuaThongTinActivity extends AppCompatActivity {
         android.util.Log.d("UpdateUser", "Số điện thoại: " + soDienThoai);
         android.util.Log.d("UpdateUser", "Request JSON: " + new com.google.gson.Gson().toJson(request));
 
-        Call<ApiResponse<UserResponse>> call = userService.updateUser(String.valueOf(userId), request);
-        call.enqueue(new Callback<ApiResponse<UserResponse>>() {
+        // ✅ Dùng PUT /api/auth/me để customer có thể update profile của chính mình
+        // Thay vì PUT /api/users/:id (chỉ admin mới có quyền)
+        Call<ApiResponse<fpoly.haideptrai.duan1.api.models.UserInfo>> call = authService.updateProfile(request);
+        call.enqueue(new Callback<ApiResponse<fpoly.haideptrai.duan1.api.models.UserInfo>>() {
             @Override
-            public void onResponse(Call<ApiResponse<UserResponse>> call, Response<ApiResponse<UserResponse>> response) {
+            public void onResponse(Call<ApiResponse<fpoly.haideptrai.duan1.api.models.UserInfo>> call, Response<ApiResponse<fpoly.haideptrai.duan1.api.models.UserInfo>> response) {
                 btnLuuThongTin.setEnabled(true);
                 btnLuuThongTin.setText("Lưu thông tin");
 
@@ -171,23 +175,25 @@ public class SuaThongTinActivity extends AppCompatActivity {
                 android.util.Log.d("UpdateUser", "Response successful: " + response.isSuccessful());
 
                 if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<UserResponse> apiResponse = response.body();
+                    ApiResponse<fpoly.haideptrai.duan1.api.models.UserInfo> apiResponse = response.body();
                     android.util.Log.d("UpdateUser", "Response success: " + apiResponse.isSuccess());
                     android.util.Log.d("UpdateUser", "Response message: " + apiResponse.getMessage());
                     
                     if (apiResponse.isSuccess() && apiResponse.getData() != null) {
-                        UserResponse updatedUser = apiResponse.getData();
+                        fpoly.haideptrai.duan1.api.models.UserInfo updatedUser = apiResponse.getData();
                         android.util.Log.d("UpdateUser", "Updated user data: " + new com.google.gson.Gson().toJson(updatedUser));
                         
                         // Cập nhật session với thông tin mới
-                        if (updatedUser.getHoTen() != null && !updatedUser.getHoTen().isEmpty()) {
-                            sessionManager.setHoTen(updatedUser.getHoTen());
+                        // UserInfo có fullName
+                        if (updatedUser.getFullName() != null && !updatedUser.getFullName().isEmpty()) {
+                            sessionManager.setHoTen(updatedUser.getFullName());
                         } else {
                             sessionManager.setHoTen(hoTen);
                         }
                         
-                        if (updatedUser.getTenDangNhap() != null && !updatedUser.getTenDangNhap().isEmpty()) {
-                            sessionManager.setUsername(updatedUser.getTenDangNhap());
+                        // UserInfo có username
+                        if (updatedUser.getUsername() != null && !updatedUser.getUsername().isEmpty()) {
+                            sessionManager.setUsername(updatedUser.getUsername());
                         } else {
                             sessionManager.setUsername(email);
                         }
@@ -234,8 +240,8 @@ public class SuaThongTinActivity extends AppCompatActivity {
                                 // Không phải JSON, kiểm tra nếu là HTML (404, 500, etc)
                                 if (errorBody.contains("Cannot PUT") || errorBody.contains("<!DOCTYPE html>")) {
                                     errorMsg = "Endpoint không tồn tại. Vui lòng kiểm tra backend server!\n" +
-                                              "Đảm bảo route PUT /api/users/:id đã được đăng ký.\n" +
-                                              "Hoặc có thể cần dùng endpoint khác như PUT /api/auth/me";
+                                              "Đảm bảo route PUT /api/auth/me đã được đăng ký.\n" +
+                                              "Endpoint này cho phép customer update profile của chính mình.";
                                 } else if (errorBody.length() < 200) {
                                     errorMsg = errorBody;
                                 }
@@ -252,7 +258,7 @@ public class SuaThongTinActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<ApiResponse<UserResponse>> call, Throwable t) {
+            public void onFailure(Call<ApiResponse<fpoly.haideptrai.duan1.api.models.UserInfo>> call, Throwable t) {
                 btnLuuThongTin.setEnabled(true);
                 btnLuuThongTin.setText("Lưu thông tin");
                 

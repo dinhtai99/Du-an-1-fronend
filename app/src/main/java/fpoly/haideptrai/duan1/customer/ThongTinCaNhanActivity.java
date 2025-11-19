@@ -34,6 +34,7 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigation;
     
     private UserService userService;
+    private fpoly.haideptrai.duan1.api.services.AuthService authService;
     private InvoiceService invoiceService;
     private SessionManager sessionManager;
 
@@ -46,6 +47,7 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
         setupBottomNavigation();
         sessionManager = new SessionManager(this);
         userService = ApiClient.getClient().create(UserService.class);
+        authService = ApiClient.getClient().create(fpoly.haideptrai.duan1.api.services.AuthService.class);
         invoiceService = ApiClient.getClient().create(InvoiceService.class);
         loadUserInfo();
         loadOrderCount();
@@ -115,36 +117,73 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
     }
 
     private void loadUserInfo() {
-        int userId = sessionManager.getUserId();
-        if (userId == -1) {
-            Toast.makeText(this, "Không tìm thấy thông tin người dùng", Toast.LENGTH_SHORT).show();
-            return;
+        // ✅ Ưu tiên load từ session trước (đã được update sau khi sửa thông tin)
+        String hoTen = sessionManager.getHoTen();
+        String username = sessionManager.getUsername();
+        
+        android.util.Log.d("ThongTinCaNhan", "=== LOADING USER INFO ===");
+        android.util.Log.d("ThongTinCaNhan", "From session - Họ tên: " + hoTen);
+        android.util.Log.d("ThongTinCaNhan", "From session - Username: " + username);
+        
+        // Hiển thị ngay từ session (để user thấy update ngay lập tức)
+        if (hoTen != null && !hoTen.isEmpty()) {
+            txtHoTen.setText(hoTen);
         }
-
-        // Load từ session trước (fallback)
-        txtHoTen.setText(sessionManager.getHoTen());
-        txtEmail.setText(sessionManager.getUsername());
+        if (username != null && !username.isEmpty()) {
+            txtEmail.setText(username);
+        }
         txtSoDienThoai.setText("");
         txtDiaChi.setText("");
 
-        // Gọi API để lấy thông tin chi tiết
-        Call<UserResponse> call = userService.getById(String.valueOf(userId));
-        call.enqueue(new Callback<UserResponse>() {
+        // ✅ Gọi API /api/auth/me để lấy thông tin mới nhất từ server
+        // Endpoint này tự động lấy từ JWT token, không cần userId
+        Call<UserInfo> call = authService.getMe();
+        call.enqueue(new Callback<UserInfo>() {
             @Override
-            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+            public void onResponse(Call<UserInfo> call, Response<UserInfo> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    UserResponse user = response.body();
-                    txtHoTen.setText(user.getHoTen() != null ? user.getHoTen() : sessionManager.getHoTen());
-                    txtEmail.setText(user.getTenDangNhap() != null ? user.getTenDangNhap() : sessionManager.getUsername());
-                    txtSoDienThoai.setText(user.getSoDienThoai() != null ? user.getSoDienThoai() : "");
-                    // UserResponse không có address field, có thể thêm sau
+                    UserInfo user = response.body();
+                    android.util.Log.d("ThongTinCaNhan", "API response - FullName: " + user.getFullName());
+                    android.util.Log.d("ThongTinCaNhan", "API response - Username: " + user.getUsername());
+                    android.util.Log.d("ThongTinCaNhan", "API response - Phone: " + user.getPhone());
+                    
+                    // Cập nhật UI với data từ API
+                    if (user.getFullName() != null && !user.getFullName().isEmpty()) {
+                        txtHoTen.setText(user.getFullName());
+                        // Cập nhật session nếu khác
+                        if (!user.getFullName().equals(sessionManager.getHoTen())) {
+                            sessionManager.setHoTen(user.getFullName());
+                        }
+                    }
+                    
+                    if (user.getUsername() != null && !user.getUsername().isEmpty()) {
+                        txtEmail.setText(user.getUsername());
+                        // Cập nhật session nếu khác
+                        if (!user.getUsername().equals(sessionManager.getUsername())) {
+                            sessionManager.setUsername(user.getUsername());
+                        }
+                    }
+                    
+                    if (user.getPhone() != null && !user.getPhone().isEmpty()) {
+                        txtSoDienThoai.setText(user.getPhone());
+                    } else {
+                        txtSoDienThoai.setText("");
+                    }
+                    
+                    // UserInfo không có address field
                     txtDiaChi.setText("");
+                    
+                    android.util.Log.d("ThongTinCaNhan", "✅ User info loaded and displayed");
+                } else {
+                    android.util.Log.w("ThongTinCaNhan", "API failed, using session data");
+                    // Giữ nguyên data từ session đã hiển thị
                 }
             }
 
             @Override
-            public void onFailure(Call<UserResponse> call, Throwable t) {
-                // Silent fail, sử dụng session data
+            public void onFailure(Call<UserInfo> call, Throwable t) {
+                android.util.Log.e("ThongTinCaNhan", "API error: " + t.getMessage());
+                // Giữ nguyên data từ session đã hiển thị
             }
         });
     }
@@ -187,7 +226,9 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 100 && resultCode == RESULT_OK) {
+            android.util.Log.d("ThongTinCaNhan", "=== REFRESHING AFTER UPDATE ===");
             // Refresh user info sau khi sửa thông tin thành công
+            // Session đã được update trong SuaThongTinActivity
             loadUserInfo();
         }
     }
