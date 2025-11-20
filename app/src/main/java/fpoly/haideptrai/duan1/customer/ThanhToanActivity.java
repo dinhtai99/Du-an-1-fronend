@@ -1,10 +1,12 @@
 package fpoly.haideptrai.duan1.customer;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -780,12 +783,14 @@ public class ThanhToanActivity extends AppCompatActivity {
                         String zpTransToken = zalopayResponse.getZp_trans_token();
                         String orderId = zalopayResponse.getOrderId();
                         String orderNumber = zalopayResponse.getOrderNumber();
+                        String orderUrl = zalopayResponse.getOrder_url();
                         
                         Log.d("ZaloPay", "Received zp_trans_token: " + zpTransToken);
                         Log.d("ZaloPay", "Order ID: " + orderId);
                         Log.d("ZaloPay", "Order Number: " + orderNumber);
                         
                         // Mở ZaloPay app với zp_trans_token
+                        final String finalOrderUrl = orderUrl;
                         ZaloPaySDK.getInstance().payOrder(
                             ThanhToanActivity.this,
                             zpTransToken,
@@ -832,12 +837,17 @@ public class ThanhToanActivity extends AppCompatActivity {
                                     Log.e("ZaloPay", "Payment error: " + zaloPayError.toString() + 
                                           ", App Trans ID: " + appTransID);
                                     
-                                    ToastManager.showToast(ThanhToanActivity.this, 
-                                        "Lỗi thanh toán: " + zaloPayError.toString(), 
-                                        Toast.LENGTH_LONG);
-                                    
-                                    btnThanhToan.setEnabled(true);
-                                    btnThanhToan.setText("Thanh toán");
+                                    if (zaloPayError == ZaloPayError.PAYMENT_APP_NOT_FOUND) {
+                                        Log.w("ZaloPay", "ZaloPay app not found. Fallback to order url: " + finalOrderUrl);
+                                        showZaloPayAppNotFoundDialog(finalOrderUrl);
+                                    } else {
+                                        ToastManager.showToast(ThanhToanActivity.this, 
+                                            "Lỗi thanh toán: " + zaloPayError.toString(), 
+                                            Toast.LENGTH_LONG);
+                                        
+                                        btnThanhToan.setEnabled(true);
+                                        btnThanhToan.setText("Thanh toán");
+                                    }
                                 }
                             }
                         );
@@ -910,6 +920,32 @@ public class ThanhToanActivity extends AppCompatActivity {
                 ToastManager.showToast(ThanhToanActivity.this, "Lỗi kết nối: " + t.getMessage());
             }
         });
+    }
+
+    private void showZaloPayAppNotFoundDialog(String orderUrl) {
+        btnThanhToan.setEnabled(true);
+        btnThanhToan.setText("Thanh toán");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Chưa cài ZaloPay");
+        builder.setMessage("Thiết bị của bạn chưa cài ứng dụng ZaloPay sandbox. " +
+                "Bạn có thể cài app hoặc mở liên kết thanh toán trong trình duyệt.");
+        builder.setPositiveButton("Mở liên kết", (dialog, which) -> openZaloPayOrderUrl(orderUrl));
+        builder.setNegativeButton("Để sau", null);
+        builder.show();
+    }
+
+    private void openZaloPayOrderUrl(String orderUrl) {
+        if (orderUrl == null || orderUrl.trim().isEmpty()) {
+            ToastManager.showToast(this, "Không tìm thấy liên kết thanh toán ZaloPay");
+            return;
+        }
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(orderUrl));
+            startActivity(intent);
+        } catch (Exception e) {
+            Log.e("ZaloPay", "Không mở được liên kết ZaloPay", e);
+            ToastManager.showToast(this, "Không mở được trình duyệt. Vui lòng cài ZaloPay.");
+        }
     }
     
     /**
