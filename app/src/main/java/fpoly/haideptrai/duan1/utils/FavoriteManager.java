@@ -185,7 +185,7 @@ public class FavoriteManager {
                     Log.d("FavoriteManager", "Synced " + favorites.size() + " favorites from server");
                     if (callback != null) callback.onSuccess(favorites);
                 } else {
-                    Log.w("FavoriteManager", "Failed to sync favorites from server");
+                    Log.w("FavoriteManager", "Failed to sync favorites from server. Code: " + response.code());
                     if (callback != null) callback.onError("Không thể tải danh sách yêu thích");
                 }
             }

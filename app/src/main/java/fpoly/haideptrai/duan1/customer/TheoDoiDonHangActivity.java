@@ -1,8 +1,10 @@
 package fpoly.haideptrai.duan1.customer;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,12 +30,17 @@ import retrofit2.Response;
 public class TheoDoiDonHangActivity extends AppCompatActivity {
 
     private ImageView imgSanPham;
-    private TextView txtTenSanPham, txtDiemGui, txtDiemDen, txtDonViVanChuyen, txtCanNang;
+    private TextView txtMaDonHang, txtTrangThai, txtTenSanPham, txtDiemGui, txtDiemDen, txtDonViVanChuyen, txtCanNang;
+    private TextView txtTongTien, txtPhuongThucThanhToan, txtNgayTao;
     private RecyclerView rvTimeline;
     private ImageButton btnBack, btnMenu;
+    private com.google.android.material.button.MaterialButton btnDanhGia;
     private TimelineAdapter timelineAdapter;
     private InvoiceService invoiceService;
+    private fpoly.haideptrai.duan1.api.services.ReviewService reviewService;
     private String invoiceId;
+    private InvoiceResponse currentInvoice;
+    private java.text.NumberFormat currency = java.text.NumberFormat.getCurrencyInstance(new java.util.Locale("vi", "VN"));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,23 +56,42 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
 
         initViews();
         invoiceService = ApiClient.getClient().create(InvoiceService.class);
+        reviewService = ApiClient.getClient().create(fpoly.haideptrai.duan1.api.services.ReviewService.class);
         loadOrderDetails();
     }
 
     private void initViews() {
         imgSanPham = findViewById(R.id.imgSanPham);
+        txtMaDonHang = findViewById(R.id.txtMaDonHang);
+        txtTrangThai = findViewById(R.id.txtTrangThai);
         txtTenSanPham = findViewById(R.id.txtTenSanPham);
         txtDiemGui = findViewById(R.id.txtDiemGui);
         txtDiemDen = findViewById(R.id.txtDiemDen);
         txtDonViVanChuyen = findViewById(R.id.txtDonViVanChuyen);
         txtCanNang = findViewById(R.id.txtCanNang);
+        txtTongTien = findViewById(R.id.txtTongTien);
+        txtPhuongThucThanhToan = findViewById(R.id.txtPhuongThucThanhToan);
+        txtNgayTao = findViewById(R.id.txtNgayTao);
         rvTimeline = findViewById(R.id.rvTimeline);
         btnBack = findViewById(R.id.btnBack);
         btnMenu = findViewById(R.id.btnMenu);
+        btnDanhGia = findViewById(R.id.btnDanhGia);
 
         btnBack.setOnClickListener(v -> finish());
         btnMenu.setOnClickListener(v -> {
-            // TODO: Show menu options
+            // Reload order details
+            loadOrderDetails();
+            Toast.makeText(this, "Đang làm mới thông tin đơn hàng...", Toast.LENGTH_SHORT).show();
+        });
+
+        btnDanhGia.setOnClickListener(v -> {
+            if (currentInvoice != null && currentInvoice.getItems() != null && !currentInvoice.getItems().isEmpty()) {
+                // Lấy sản phẩm đầu tiên để đánh giá
+                InvoiceResponse.Item firstItem = currentInvoice.getItems().get(0);
+                if (firstItem.getProduct() != null && firstItem.getProduct().get_id() != null) {
+                    showReviewDialog(firstItem.getProduct().get_id(), invoiceId);
+                }
+            }
         });
 
         timelineAdapter = new TimelineAdapter();
@@ -80,20 +106,51 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     InvoiceResponse invoice = response.body();
+                    currentInvoice = invoice; // Lưu invoice để dùng cho đánh giá
+                    android.util.Log.d("TheoDoiDonHang", "Invoice loaded: " + invoice.getInvoiceNumber());
+                    android.util.Log.d("TheoDoiDonHang", "ShippingAddress exists: " + (invoice.getShippingAddress() != null));
+                    if (invoice.getShippingAddress() != null) {
+                        android.util.Log.d("TheoDoiDonHang", "ShippingAddress details - Address: " + invoice.getShippingAddress().getAddress() + 
+                            ", Ward: " + invoice.getShippingAddress().getWard() + 
+                            ", District: " + invoice.getShippingAddress().getDistrict() + 
+                            ", City: " + invoice.getShippingAddress().getCity());
+                    }
+                    if (invoice.getCustomer() != null) {
+                        android.util.Log.d("TheoDoiDonHang", "Customer address: " + invoice.getCustomer().getAddress());
+                    }
                     displayOrderDetails(invoice);
                 } else {
+                    android.util.Log.e("TheoDoiDonHang", "Failed to load invoice. Code: " + response.code());
                     Toast.makeText(TheoDoiDonHangActivity.this, "Không tải được thông tin đơn hàng", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<InvoiceResponse> call, Throwable t) {
+                android.util.Log.e("TheoDoiDonHang", "Error loading invoice", t);
                 Toast.makeText(TheoDoiDonHangActivity.this, "Lỗi kết nối server", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void displayOrderDetails(InvoiceResponse invoice) {
+        // Mã đơn hàng
+        String invoiceNumber = invoice.getInvoiceNumber();
+        if (invoiceNumber != null && !invoiceNumber.isEmpty()) {
+            txtMaDonHang.setText(invoiceNumber);
+        } else if (invoice.get_id() != null && !invoice.get_id().isEmpty()) {
+            String id = invoice.get_id();
+            txtMaDonHang.setText("ĐH" + id.substring(Math.max(0, id.length() - 8)));
+        } else {
+            txtMaDonHang.setText("ĐH");
+        }
+        
+        // Trạng thái với màu
+        String status = invoice.getStatus();
+        String statusLabel = getStatusLabel(status);
+        txtTrangThai.setText(statusLabel);
+        setStatusBadgeColor(txtTrangThai, status);
+        
         // Hiển thị thông tin sản phẩm
         if (invoice.getItems() != null && !invoice.getItems().isEmpty()) {
             var firstItem = invoice.getItems().get(0);
@@ -111,43 +168,82 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
                 }
             }
         }
+        
+        // Tổng tiền
+        txtTongTien.setText(formatPrice(invoice.getTotal()));
+        
+        // Phương thức thanh toán
+        String paymentMethod = invoice.getPaymentMethod();
+        String paymentLabel = getPaymentMethodLabel(paymentMethod);
+        txtPhuongThucThanhToan.setText(paymentLabel);
+        
+        // Ngày tạo đơn
+        String createdAt = invoice.getCreatedAt();
+        if (createdAt != null && !createdAt.isEmpty()) {
+            txtNgayTao.setText(formatDate(createdAt));
+        } else {
+            txtNgayTao.setText("");
+        }
 
         // Hiển thị thông tin vận chuyển
         // Điểm gửi - mặc định hoặc từ staff/store
-        txtDiemGui.setText("Hà Nội"); // Có thể lấy từ store info nếu có
+        String diemGui = "Hà Nội"; // Có thể lấy từ store info nếu có
+        if (invoice.getStaff() != null) {
+            // Có thể lấy từ staff location nếu có
+        }
+        txtDiemGui.setText(diemGui);
         
-        // Điểm đến - từ customer address hoặc shipping address
+        // Điểm đến - ưu tiên từ shippingAddress, sau đó customer address
         String address = null;
         InvoiceResponse.ShippingAddress shippingAddress = invoice.getShippingAddress();
+        
+        android.util.Log.d("TheoDoiDonHang", "ShippingAddress: " + (shippingAddress != null ? "exists" : "null"));
+        
         if (shippingAddress != null) {
-            // Format địa chỉ từ object
+            // Format địa chỉ từ object - ưu tiên các field có giá trị
             StringBuilder addressBuilder = new StringBuilder();
-            if (shippingAddress.getAddress() != null && !shippingAddress.getAddress().isEmpty()) {
-                addressBuilder.append(shippingAddress.getAddress());
+            
+            // Số nhà, đường
+            if (shippingAddress.getAddress() != null && !shippingAddress.getAddress().trim().isEmpty()) {
+                addressBuilder.append(shippingAddress.getAddress().trim());
             }
-            if (shippingAddress.getWard() != null && !shippingAddress.getWard().isEmpty()) {
+            
+            // Phường/Xã
+            if (shippingAddress.getWard() != null && !shippingAddress.getWard().trim().isEmpty()) {
                 if (addressBuilder.length() > 0) addressBuilder.append(", ");
-                addressBuilder.append(shippingAddress.getWard());
+                addressBuilder.append(shippingAddress.getWard().trim());
             }
-            if (shippingAddress.getDistrict() != null && !shippingAddress.getDistrict().isEmpty()) {
+            
+            // Quận/Huyện
+            if (shippingAddress.getDistrict() != null && !shippingAddress.getDistrict().trim().isEmpty()) {
                 if (addressBuilder.length() > 0) addressBuilder.append(", ");
-                addressBuilder.append(shippingAddress.getDistrict());
+                addressBuilder.append(shippingAddress.getDistrict().trim());
             }
-            if (shippingAddress.getCity() != null && !shippingAddress.getCity().isEmpty()) {
+            
+            // Tỉnh/Thành phố
+            if (shippingAddress.getCity() != null && !shippingAddress.getCity().trim().isEmpty()) {
                 if (addressBuilder.length() > 0) addressBuilder.append(", ");
-                addressBuilder.append(shippingAddress.getCity());
+                addressBuilder.append(shippingAddress.getCity().trim());
             }
+            
             address = addressBuilder.toString();
+            android.util.Log.d("TheoDoiDonHang", "Address from shippingAddress: " + address);
         }
-        if (address == null || address.isEmpty()) {
-            if (invoice.getCustomer() != null && invoice.getCustomer().getAddress() != null) {
-                address = invoice.getCustomer().getAddress();
+        
+        // Nếu không có từ shippingAddress, thử lấy từ customer
+        if ((address == null || address.trim().isEmpty()) && invoice.getCustomer() != null) {
+            if (invoice.getCustomer().getAddress() != null && !invoice.getCustomer().getAddress().trim().isEmpty()) {
+                address = invoice.getCustomer().getAddress().trim();
+                android.util.Log.d("TheoDoiDonHang", "Address from customer: " + address);
             }
         }
-        if (address != null && !address.isEmpty()) {
+        
+        // Hiển thị địa chỉ hoặc thông báo
+        if (address != null && !address.trim().isEmpty()) {
             txtDiemDen.setText(address);
         } else {
             txtDiemDen.setText("Chưa cập nhật");
+            android.util.Log.w("TheoDoiDonHang", "No address found in invoice data");
         }
         
         // Đơn vị vận chuyển - mặc định
@@ -169,6 +265,124 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
         // Tạo timeline từ status
         List<TimelineItem> timeline = createTimelineFromInvoice(invoice);
         timelineAdapter.setItems(timeline);
+        
+        // Hiển thị nút đánh giá nếu đơn hàng đã giao thành công
+        if ("completed".equals(status) || "delivered".equals(status)) {
+            // Kiểm tra xem đã đánh giá chưa
+            checkAndShowReviewButton(invoice);
+        } else {
+            btnDanhGia.setVisibility(View.GONE);
+        }
+    }
+    
+    private void checkAndShowReviewButton(InvoiceResponse invoice) {
+        if (invoice.getItems() == null || invoice.getItems().isEmpty()) {
+            btnDanhGia.setVisibility(View.GONE);
+            return;
+        }
+        
+        // Lấy sản phẩm đầu tiên
+        InvoiceResponse.Item firstItem = invoice.getItems().get(0);
+        if (firstItem.getProduct() == null || firstItem.getProduct().get_id() == null) {
+            btnDanhGia.setVisibility(View.GONE);
+            return;
+        }
+        
+        String productId = firstItem.getProduct().get_id();
+        
+        // Kiểm tra xem đã đánh giá chưa
+        retrofit2.Call<java.util.List<fpoly.haideptrai.duan1.api.models.ReviewResponse>> call = reviewService.getMyReviews();
+        call.enqueue(new retrofit2.Callback<java.util.List<fpoly.haideptrai.duan1.api.models.ReviewResponse>>() {
+            @Override
+            public void onResponse(retrofit2.Call<java.util.List<fpoly.haideptrai.duan1.api.models.ReviewResponse>> call, 
+                                 retrofit2.Response<java.util.List<fpoly.haideptrai.duan1.api.models.ReviewResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    boolean hasReviewed = false;
+                    for (fpoly.haideptrai.duan1.api.models.ReviewResponse review : response.body()) {
+                        if (review.getProduct() != null && productId.equals(review.getProduct())) {
+                            hasReviewed = true;
+                            break;
+                        }
+                    }
+                    
+                    // Chỉ hiển thị nút nếu chưa đánh giá
+                    if (!hasReviewed) {
+                        btnDanhGia.setVisibility(View.VISIBLE);
+                    } else {
+                        btnDanhGia.setVisibility(View.GONE);
+                    }
+                } else {
+                    // Nếu không load được, vẫn hiển thị nút
+                    btnDanhGia.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<java.util.List<fpoly.haideptrai.duan1.api.models.ReviewResponse>> call, Throwable t) {
+                // Nếu lỗi, vẫn hiển thị nút
+                btnDanhGia.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+    
+    private void showReviewDialog(String productId, String orderId) {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        builder.setTitle("Đánh giá sản phẩm");
+        
+        android.view.View dialogView = getLayoutInflater().inflate(R.layout.dialog_review, null);
+        builder.setView(dialogView);
+        
+        android.widget.RatingBar ratingBar = dialogView.findViewById(R.id.ratingBar);
+        com.google.android.material.textfield.TextInputEditText edtComment = dialogView.findViewById(R.id.edtComment);
+        
+        builder.setPositiveButton("Gửi đánh giá", (dialog, which) -> {
+            int rating = (int) ratingBar.getRating();
+            String comment = edtComment.getText() != null ? edtComment.getText().toString().trim() : "";
+            
+            if (rating == 0) {
+                Toast.makeText(this, "Vui lòng chọn số sao đánh giá", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            
+            submitReview(productId, orderId, rating, comment);
+        });
+        
+        builder.setNegativeButton("Hủy", null);
+        builder.show();
+    }
+    
+    private void submitReview(String productId, String orderId, int rating, String comment) {
+        fpoly.haideptrai.duan1.api.models.ReviewRequest request = new fpoly.haideptrai.duan1.api.models.ReviewRequest();
+        request.setProductId(productId);
+        request.setOrderId(orderId);
+        request.setRating(rating);
+        request.setComment(comment);
+        
+        retrofit2.Call<fpoly.haideptrai.duan1.api.models.ApiResponse<fpoly.haideptrai.duan1.api.models.ReviewResponse>> call = reviewService.createReview(request);
+        call.enqueue(new retrofit2.Callback<fpoly.haideptrai.duan1.api.models.ApiResponse<fpoly.haideptrai.duan1.api.models.ReviewResponse>>() {
+            @Override
+            public void onResponse(retrofit2.Call<fpoly.haideptrai.duan1.api.models.ApiResponse<fpoly.haideptrai.duan1.api.models.ReviewResponse>> call, 
+                                 retrofit2.Response<fpoly.haideptrai.duan1.api.models.ApiResponse<fpoly.haideptrai.duan1.api.models.ReviewResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    fpoly.haideptrai.duan1.api.models.ApiResponse<fpoly.haideptrai.duan1.api.models.ReviewResponse> apiResponse = response.body();
+                    if (apiResponse.isSuccess()) {
+                        Toast.makeText(TheoDoiDonHangActivity.this, "Đánh giá thành công!", Toast.LENGTH_SHORT).show();
+                        btnDanhGia.setVisibility(View.GONE);
+                    } else {
+                        Toast.makeText(TheoDoiDonHangActivity.this, 
+                            apiResponse.getMessage() != null ? apiResponse.getMessage() : "Không thể gửi đánh giá", 
+                            Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(TheoDoiDonHangActivity.this, "Không thể gửi đánh giá", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<fpoly.haideptrai.duan1.api.models.ApiResponse<fpoly.haideptrai.duan1.api.models.ReviewResponse>> call, Throwable t) {
+                Toast.makeText(TheoDoiDonHangActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private List<TimelineItem> createTimelineFromInvoice(InvoiceResponse invoice) {
@@ -235,6 +449,73 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
         } catch (Exception e) {
             return dateString;
         }
+    }
+    
+    private String getStatusLabel(String status) {
+        if (status == null) return "Chưa xác định";
+        switch (status.toLowerCase()) {
+            case "completed":
+            case "delivered":
+                return "Đã giao";
+            case "pending":
+            case "processing":
+            case "confirmed":
+                return "Đang xử lý";
+            case "shipping":
+            case "shipped":
+                return "Đang giao";
+            case "cancelled":
+            case "canceled":
+                return "Đã hủy";
+            default: 
+                return status;
+        }
+    }
+    
+    private void setStatusBadgeColor(TextView textView, String status) {
+        int colorRes;
+        if (status == null) {
+            colorRes = R.color.text_secondary;
+        } else if ("completed".equals(status) || "delivered".equals(status)) {
+            colorRes = R.color.green;
+        } else if ("shipping".equals(status) || "processing".equals(status) || "pending".equals(status)) {
+            colorRes = R.color.orange;
+        } else if ("cancelled".equals(status)) {
+            colorRes = R.color.red;
+        } else {
+            colorRes = R.color.text_secondary;
+        }
+        textView.setBackgroundTintList(android.content.res.ColorStateList.valueOf(
+            textView.getContext().getResources().getColor(colorRes, null)
+        ));
+    }
+    
+    private String getPaymentMethodLabel(String method) {
+        if (method == null) return "Chưa xác định";
+        switch (method.toLowerCase()) {
+            case "cod":
+            case "cash": 
+                return "Tiền mặt (COD)";
+            case "zalopay": 
+                return "ZaloPay";
+            case "momo": 
+                return "MoMo";
+            case "transfer": 
+                return "Chuyển khoản";
+            case "card": 
+                return "Thẻ";
+            case "visa": 
+                return "VISA";
+            case "mastercard": 
+                return "Mastercard";
+            default: 
+                return method;
+        }
+    }
+    
+    private String formatPrice(Double price) {
+        if (price == null) return "0 vnd";
+        return currency.format(price).replace("₫", "vnd");
     }
 }
 

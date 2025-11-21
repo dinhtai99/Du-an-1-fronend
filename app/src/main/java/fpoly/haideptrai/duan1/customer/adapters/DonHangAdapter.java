@@ -61,6 +61,20 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.ViewHold
         holder.txtTrangThai.setText(statusLabel);
         setStatusBadgeColor(holder.txtTrangThai, status);
         
+        // Tên sản phẩm - lấy từ sản phẩm đầu tiên
+        String productName = "Sản phẩm";
+        if (invoice.getItems() != null && !invoice.getItems().isEmpty()) {
+            InvoiceResponse.Item firstItem = invoice.getItems().get(0);
+            if (firstItem.getProduct() != null && firstItem.getProduct().getName() != null) {
+                productName = firstItem.getProduct().getName();
+            }
+            // Nếu có nhiều sản phẩm, thêm thông tin
+            if (invoice.getItems().size() > 1) {
+                productName += " và " + (invoice.getItems().size() - 1) + " sản phẩm khác";
+            }
+        }
+        holder.txtTenSanPham.setText(productName);
+        
         // Tổng tiền
         holder.txtTongTien.setText("Tổng tiền: " + formatPrice(invoice.getTotal()));
         
@@ -89,21 +103,32 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.ViewHold
             holder.txtNgayTao.setText("");
         }
 
-        // Load product image if available
-        if (invoice.getItems() != null && !invoice.getItems().isEmpty() && 
-            invoice.getItems().get(0).getProduct() != null) {
-            String imageUrl = invoice.getItems().get(0).getProduct().getImage();
-            if (imageUrl != null && !imageUrl.trim().isEmpty() && !imageUrl.contains("example.com")) {
-                Glide.with(holder.imgSanPham.getContext())
-                        .load(imageUrl)
-                        .placeholder(R.mipmap.ic_launcher)
-                        .error(R.mipmap.ic_launcher)
-                        .into(holder.imgSanPham);
+        // Load product image - ưu tiên sản phẩm đầu tiên
+        if (invoice.getItems() != null && !invoice.getItems().isEmpty()) {
+            InvoiceResponse.Item firstItem = invoice.getItems().get(0);
+            if (firstItem.getProduct() != null) {
+                String imageUrl = firstItem.getProduct().getImage();
+                if (imageUrl != null && !imageUrl.trim().isEmpty() && !imageUrl.contains("example.com")) {
+                    Glide.with(holder.imgSanPham.getContext())
+                            .load(imageUrl)
+                            .placeholder(R.mipmap.ic_launcher)
+                            .error(R.mipmap.ic_launcher)
+                            .centerCrop()
+                            .into(holder.imgSanPham);
+                } else {
+                    Glide.with(holder.imgSanPham.getContext())
+                            .load(R.mipmap.ic_launcher)
+                            .into(holder.imgSanPham);
+                }
             } else {
                 Glide.with(holder.imgSanPham.getContext())
                         .load(R.mipmap.ic_launcher)
                         .into(holder.imgSanPham);
             }
+        } else {
+            Glide.with(holder.imgSanPham.getContext())
+                    .load(R.mipmap.ic_launcher)
+                    .into(holder.imgSanPham);
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -114,13 +139,23 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.ViewHold
     }
 
     private String getStatusLabel(String status) {
-        if (status == null) return "";
-        switch (status) {
-            case "completed": return "Đã giao";
-            case "pending": return "Đang xử lý";
-            case "shipping": return "Đang giao";
-            case "cancelled": return "Đã hủy";
-            default: return status;
+        if (status == null) return "Chưa xác định";
+        switch (status.toLowerCase()) {
+            case "completed":
+            case "delivered":
+                return "Đã giao";
+            case "pending":
+            case "processing":
+            case "confirmed":
+                return "Đang xử lý";
+            case "shipping":
+            case "shipped":
+                return "Đang giao";
+            case "cancelled":
+            case "canceled":
+                return "Đã hủy";
+            default: 
+                return status;
         }
     }
 
@@ -205,13 +240,14 @@ public class DonHangAdapter extends RecyclerView.Adapter<DonHangAdapter.ViewHold
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imgSanPham;
-        TextView txtMaDonHang, txtTrangThai, txtTongTien, txtPhuongThucThanhToan, txtSoLuongSanPham, txtNgayTao;
+        TextView txtMaDonHang, txtTrangThai, txtTenSanPham, txtTongTien, txtPhuongThucThanhToan, txtSoLuongSanPham, txtNgayTao;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             imgSanPham = itemView.findViewById(R.id.imgSanPham);
             txtMaDonHang = itemView.findViewById(R.id.txtMaDonHang);
             txtTrangThai = itemView.findViewById(R.id.txtTrangThai);
+            txtTenSanPham = itemView.findViewById(R.id.txtTenSanPham);
             txtTongTien = itemView.findViewById(R.id.txtTongTien);
             txtPhuongThucThanhToan = itemView.findViewById(R.id.txtPhuongThucThanhToan);
             txtSoLuongSanPham = itemView.findViewById(R.id.txtSoLuongSanPham);

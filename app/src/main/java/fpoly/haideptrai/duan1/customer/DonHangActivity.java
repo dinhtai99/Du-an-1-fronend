@@ -78,7 +78,7 @@ public class DonHangActivity extends AppCompatActivity {
         // String customerId = sessionManager.getMongoUserId();
         
         android.util.Log.d("DonHangActivity", "Calling API: GET /api/invoices?customer=" + customerId);
-        
+
         Call<InvoiceListResponse> call = invoiceService.getInvoices(null, customerId, null, null, null, null, null, 1, 50);
         call.enqueue(new Callback<InvoiceListResponse>() {
             @Override
@@ -126,7 +126,7 @@ public class DonHangActivity extends AppCompatActivity {
                     String errorMsg = "Không tải được đơn hàng";
                     String errorBody = "";
                     try {
-                        if (response.errorBody() != null) {
+                    if (response.errorBody() != null) {
                             errorBody = response.errorBody().string();
                             android.util.Log.e("DonHangActivity", "Error response body: " + errorBody);
                             
@@ -141,8 +141,8 @@ public class DonHangActivity extends AppCompatActivity {
                                 // Không phải JSON
                                 if (errorBody.length() < 200) {
                                     errorMsg = errorBody;
-                                }
-                            }
+                        }
+                    }
                         }
                     } catch (Exception e) {
                         android.util.Log.e("DonHangActivity", "Error parsing error body: " + e.getMessage());

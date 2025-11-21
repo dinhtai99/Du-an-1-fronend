@@ -201,8 +201,15 @@ public class QuanLyVoucherActivity extends AppCompatActivity {
             mucGiamGia = "Không có mô tả";
         }
         
-        // ✅ Format điều kiện
-        String dieuKien = "ĐK: Đơn từ " + formatPrice(response.getMinOrderAmount() != null ? response.getMinOrderAmount() : 0);
+        // ✅ Format điều kiện - hiển thị rõ ràng điều kiện sử dụng
+        String dieuKien;
+        Double minOrderAmount = response.getMinOrderAmount();
+        
+        if (minOrderAmount != null && minOrderAmount > 0) {
+            dieuKien = "Điều kiện: Đơn hàng tối thiểu " + formatPrice(minOrderAmount);
+        } else {
+            dieuKien = "Áp dụng cho mọi đơn hàng";
+        }
         
         // ✅ Số lượng còn lại
         int soLuong = 0;

@@ -12,7 +12,7 @@ public class InvoiceListResponse {
     private int page;
     private int limit;
     private int totalPages;
-    
+
     private Pagination pagination; // Backend format: { pagination: { page, limit, total, pages } }
 
     // Getter cho invoices - ưu tiên data nếu có
@@ -95,10 +95,10 @@ public class InvoiceListResponse {
         private int total;
         private int pages;
 
-        public int getPage() { return page; }
-        public void setPage(int page) { this.page = page; }
-        public int getLimit() { return limit; }
-        public void setLimit(int limit) { this.limit = limit; }
+    public int getPage() { return page; }
+    public void setPage(int page) { this.page = page; }
+    public int getLimit() { return limit; }
+    public void setLimit(int limit) { this.limit = limit; }
         public int getTotal() { return total; }
         public void setTotal(int total) { this.total = total; }
         public int getPages() { return pages; }

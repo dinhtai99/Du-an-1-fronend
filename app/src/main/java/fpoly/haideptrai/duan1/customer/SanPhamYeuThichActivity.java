@@ -85,7 +85,16 @@ public class SanPhamYeuThichActivity extends AppCompatActivity {
     }
 
     private void loadFavoriteProducts() {
-        // Load favorites directly from API
+        // Kiểm tra token trước
+        String token = fpoly.haideptrai.duan1.api.TokenStore.getToken();
+        if (token == null || token.isEmpty()) {
+            android.util.Log.w("SanPhamYeuThich", "No token found, user may not be logged in");
+            showEmptyState();
+            txtEmptyMessage.setText("Vui lòng đăng nhập để xem sản phẩm yêu thích");
+            return;
+        }
+        
+        // Load favorites from API
         fpoly.haideptrai.duan1.api.services.FavoriteService favoriteService = 
             fpoly.haideptrai.duan1.api.ApiClient.getClient().create(fpoly.haideptrai.duan1.api.services.FavoriteService.class);
         
@@ -94,8 +103,11 @@ public class SanPhamYeuThichActivity extends AppCompatActivity {
             @Override
             public void onResponse(retrofit2.Call<java.util.List<ProductResponse>> call, 
                                  retrofit2.Response<java.util.List<ProductResponse>> response) {
+                android.util.Log.d("SanPhamYeuThich", "Response code: " + response.code());
+                
                 if (response.isSuccessful() && response.body() != null) {
                     List<ProductResponse> favoriteProducts = response.body();
+                    android.util.Log.d("SanPhamYeuThich", "Received " + favoriteProducts.size() + " favorite products");
                     
                     if (favoriteProducts.isEmpty()) {
                         showEmptyState();
@@ -103,15 +115,38 @@ public class SanPhamYeuThichActivity extends AppCompatActivity {
                         productAdapter.setItems(favoriteProducts);
                         rvSanPhamYeuThich.setVisibility(View.VISIBLE);
                         layoutEmpty.setVisibility(View.GONE);
+                        android.util.Log.d("SanPhamYeuThich", "Displayed " + favoriteProducts.size() + " favorite products");
                     }
                 } else {
+                    android.util.Log.e("SanPhamYeuThich", "API response not successful. Code: " + response.code());
+                    
+                    // Xử lý các mã lỗi phổ biến
+                    if (response.code() == 401) {
+                        android.util.Log.w("SanPhamYeuThich", "Unauthorized - token may be invalid");
+                        txtEmptyMessage.setText("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại");
+                    } else if (response.code() == 403) {
+                        android.util.Log.w("SanPhamYeuThich", "Forbidden - access denied");
+                        txtEmptyMessage.setText("Không có quyền truy cập");
+                    } else {
+                        txtEmptyMessage.setText("Không thể tải danh sách yêu thích");
+                    }
+                    
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorString = response.errorBody().string();
+                            android.util.Log.e("SanPhamYeuThich", "Error body: " + errorString);
+                        } catch (Exception e) {
+                            android.util.Log.e("SanPhamYeuThich", "Error reading error body", e);
+                        }
+                    }
                     showEmptyState();
                 }
             }
 
             @Override
             public void onFailure(retrofit2.Call<java.util.List<ProductResponse>> call, Throwable t) {
-                android.util.Log.e("SanPhamYeuThich", "Error loading favorites: " + t.getMessage());
+                android.util.Log.e("SanPhamYeuThich", "Error loading favorites: " + t.getMessage(), t);
+                txtEmptyMessage.setText("Lỗi kết nối. Vui lòng thử lại");
                 showEmptyState();
             }
         });

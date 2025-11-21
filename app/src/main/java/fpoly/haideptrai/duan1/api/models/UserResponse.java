@@ -6,6 +6,7 @@ public class UserResponse {
     private String gioiTinh;
     private String ngaySinh;
     private String soDienThoai;
+    private String address;
     private String tenDangNhap;
     private String vaiTro;
     private String anhDaiDien;
@@ -50,6 +51,14 @@ public class UserResponse {
     
     public void setSoDienThoai(String soDienThoai) {
         this.soDienThoai = soDienThoai;
+    }
+    
+    public String getAddress() {
+        return address;
+    }
+    
+    public void setAddress(String address) {
+        this.address = address;
     }
     
     public String getTenDangNhap() {

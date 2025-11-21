@@ -81,8 +81,7 @@ public class SuaThongTinActivity extends AppCompatActivity {
                     edtHoTen.setText(user.getHoTen() != null ? user.getHoTen() : sessionManager.getHoTen());
                     edtEmail.setText(user.getTenDangNhap() != null ? user.getTenDangNhap() : sessionManager.getUsername());
                     edtSoDienThoai.setText(user.getSoDienThoai() != null ? user.getSoDienThoai() : "");
-                    // UserResponse doesn't have address field, can be added later
-                    edtDiaChi.setText("");
+                    edtDiaChi.setText(user.getAddress() != null ? user.getAddress() : "");
                     
                     // Load avatar if available
                     if (user.getAnhDaiDien() != null && !user.getAnhDaiDien().isEmpty()) {
@@ -150,6 +149,7 @@ public class SuaThongTinActivity extends AppCompatActivity {
         // Backend có thể cần fullName hoặc hoTen - thử cả hai
         request.setFullName(hoTen);
         request.setPhone(soDienThoai);
+        request.setAddress(diaChi); // Thêm địa chỉ vào request
         request.setUsername(email); // Backend có thể cần username (email)
         // Không set password để không thay đổi password
         // Không set role để giữ nguyên role
@@ -159,6 +159,7 @@ public class SuaThongTinActivity extends AppCompatActivity {
         android.util.Log.d("UpdateUser", "Họ tên: " + hoTen);
         android.util.Log.d("UpdateUser", "Email: " + email);
         android.util.Log.d("UpdateUser", "Số điện thoại: " + soDienThoai);
+        android.util.Log.d("UpdateUser", "Địa chỉ: " + diaChi);
         android.util.Log.d("UpdateUser", "Request JSON: " + new com.google.gson.Gson().toJson(request));
 
         // ✅ Dùng PUT /api/auth/me để customer có thể update profile của chính mình

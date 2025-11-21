@@ -146,6 +146,7 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
                     android.util.Log.d("ThongTinCaNhan", "API response - FullName: " + user.getFullName());
                     android.util.Log.d("ThongTinCaNhan", "API response - Username: " + user.getUsername());
                     android.util.Log.d("ThongTinCaNhan", "API response - Phone: " + user.getPhone());
+                    android.util.Log.d("ThongTinCaNhan", "API response - Address: " + user.getAddress());
                     
                     // Cập nhật UI với data từ API
                     if (user.getFullName() != null && !user.getFullName().isEmpty()) {
@@ -170,13 +171,19 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
                         txtSoDienThoai.setText("");
                     }
                     
-                    // UserInfo không có address field
-                    txtDiaChi.setText("");
+                    if (user.getAddress() != null && !user.getAddress().isEmpty()) {
+                        txtDiaChi.setText(user.getAddress());
+                        android.util.Log.d("ThongTinCaNhan", "✅ Address loaded from getMe: " + user.getAddress());
+                    } else {
+                        // Nếu getMe không có address, thử load từ UserService.getById()
+                        loadAddressFromUserService();
+                    }
                     
                     android.util.Log.d("ThongTinCaNhan", "✅ User info loaded and displayed");
                 } else {
                     android.util.Log.w("ThongTinCaNhan", "API failed, using session data");
-                    // Giữ nguyên data từ session đã hiển thị
+                    // Thử load từ UserService như fallback
+                    loadAddressFromUserService();
                 }
             }
 
@@ -219,7 +226,40 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        // Reload user info khi quay lại màn hình (có thể đã cập nhật ở màn hình khác)
         loadUserInfo();
+    }
+
+    private void loadAddressFromUserService() {
+        int userId = sessionManager.getUserId();
+        if (userId == -1) {
+            return;
+        }
+        
+        android.util.Log.d("ThongTinCaNhan", "Loading address from UserService.getById()");
+        Call<UserResponse> call = userService.getById(String.valueOf(userId));
+        call.enqueue(new Callback<UserResponse>() {
+            @Override
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    UserResponse user = response.body();
+                    if (user.getAddress() != null && !user.getAddress().isEmpty()) {
+                        txtDiaChi.setText(user.getAddress());
+                        android.util.Log.d("ThongTinCaNhan", "✅ Address loaded from UserService: " + user.getAddress());
+                    } else {
+                        android.util.Log.d("ThongTinCaNhan", "⚠️ No address in UserResponse");
+                        txtDiaChi.setText("");
+                    }
+                } else {
+                    android.util.Log.w("ThongTinCaNhan", "UserService.getById() failed");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                android.util.Log.e("ThongTinCaNhan", "UserService.getById() error: " + t.getMessage());
+            }
+        });
     }
 
     @Override

@@ -3,11 +3,14 @@ package fpoly.haideptrai.duan1.customer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
@@ -19,7 +22,11 @@ import java.util.Locale;
 import fpoly.haideptrai.duan1.R;
 import fpoly.haideptrai.duan1.api.ApiClient;
 import fpoly.haideptrai.duan1.api.models.ProductResponse;
+import fpoly.haideptrai.duan1.api.models.ReviewListResponse;
+import fpoly.haideptrai.duan1.api.models.ReviewResponse;
 import fpoly.haideptrai.duan1.api.services.ProductService;
+import fpoly.haideptrai.duan1.api.services.ReviewService;
+import fpoly.haideptrai.duan1.customer.adapters.ReviewAdapter;
 import fpoly.haideptrai.duan1.customer.models.CartItem;
 import fpoly.haideptrai.duan1.utils.CartManager;
 import retrofit2.Call;
@@ -30,11 +37,15 @@ public class ChiTietSanPhamActivity extends AppCompatActivity {
 
     private ImageView imgSanPham;
     private TextView txtTenSanPham, txtLoaiSanPham, txtGiaBan, txtMoTa;
-    private MaterialButton btnThemVaoGioHang;
+    private TextView txtRatingAverage, txtReviewCount, txtNoReviews;
+    private MaterialButton btnThemVaoGioHang, btnDanhGia;
     private BottomNavigationView bottomNavigation;
+    private RecyclerView rvReviews;
     
     private ProductService productService;
+    private ReviewService reviewService;
     private CartManager cartManager;
+    private ReviewAdapter reviewAdapter;
     private String productId;
     private ProductResponse product;
     private NumberFormat currency = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
@@ -54,8 +65,10 @@ public class ChiTietSanPhamActivity extends AppCompatActivity {
         initViews();
         setupBottomNavigation();
         productService = ApiClient.getClient().create(ProductService.class);
+        reviewService = ApiClient.getClient().create(ReviewService.class);
         cartManager = new CartManager(this);
         loadProductDetails();
+        loadReviews();
     }
 
     private void initViews() {
@@ -64,14 +77,28 @@ public class ChiTietSanPhamActivity extends AppCompatActivity {
         txtLoaiSanPham = findViewById(R.id.txtLoaiSanPham);
         txtGiaBan = findViewById(R.id.txtGiaBan);
         txtMoTa = findViewById(R.id.txtMoTa);
+        txtRatingAverage = findViewById(R.id.txtRatingAverage);
+        txtReviewCount = findViewById(R.id.txtReviewCount);
+        txtNoReviews = findViewById(R.id.txtNoReviews);
         btnThemVaoGioHang = findViewById(R.id.btnThemVaoGioHang);
+        btnDanhGia = findViewById(R.id.btnDanhGia);
         bottomNavigation = findViewById(R.id.bottomNavigation);
+        rvReviews = findViewById(R.id.rvReviews);
+
+        // Setup RecyclerView cho reviews
+        reviewAdapter = new ReviewAdapter();
+        rvReviews.setLayoutManager(new LinearLayoutManager(this));
+        rvReviews.setAdapter(reviewAdapter);
+        rvReviews.setNestedScrollingEnabled(false);
 
         btnThemVaoGioHang.setOnClickListener(v -> {
             if (product != null) {
                 addToCart();
             }
         });
+
+        // Ẩn nút đánh giá - chỉ hiển thị sau khi thanh toán thành công
+        btnDanhGia.setVisibility(View.GONE);
     }
 
     private void setupBottomNavigation() {
@@ -184,6 +211,60 @@ public class ChiTietSanPhamActivity extends AppCompatActivity {
         cartManager.addToCart(cartItem);
 
         Toast.makeText(this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+    }
+
+    private void loadReviews() {
+        Call<ReviewListResponse> call = reviewService.getProductReviews(productId, 1, 10);
+        call.enqueue(new Callback<ReviewListResponse>() {
+            @Override
+            public void onResponse(Call<ReviewListResponse> call, Response<ReviewListResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ReviewListResponse reviewList = response.body();
+                    if (reviewList.getReviews() != null && !reviewList.getReviews().isEmpty()) {
+                        reviewAdapter.setItems(reviewList.getReviews());
+                        rvReviews.setVisibility(View.VISIBLE);
+                        txtNoReviews.setVisibility(View.GONE);
+                        
+                        // Hiển thị rating và count
+                        int total = reviewList.getTotal() != null ? reviewList.getTotal() : reviewList.getReviews().size();
+                        txtReviewCount.setText("(" + total + ")");
+                        
+                        // Tính rating trung bình từ reviews
+                        double avgRating = 0.0;
+                        for (ReviewResponse review : reviewList.getReviews()) {
+                            if (review.getRating() != null) {
+                                avgRating += review.getRating();
+                            }
+                        }
+                        if (reviewList.getReviews().size() > 0) {
+                            avgRating = avgRating / reviewList.getReviews().size();
+                        }
+                        
+                        txtRatingAverage.setText(String.format(Locale.getDefault(), "%.1f", avgRating));
+                    } else {
+                        reviewAdapter.setItems(java.util.Collections.emptyList());
+                        rvReviews.setVisibility(View.GONE);
+                        txtNoReviews.setVisibility(View.VISIBLE);
+                        txtRatingAverage.setText("0.0");
+                        txtReviewCount.setText("(0)");
+                    }
+                } else {
+                    // Silent fail - không hiển thị lỗi nếu không load được reviews
+                    reviewAdapter.setItems(java.util.Collections.emptyList());
+                    rvReviews.setVisibility(View.GONE);
+                    txtNoReviews.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ReviewListResponse> call, Throwable t) {
+                // Silent fail
+                android.util.Log.e("ChiTietSanPham", "Error loading reviews: " + t.getMessage());
+                reviewAdapter.setItems(java.util.Collections.emptyList());
+                rvReviews.setVisibility(View.GONE);
+                txtNoReviews.setVisibility(View.VISIBLE);
+            }
+        });
     }
 }
 

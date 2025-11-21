@@ -25,6 +25,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -1059,59 +1060,122 @@ public class ThanhToanActivity extends AppCompatActivity {
     
     /**
      * Chuyển đổi tọa độ thành địa chỉ (Reverse Geocoding)
+     * Chạy trên background thread để tránh ANR
      */
     private void getAddressFromLocation(double latitude, double longitude) {
-        try {
-            Geocoder geocoder = new Geocoder(this, java.util.Locale.getDefault());
-            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
+        // Hiển thị loading
+        runOnUiThread(() -> {
+            btnSuDungViTriHienTai.setText("Đang lấy địa chỉ...");
+            btnSuDungViTriHienTai.setEnabled(false);
+        });
+        
+        // Chạy trên background thread
+        new Thread(() -> {
+            android.os.Handler mainHandler = new android.os.Handler(getMainLooper());
             
-            if (addresses != null && !addresses.isEmpty()) {
-                Address address = addresses.get(0);
+            try {
+                Geocoder geocoder = new Geocoder(this, java.util.Locale.getDefault());
                 
-                // Tạo địa chỉ đầy đủ
-                StringBuilder addressBuilder = new StringBuilder();
+                // Thêm timeout bằng cách sử dụng Future
+                java.util.concurrent.ExecutorService executor = java.util.concurrent.Executors.newSingleThreadExecutor();
+                java.util.concurrent.Future<List<Address>> future = executor.submit(() -> {
+                    return geocoder.getFromLocation(latitude, longitude, 1);
+                });
                 
-                // Số nhà, đường
-                if (address.getThoroughfare() != null) {
-                    addressBuilder.append(address.getThoroughfare());
+                List<Address> addresses = null;
+                try {
+                    // Timeout sau 5 giây
+                    addresses = future.get(5, java.util.concurrent.TimeUnit.SECONDS);
+                } catch (java.util.concurrent.TimeoutException e) {
+                    future.cancel(true);
+                    android.util.Log.e("ThanhToanActivity", "Geocoding timeout");
+                    mainHandler.post(() -> {
+                        btnSuDungViTriHienTai.setEnabled(true);
+                        btnSuDungViTriHienTai.setText("Sử dụng vị trí hiện tại");
+                        showToast("Lỗi: Quá thời gian chờ. Vui lòng thử lại hoặc nhập địa chỉ thủ công.");
+                    });
+                    executor.shutdown();
+                    return;
+                } catch (java.util.concurrent.ExecutionException e) {
+                    android.util.Log.e("ThanhToanActivity", "Geocoding execution error", e);
+                    // Kiểm tra nếu cause là IOException
+                    Throwable cause = e.getCause();
+                    if (cause instanceof IOException) {
+                        android.util.Log.e("ThanhToanActivity", "Geocoding IOException: " + cause.getMessage());
+                    }
+                    mainHandler.post(() -> {
+                        btnSuDungViTriHienTai.setEnabled(true);
+                        btnSuDungViTriHienTai.setText("Sử dụng vị trí hiện tại");
+                        showToast("Lỗi khi lấy địa chỉ. Vui lòng thử lại hoặc nhập địa chỉ thủ công.");
+                    });
+                    executor.shutdown();
+                    return;
                 }
                 
-                // Phường/Xã
-                if (address.getSubLocality() != null) {
-                    if (addressBuilder.length() > 0) addressBuilder.append(", ");
-                    addressBuilder.append(address.getSubLocality());
-                }
+                executor.shutdown();
                 
-                // Quận/Huyện
-                if (address.getSubAdminArea() != null) {
-                    if (addressBuilder.length() > 0) addressBuilder.append(", ");
-                    addressBuilder.append(address.getSubAdminArea());
-                }
-                
-                // Tỉnh/Thành phố
-                if (address.getAdminArea() != null) {
-                    if (addressBuilder.length() > 0) addressBuilder.append(", ");
-                    addressBuilder.append(address.getAdminArea());
-                }
-                
-                String fullAddress = addressBuilder.toString();
-                if (!fullAddress.isEmpty()) {
-                    edtDiaChi.setText(fullAddress);
-                    showToast("Đã lấy địa chỉ từ vị trí hiện tại");
+                if (addresses != null && !addresses.isEmpty()) {
+                    Address address = addresses.get(0);
+                    
+                    // Tạo địa chỉ đầy đủ
+                    StringBuilder addressBuilder = new StringBuilder();
+                    
+                    // Số nhà, đường
+                    if (address.getThoroughfare() != null) {
+                        addressBuilder.append(address.getThoroughfare());
+                    }
+                    
+                    // Phường/Xã
+                    if (address.getSubLocality() != null) {
+                        if (addressBuilder.length() > 0) addressBuilder.append(", ");
+                        addressBuilder.append(address.getSubLocality());
+                    }
+                    
+                    // Quận/Huyện
+                    if (address.getSubAdminArea() != null) {
+                        if (addressBuilder.length() > 0) addressBuilder.append(", ");
+                        addressBuilder.append(address.getSubAdminArea());
+                    }
+                    
+                    // Tỉnh/Thành phố
+                    if (address.getAdminArea() != null) {
+                        if (addressBuilder.length() > 0) addressBuilder.append(", ");
+                        addressBuilder.append(address.getAdminArea());
+                    }
+                    
+                    String fullAddress = addressBuilder.toString();
+                    
+                    // Cập nhật UI trên main thread
+                    mainHandler.post(() -> {
+                        if (!fullAddress.isEmpty()) {
+                            edtDiaChi.setText(fullAddress);
+                            showToast("Đã lấy địa chỉ từ vị trí hiện tại");
+                        } else {
+                            // Fallback: Hiển thị tọa độ
+                            edtDiaChi.setText(String.format("Lat: %.6f, Lng: %.6f", latitude, longitude));
+                            showToast("Đã lấy tọa độ. Vui lòng nhập địa chỉ thủ công.");
+                        }
+                        btnSuDungViTriHienTai.setEnabled(true);
+                        btnSuDungViTriHienTai.setText("Sử dụng vị trí hiện tại");
+                    });
                 } else {
-                    // Fallback: Hiển thị tọa độ
-                    edtDiaChi.setText(String.format("Lat: %.6f, Lng: %.6f", latitude, longitude));
-                    showToast("Đã lấy tọa độ. Vui lòng nhập địa chỉ thủ công.");
+                    mainHandler.post(() -> {
+                        // Fallback: Hiển thị tọa độ
+                        edtDiaChi.setText(String.format("Lat: %.6f, Lng: %.6f", latitude, longitude));
+                        showToast("Không tìm thấy địa chỉ. Vui lòng nhập thủ công.");
+                        btnSuDungViTriHienTai.setEnabled(true);
+                        btnSuDungViTriHienTai.setText("Sử dụng vị trí hiện tại");
+                    });
                 }
-            } else {
-                // Fallback: Hiển thị tọa độ
-                edtDiaChi.setText(String.format("Lat: %.6f, Lng: %.6f", latitude, longitude));
-                showToast("Không tìm thấy địa chỉ. Vui lòng nhập thủ công.");
+            } catch (Exception e) {
+                android.util.Log.e("ThanhToanActivity", "Unexpected error: " + e.getMessage(), e);
+                mainHandler.post(() -> {
+                    btnSuDungViTriHienTai.setEnabled(true);
+                    btnSuDungViTriHienTai.setText("Sử dụng vị trí hiện tại");
+                    showToast("Lỗi không xác định. Vui lòng thử lại.");
+                });
             }
-        } catch (Exception e) {
-            Log.e("ThanhToanActivity", "Error getting address: " + e.getMessage(), e);
-            showToast("Lỗi khi lấy địa chỉ: " + e.getMessage());
-        }
+        }).start();
     }
     
     /**
