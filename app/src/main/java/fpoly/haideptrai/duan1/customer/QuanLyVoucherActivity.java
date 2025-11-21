@@ -131,7 +131,7 @@ public class QuanLyVoucherActivity extends AppCompatActivity {
                         // Log để debug
                         android.util.Log.d("Voucher", "Loaded " + vouchers.size() + " vouchers from API");
                     } else {
-// ✅ Không có voucher nào (empty list)
+                        // ✅ Không có voucher nào (empty list)
                         vouchers.clear();
                         voucherResponses.clear();
                         voucherAdapter.notifyDataSetChanged();
@@ -201,8 +201,15 @@ public class QuanLyVoucherActivity extends AppCompatActivity {
             mucGiamGia = "Không có mô tả";
         }
 
-        // ✅ Format điều kiện
-        String dieuKien = "ĐK: Đơn từ " + formatPrice(response.getMinOrderAmount() != null ? response.getMinOrderAmount() : 0);
+        // ✅ Format điều kiện - hiển thị rõ ràng điều kiện sử dụng
+        String dieuKien;
+        Double minOrderAmount = response.getMinOrderAmount();
+
+        if (minOrderAmount != null && minOrderAmount > 0) {
+            dieuKien = "Điều kiện: Đơn hàng tối thiểu " + formatPrice(minOrderAmount);
+        } else {
+            dieuKien = "Áp dụng cho mọi đơn hàng";
+        }
 
         // ✅ Số lượng còn lại
         int soLuong = 0;
@@ -257,7 +264,6 @@ public class QuanLyVoucherActivity extends AppCompatActivity {
             return "giảm " + formatPrice(discount);
         }
     }
-
     private String formatPrice(Double price) {
         if (price == null) return "0 vnd";
         return String.format(Locale.getDefault(), "%.0f vnd", price);
