@@ -10,4 +10,16 @@
     <string name="quan_ly_khach_hang">Khách hàng</string>
     <string name="quan_ly_hoa_don">Hóa đơn</string>
     <string name="thong_ke_bao_cao">Thống kê &amp; Báo cáo</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title_1">Mua sắm tiện lợi</string>
+    <string name="onboarding_description_1">Khám phá hàng nghìn sản phẩm chất lượng chỉ với vài chạm.</string>
+    <string name="onboarding_title_2">Ưu đãi hấp dẫn</string>
+    <string name="onboarding_description_2">Theo dõi voucher, săn khuyến mãi và mua sắm tiết kiệm mỗi ngày.</string>
+    <string name="onboarding_title_3">Thanh toán an toàn</string>
+    <string name="onboarding_description_3">Hỗ trợ nhiều hình thức thanh toán như ZaloPay, MoMo và COD.</string>
+    <string name="onboarding_skip">Bỏ qua</string>
+    <string name="onboarding_next">Tiếp tục</string>
+    <string name="onboarding_start">Bắt đầu ngay</string>
+    <string name="onboarding_image_content_description">Hình ảnh giới thiệu ứng dụng</string>
 </resources>

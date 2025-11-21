@@ -1,9 +1,13 @@
 package fpoly.haideptrai.duan1.api.models;
 
+import com.google.gson.annotations.JsonAdapter;
+
 public class ProductResponse {
     private String _id;
     private String name;
-    private CategoryResponse category; // populated
+    @JsonAdapter(CategoryTypeAdapter.class)
+    private CategoryResponse category; // populated - can be string (ID) or object
+
     private Double importPrice;
     private Double price;
     private Integer stock;

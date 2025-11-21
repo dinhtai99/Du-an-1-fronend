@@ -6,13 +6,13 @@ public class InvoiceListResponse {
     // Backend có thể trả về "invoices" hoặc "data"
     private List<InvoiceResponse> invoices;
     private List<InvoiceResponse> data; // Backend format: { success: true, data: [...] }
-    
+
     // Pagination có thể ở root hoặc trong object "pagination"
     private int total;
     private int page;
     private int limit;
     private int totalPages;
-    
+
     private Pagination pagination; // Backend format: { pagination: { page, limit, total, pages } }
 
     // Getter cho invoices - ưu tiên data nếu có
@@ -22,72 +22,72 @@ public class InvoiceListResponse {
         }
         return invoices;
     }
-    
-    public void setInvoices(List<InvoiceResponse> invoices) { 
-        this.invoices = invoices; 
+
+    public void setInvoices(List<InvoiceResponse> invoices) {
+        this.invoices = invoices;
     }
-    
-    public List<InvoiceResponse> getData() { 
-        return data; 
+
+    public List<InvoiceResponse> getData() {
+        return data;
     }
-    
-    public void setData(List<InvoiceResponse> data) { 
-        this.data = data; 
+
+    public void setData(List<InvoiceResponse> data) {
+        this.data = data;
     }
-    
+
     // Getter cho pagination - ưu tiên pagination object nếu có
-    public int getTotal() { 
+    public int getTotal() {
         if (pagination != null) {
             return pagination.getTotal();
         }
-        return total; 
+        return total;
     }
-    
-    public void setTotal(int total) { 
-        this.total = total; 
+
+    public void setTotal(int total) {
+        this.total = total;
     }
-    
-    public int getPage() { 
+
+    public int getPage() {
         if (pagination != null) {
             return pagination.getPage();
         }
-        return page; 
+        return page;
     }
-    
-    public void setPage(int page) { 
-        this.page = page; 
+
+    public void setPage(int page) {
+        this.page = page;
     }
-    
-    public int getLimit() { 
+
+    public int getLimit() {
         if (pagination != null) {
             return pagination.getLimit();
         }
-        return limit; 
+        return limit;
     }
-    
-    public void setLimit(int limit) { 
-        this.limit = limit; 
+
+    public void setLimit(int limit) {
+        this.limit = limit;
     }
-    
-    public int getTotalPages() { 
+
+    public int getTotalPages() {
         if (pagination != null) {
             return pagination.getPages();
         }
-        return totalPages; 
+        return totalPages;
     }
-    
-    public void setTotalPages(int totalPages) { 
-        this.totalPages = totalPages; 
+
+    public void setTotalPages(int totalPages) {
+        this.totalPages = totalPages;
     }
-    
+
     public Pagination getPagination() {
         return pagination;
     }
-    
+
     public void setPagination(Pagination pagination) {
         this.pagination = pagination;
     }
-    
+
     // Inner class cho pagination object
     public static class Pagination {
         private int page;
