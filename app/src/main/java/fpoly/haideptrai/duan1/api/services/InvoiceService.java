@@ -29,7 +29,7 @@ public interface InvoiceService {
     );
 
     @GET("api/invoices/{id}")
-    Call<InvoiceResponse> getById(@Path("id") String id);
+    Call<ApiResponse<InvoiceResponse>> getById(@Path("id") String id);
 
     @POST("api/invoices")
     Call<ApiResponse<InvoiceResponse>> createInvoice(@Body InvoiceRequest request);
