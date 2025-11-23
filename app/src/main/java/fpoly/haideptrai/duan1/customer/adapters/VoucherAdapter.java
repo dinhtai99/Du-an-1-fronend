@@ -25,7 +25,7 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.ViewHold
     public VoucherAdapter(List<Voucher> items) {
         this.items = items;
     }
-    
+
     public void setOnVoucherClickListener(OnVoucherClickListener listener) {
         this.listener = listener;
     }
@@ -45,10 +45,27 @@ public class VoucherAdapter extends RecyclerView.Adapter<VoucherAdapter.ViewHold
         holder.txtDieuKien.setText(voucher.getDieuKien());
         holder.txtSoLuong.setText("Số lượng: " + voucher.getSoLuong());
         holder.txtTrangThai.setText("Trạng thái: " + voucher.getTrangThai());
-        
-        // Thêm click listener cho item
+
+        // Kiểm tra trạng thái voucher
+        boolean isActive = "Hoạt động".equals(voucher.getTrangThai());
+
+        if (isActive) {
+            // Voucher hoạt động - sáng lên
+            holder.itemView.setAlpha(1.0f);
+            holder.itemView.setEnabled(true);
+            holder.txtMucGiamGia.setTextColor(holder.itemView.getContext().getResources().getColor(android.R.color.black, null));
+            holder.txtTrangThai.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.primary_blue, null));
+        } else {
+            // Voucher không hoạt động - mờ đi
+            holder.itemView.setAlpha(0.5f);
+            holder.itemView.setEnabled(false);
+            holder.txtMucGiamGia.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.text_secondary, null));
+            holder.txtTrangThai.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.text_secondary, null));
+        }
+
+        // Thêm click listener cho item (chỉ cho voucher hoạt động)
         holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
+            if (isActive && listener != null) {
                 listener.onVoucherClick(position);
             }
         });
