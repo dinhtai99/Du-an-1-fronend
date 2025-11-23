@@ -65,7 +65,9 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
 
         btnBack.setOnClickListener(v -> finish());
         btnMenu.setOnClickListener(v -> {
-            // TODO: Show menu options
+            // Reload order details
+            loadOrderDetails();
+            Toast.makeText(this, "Đang làm mới thông tin đơn hàng...", Toast.LENGTH_SHORT).show();
         });
 
         timelineAdapter = new TimelineAdapter();
@@ -80,14 +82,27 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
             public void onResponse(Call<InvoiceResponse> call, Response<InvoiceResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     InvoiceResponse invoice = response.body();
+                    android.util.Log.d("TheoDoiDonHang", "Invoice loaded: " + invoice.getInvoiceNumber());
+                    android.util.Log.d("TheoDoiDonHang", "ShippingAddress exists: " + (invoice.getShippingAddress() != null));
+                    if (invoice.getShippingAddress() != null) {
+                        android.util.Log.d("TheoDoiDonHang", "ShippingAddress details - Address: " + invoice.getShippingAddress().getAddress() +
+                                ", Ward: " + invoice.getShippingAddress().getWard() +
+                                ", District: " + invoice.getShippingAddress().getDistrict() +
+                                ", City: " + invoice.getShippingAddress().getCity());
+                    }
+                    if (invoice.getCustomer() != null) {
+                        android.util.Log.d("TheoDoiDonHang", "Customer address: " + invoice.getCustomer().getAddress());
+                    }
                     displayOrderDetails(invoice);
                 } else {
+                    android.util.Log.e("TheoDoiDonHang", "Failed to load invoice. Code: " + response.code());
                     Toast.makeText(TheoDoiDonHangActivity.this, "Không tải được thông tin đơn hàng", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<InvoiceResponse> call, Throwable t) {
+                android.util.Log.e("TheoDoiDonHang", "Error loading invoice", t);
                 Toast.makeText(TheoDoiDonHangActivity.this, "Lỗi kết nối server", Toast.LENGTH_SHORT).show();
             }
         });
@@ -99,7 +114,7 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
             var firstItem = invoice.getItems().get(0);
             if (firstItem.getProduct() != null) {
                 txtTenSanPham.setText(firstItem.getProduct().getName());
-                
+
                 // Load hình ảnh sản phẩm
                 String imageUrl = firstItem.getProduct().getImage();
                 if (imageUrl != null && !imageUrl.trim().isEmpty() && !imageUrl.contains("example.com")) {
@@ -114,45 +129,68 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
 
         // Hiển thị thông tin vận chuyển
         // Điểm gửi - mặc định hoặc từ staff/store
-        txtDiemGui.setText("Hà Nội"); // Có thể lấy từ store info nếu có
-        
-        // Điểm đến - từ customer address hoặc shipping address
+        String diemGui = "Hà Nội"; // Có thể lấy từ store info nếu có
+        if (invoice.getStaff() != null) {
+            // Có thể lấy từ staff location nếu có
+        }
+        txtDiemGui.setText(diemGui);
+
+        // Điểm đến - ưu tiên từ shippingAddress, sau đó customer address
         String address = null;
         InvoiceResponse.ShippingAddress shippingAddress = invoice.getShippingAddress();
+
+        android.util.Log.d("TheoDoiDonHang", "ShippingAddress: " + (shippingAddress != null ? "exists" : "null"));
+
         if (shippingAddress != null) {
-            // Format địa chỉ từ object
+            // Format địa chỉ từ object - ưu tiên các field có giá trị
             StringBuilder addressBuilder = new StringBuilder();
-            if (shippingAddress.getAddress() != null && !shippingAddress.getAddress().isEmpty()) {
-                addressBuilder.append(shippingAddress.getAddress());
+
+            // Số nhà, đường
+            if (shippingAddress.getAddress() != null && !shippingAddress.getAddress().trim().isEmpty()) {
+                addressBuilder.append(shippingAddress.getAddress().trim());
             }
-            if (shippingAddress.getWard() != null && !shippingAddress.getWard().isEmpty()) {
+
+            // Phường/Xã
+            if (shippingAddress.getWard() != null && !shippingAddress.getWard().trim().isEmpty()) {
                 if (addressBuilder.length() > 0) addressBuilder.append(", ");
-                addressBuilder.append(shippingAddress.getWard());
+                addressBuilder.append(shippingAddress.getWard().trim());
             }
-            if (shippingAddress.getDistrict() != null && !shippingAddress.getDistrict().isEmpty()) {
+
+            // Quận/Huyện
+            if (shippingAddress.getDistrict() != null && !shippingAddress.getDistrict().trim().isEmpty()) {
                 if (addressBuilder.length() > 0) addressBuilder.append(", ");
-                addressBuilder.append(shippingAddress.getDistrict());
+                addressBuilder.append(shippingAddress.getDistrict().trim());
             }
-            if (shippingAddress.getCity() != null && !shippingAddress.getCity().isEmpty()) {
+
+            // Tỉnh/Thành phố
+            if (shippingAddress.getCity() != null && !shippingAddress.getCity().trim().isEmpty()) {
                 if (addressBuilder.length() > 0) addressBuilder.append(", ");
-                addressBuilder.append(shippingAddress.getCity());
+                addressBuilder.append(shippingAddress.getCity().trim());
             }
+
             address = addressBuilder.toString();
+            android.util.Log.d("TheoDoiDonHang", "Address from shippingAddress: " + address);
         }
-        if (address == null || address.isEmpty()) {
-            if (invoice.getCustomer() != null && invoice.getCustomer().getAddress() != null) {
-                address = invoice.getCustomer().getAddress();
+
+        // Nếu không có từ shippingAddress, thử lấy từ customer
+        if ((address == null || address.trim().isEmpty()) && invoice.getCustomer() != null) {
+            if (invoice.getCustomer().getAddress() != null && !invoice.getCustomer().getAddress().trim().isEmpty()) {
+                address = invoice.getCustomer().getAddress().trim();
+                android.util.Log.d("TheoDoiDonHang", "Address from customer: " + address);
             }
         }
-        if (address != null && !address.isEmpty()) {
+
+        // Hiển thị địa chỉ hoặc thông báo
+        if (address != null && !address.trim().isEmpty()) {
             txtDiemDen.setText(address);
         } else {
             txtDiemDen.setText("Chưa cập nhật");
+            android.util.Log.w("TheoDoiDonHang", "No address found in invoice data");
         }
-        
+
         // Đơn vị vận chuyển - mặc định
         txtDonViVanChuyen.setText("JnE Express");
-        
+
         // Cân nặng - tính từ items
         if (invoice.getItems() != null && !invoice.getItems().isEmpty()) {
             int totalQuantity = 0;
@@ -165,7 +203,7 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
         } else {
             txtCanNang.setText("1Kg");
         }
-        
+
         // Tạo timeline từ status
         List<TimelineItem> timeline = createTimelineFromInvoice(invoice);
         timelineAdapter.setItems(timeline);
@@ -174,12 +212,12 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
     private List<TimelineItem> createTimelineFromInvoice(InvoiceResponse invoice) {
         List<TimelineItem> timeline = new ArrayList<>();
         String status = invoice.getStatus();
-        
+
         // Sử dụng thời gian từ API nếu có
         String createdAt = invoice.getCreatedAt();
         String updatedAt = invoice.getUpdatedAt();
         String currentTime = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault()).format(new java.util.Date());
-        
+
         if (createdAt != null && !createdAt.isEmpty()) {
             try {
                 // Parse ISO date format nếu có
@@ -191,7 +229,7 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
                 // Nếu parse lỗi, dùng thời gian hiện tại
             }
         }
-        
+
         // Timeline dựa trên status
         if (status == null || "pending".equals(status)) {
             timeline.add(new TimelineItem("Xác nhận đơn hàng", currentTime, true));
@@ -219,10 +257,10 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
             // Fallback
             timeline.add(new TimelineItem("Xác nhận đơn hàng", currentTime, true));
         }
-        
+
         return timeline;
     }
-    
+
     private String formatDate(String dateString) {
         if (dateString == null || dateString.isEmpty()) {
             return "";
@@ -237,4 +275,3 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
         }
     }
 }
-

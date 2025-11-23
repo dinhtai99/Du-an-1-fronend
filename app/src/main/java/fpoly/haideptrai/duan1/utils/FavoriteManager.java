@@ -21,27 +21,27 @@ import retrofit2.Response;
 public class FavoriteManager {
     private static final String PREF_NAME = "favorite_prefs";
     private static final String KEY_FAVORITES = "favorite_products";
-    
+
     private SharedPreferences sharedPreferences;
     private Set<String> favorites; // Local cache
     private FavoriteService favoriteService;
     private static FavoriteManager instance;
     private Context context;
-    
+
     private FavoriteManager(Context context) {
         this.context = context.getApplicationContext();
         sharedPreferences = this.context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         favoriteService = ApiClient.getClient().create(FavoriteService.class);
         loadFavorites();
     }
-    
+
     public static synchronized FavoriteManager getInstance(Context context) {
         if (instance == null) {
             instance = new FavoriteManager(context);
         }
         return instance;
     }
-    
+
     private void loadFavorites() {
         // Load from local storage first (for offline support)
         String favoritesJson = sharedPreferences.getString(KEY_FAVORITES, null);
@@ -61,21 +61,21 @@ public class FavoriteManager {
             favorites = new HashSet<>();
         }
     }
-    
+
     private void saveFavorites() {
         // Save to local storage
         Gson gson = new Gson();
         String favoritesJson = gson.toJson(favorites);
         sharedPreferences.edit().putString(KEY_FAVORITES, favoritesJson).apply();
     }
-    
+
     /**
      * Check if product is favorite (from local cache)
      */
     public boolean isFavorite(String productId) {
         return favorites.contains(productId);
     }
-    
+
     /**
      * Add favorite - Optimistic update + API call
      */
@@ -84,12 +84,11 @@ public class FavoriteManager {
             if (callback != null) callback.onError("Product ID không hợp lệ");
             return;
         }
-        
-        // Optimistic update: add to local cache immediately
+// Optimistic update: add to local cache immediately
         favorites.add(productId);
         saveFavorites();
         Log.d("FavoriteManager", "Added favorite locally: " + productId);
-        
+
         // Call API
         Call<FavoriteService.FavoriteResponse> call = favoriteService.addFavorite(productId);
         call.enqueue(new Callback<FavoriteService.FavoriteResponse>() {
@@ -113,7 +112,7 @@ public class FavoriteManager {
             }
         });
     }
-    
+
     /**
      * Remove favorite - Optimistic update + API call
      */
@@ -122,12 +121,12 @@ public class FavoriteManager {
             if (callback != null) callback.onError("Product ID không hợp lệ");
             return;
         }
-        
+
         // Optimistic update: remove from local cache immediately
         favorites.remove(productId);
         saveFavorites();
         Log.d("FavoriteManager", "Removed favorite locally: " + productId);
-        
+
         // Call API
         Call<ApiResponse<Void>> call = favoriteService.removeFavorite(productId);
         call.enqueue(new Callback<ApiResponse<Void>>() {
@@ -151,7 +150,7 @@ public class FavoriteManager {
             }
         });
     }
-    
+
     /**
      * Toggle favorite - Optimistic update + API call
      */
@@ -163,7 +162,7 @@ public class FavoriteManager {
             addFavorite(productId, callback);
         }
     }
-    
+
     /**
      * Sync favorites from server (load all favorites from API)
      */
@@ -171,8 +170,8 @@ public class FavoriteManager {
         Call<java.util.List<fpoly.haideptrai.duan1.api.models.ProductResponse>> call = favoriteService.getFavorites();
         call.enqueue(new Callback<java.util.List<fpoly.haideptrai.duan1.api.models.ProductResponse>>() {
             @Override
-            public void onResponse(Call<java.util.List<fpoly.haideptrai.duan1.api.models.ProductResponse>> call, 
-                                 Response<java.util.List<fpoly.haideptrai.duan1.api.models.ProductResponse>> response) {
+            public void onResponse(Call<java.util.List<fpoly.haideptrai.duan1.api.models.ProductResponse>> call,
+                                   Response<java.util.List<fpoly.haideptrai.duan1.api.models.ProductResponse>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     // Update local cache with server data
                     favorites.clear();
@@ -185,7 +184,7 @@ public class FavoriteManager {
                     Log.d("FavoriteManager", "Synced " + favorites.size() + " favorites from server");
                     if (callback != null) callback.onSuccess(favorites);
                 } else {
-                    Log.w("FavoriteManager", "Failed to sync favorites from server");
+                    Log.w("FavoriteManager", "Failed to sync favorites from server. Code: " + response.code());
                     if (callback != null) callback.onError("Không thể tải danh sách yêu thích");
                 }
             }
@@ -197,29 +196,28 @@ public class FavoriteManager {
             }
         });
     }
-    
+
     public Set<String> getAllFavorites() {
         return new HashSet<>(favorites);
     }
-    
+
     public int getFavoriteCount() {
         return favorites.size();
     }
-    
+
     public void clearAll() {
         favorites.clear();
         saveFavorites();
     }
-    
+
     // Callback interfaces
     public interface OnFavoriteCallback {
         void onSuccess(boolean isFavorite);
         void onError(String error);
     }
-    
+
     public interface OnSyncCallback {
         void onSuccess(Set<String> favorites);
         void onError(String error);
     }
 }
-

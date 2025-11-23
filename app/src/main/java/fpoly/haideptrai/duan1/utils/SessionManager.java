@@ -14,15 +14,16 @@ public class SessionManager {
     private static final String KEY_VAI_TRO = "vai_tro";
     private static final String KEY_LOGIN_FAILED_COUNT_PREFIX = "login_failed_count_";
     private static final String KEY_LOCKED_UNTIL_PREFIX = "locked_until_";
-    
+    private static final String KEY_ONBOARDING_COMPLETED = "onboarding_completed";
+
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
-    
+
     public SessionManager(Context context) {
         sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
     }
-    
+
     public void saveSession(NhanVien nhanVien) {
         editor.putInt(KEY_USER_ID, nhanVien.id);
         editor.putString(KEY_USERNAME, nhanVien.tenDangNhap);
@@ -33,7 +34,7 @@ public class SessionManager {
         editor.putLong(KEY_LOCKED_UNTIL_PREFIX + nhanVien.tenDangNhap, 0);
         editor.apply();
     }
-    
+
     /**
      * Lưu MongoDB ObjectId (dùng cho API calls)
      */
@@ -41,49 +42,58 @@ public class SessionManager {
         editor.putString(KEY_MONGO_USER_ID, mongoUserId);
         editor.apply();
     }
-    
+
     /**
      * Lấy MongoDB ObjectId (dùng cho API calls)
      */
     public String getMongoUserId() {
         return sharedPreferences.getString(KEY_MONGO_USER_ID, null);
     }
-    
+
     public int getUserId() {
         return sharedPreferences.getInt(KEY_USER_ID, -1);
     }
-    
+
     public String getUsername() {
         return sharedPreferences.getString(KEY_USERNAME, "");
     }
-    
+
     public String getHoTen() {
         return sharedPreferences.getString(KEY_HO_TEN, "");
     }
-    
+
     public void setHoTen(String hoTen) {
         editor.putString(KEY_HO_TEN, hoTen);
         editor.apply();
     }
-    
+
     public void setUsername(String username) {
         editor.putString(KEY_USERNAME, username);
         editor.apply();
     }
-    
+
+    public boolean isOnboardingCompleted() {
+        return sharedPreferences.getBoolean(KEY_ONBOARDING_COMPLETED, false);
+    }
+
+    public void setOnboardingCompleted(boolean completed) {
+        editor.putBoolean(KEY_ONBOARDING_COMPLETED, completed);
+        editor.apply();
+    }
+
     public String getVaiTro() {
         return sharedPreferences.getString(KEY_VAI_TRO, "");
     }
-    
+
     public boolean isAdmin() {
         return "admin".equals(getVaiTro());
     }
-    
+
     public void clearSession() {
         editor.clear();
         editor.apply();
     }
-    
+
     public void incrementLoginFailed(String username) {
         String countKey = KEY_LOGIN_FAILED_COUNT_PREFIX + username;
         int count = sharedPreferences.getInt(countKey, 0) + 1;
@@ -95,13 +105,13 @@ public class SessionManager {
         }
         editor.apply();
     }
-    
+
     public void resetLoginFailed(String username) {
         editor.putInt(KEY_LOGIN_FAILED_COUNT_PREFIX + username, 0);
         editor.putLong(KEY_LOCKED_UNTIL_PREFIX + username, 0);
         editor.apply();
     }
-    
+
     public boolean isLocked(String username) {
         if (username == null || username.isEmpty()) {
             return false;
@@ -117,7 +127,7 @@ public class SessionManager {
         }
         return isStillLocked;
     }
-    
+
     public long getLockedTimeRemaining(String username) {
         if (username == null || username.isEmpty()) {
             return 0;
@@ -127,4 +137,3 @@ public class SessionManager {
         return remaining > 0 ? remaining : 0;
     }
 }
-

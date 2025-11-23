@@ -54,10 +54,12 @@
                 android:id="@+id/txtDieuKien"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ĐK: Đơn từ 50k"
-                android:textSize="12sp"
+                android:text="Điều kiện: Đơn hàng tối thiểu 50.000 vnd"
+                android:textSize="13sp"
                 android:textColor="@color/text_secondary"
-                android:layout_marginTop="4dp" />
+                android:layout_marginTop="6dp"
+                android:maxLines="2"
+                android:ellipsize="end" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -85,4 +87,3 @@
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
-
