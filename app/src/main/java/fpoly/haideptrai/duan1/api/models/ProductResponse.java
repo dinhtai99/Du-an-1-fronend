@@ -7,7 +7,6 @@ public class ProductResponse {
     private String name;
     @JsonAdapter(CategoryTypeAdapter.class)
     private CategoryResponse category; // populated - can be string (ID) or object
-
     private Double importPrice;
     private Double price;
     private Integer stock;
@@ -15,6 +14,8 @@ public class ProductResponse {
     private String description;
     private String image;
     private boolean lowStockWarning;
+    private Double rating; // Rating trung bình từ reviews
+    private Integer totalReviews; // Tổng số đánh giá
 
     public String get_id() { return _id; }
     public void set_id(String _id) { this._id = _id; }
@@ -45,4 +46,10 @@ public class ProductResponse {
 
     public boolean isLowStockWarning() { return lowStockWarning; }
     public void setLowStockWarning(boolean lowStockWarning) { this.lowStockWarning = lowStockWarning; }
+
+    public Double getRating() { return rating; }
+    public void setRating(Double rating) { this.rating = rating; }
+
+    public Integer getTotalReviews() { return totalReviews; }
+    public void setTotalReviews(Integer totalReviews) { this.totalReviews = totalReviews; }
 }

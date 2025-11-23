@@ -1,9 +1,12 @@
 package fpoly.haideptrai.duan1.api.models;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class InvoiceResponse {
+    @SerializedName("_id")
     private String _id;
+    @SerializedName("orderNumber")
     private String invoiceNumber;
     private CustomerResponse customer;
     private UserInfo staff;

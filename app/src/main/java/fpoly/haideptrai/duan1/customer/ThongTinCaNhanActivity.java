@@ -15,6 +15,7 @@ import com.google.android.material.button.MaterialButton;
 
 import fpoly.haideptrai.duan1.R;
 import fpoly.haideptrai.duan1.api.ApiClient;
+import fpoly.haideptrai.duan1.api.TokenStore;
 import fpoly.haideptrai.duan1.api.models.ApiResponse;
 import fpoly.haideptrai.duan1.api.models.InvoiceListResponse;
 import fpoly.haideptrai.duan1.api.models.UserInfo;
@@ -30,9 +31,9 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
 
     private ImageView imgAvatar;
     private TextView txtHoTen, txtEmail, txtSoDienThoai, txtSoDonHang, txtDiaChi;
-    private MaterialButton btnSuaThongTin, btnDonHangCuaToi, btnSanPhamYeuThich;
+    private MaterialButton btnSuaThongTin, btnDonHangCuaToi, btnSanPhamYeuThich, btnDangXuat;
     private BottomNavigationView bottomNavigation;
-    
+
     private UserService userService;
     private fpoly.haideptrai.duan1.api.services.AuthService authService;
     private InvoiceService invoiceService;
@@ -63,6 +64,7 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
         btnSuaThongTin = findViewById(R.id.btnSuaThongTin);
         btnDonHangCuaToi = findViewById(R.id.btnDonHangCuaToi);
         btnSanPhamYeuThich = findViewById(R.id.btnSanPhamYeuThich);
+        btnDangXuat = findViewById(R.id.btnDangXuat);
         bottomNavigation = findViewById(R.id.bottomNavigation);
 
         btnSuaThongTin.setOnClickListener(v -> {
@@ -74,10 +76,14 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
             Intent intent = new Intent(this, DonHangActivity.class);
             startActivity(intent);
         });
-        
+
         btnSanPhamYeuThich.setOnClickListener(v -> {
             Intent intent = new Intent(this, SanPhamYeuThichActivity.class);
             startActivity(intent);
+        });
+
+        btnDangXuat.setOnClickListener(v -> {
+            handleLogout();
         });
 
         // Click vào số đơn hàng cũng mở danh sách đơn hàng
@@ -120,11 +126,11 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
         // ✅ Ưu tiên load từ session trước (đã được update sau khi sửa thông tin)
         String hoTen = sessionManager.getHoTen();
         String username = sessionManager.getUsername();
-        
+
         android.util.Log.d("ThongTinCaNhan", "=== LOADING USER INFO ===");
         android.util.Log.d("ThongTinCaNhan", "From session - Họ tên: " + hoTen);
         android.util.Log.d("ThongTinCaNhan", "From session - Username: " + username);
-        
+
         // Hiển thị ngay từ session (để user thấy update ngay lập tức)
         if (hoTen != null && !hoTen.isEmpty()) {
             txtHoTen.setText(hoTen);
@@ -146,7 +152,8 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
                     android.util.Log.d("ThongTinCaNhan", "API response - FullName: " + user.getFullName());
                     android.util.Log.d("ThongTinCaNhan", "API response - Username: " + user.getUsername());
                     android.util.Log.d("ThongTinCaNhan", "API response - Phone: " + user.getPhone());
-                    
+                    android.util.Log.d("ThongTinCaNhan", "API response - Address: " + user.getAddress());
+
                     // Cập nhật UI với data từ API
                     if (user.getFullName() != null && !user.getFullName().isEmpty()) {
                         txtHoTen.setText(user.getFullName());
@@ -155,7 +162,7 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
                             sessionManager.setHoTen(user.getFullName());
                         }
                     }
-                    
+
                     if (user.getUsername() != null && !user.getUsername().isEmpty()) {
                         txtEmail.setText(user.getUsername());
                         // Cập nhật session nếu khác
@@ -163,20 +170,26 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
                             sessionManager.setUsername(user.getUsername());
                         }
                     }
-                    
+
                     if (user.getPhone() != null && !user.getPhone().isEmpty()) {
                         txtSoDienThoai.setText(user.getPhone());
                     } else {
                         txtSoDienThoai.setText("");
                     }
-                    
-                    // UserInfo không có address field
-                    txtDiaChi.setText("");
-                    
+
+                    if (user.getAddress() != null && !user.getAddress().isEmpty()) {
+                        txtDiaChi.setText(user.getAddress());
+                        android.util.Log.d("ThongTinCaNhan", "✅ Address loaded from getMe: " + user.getAddress());
+                    } else {
+                        // Nếu getMe không có address, thử load từ UserService.getById()
+                        loadAddressFromUserService();
+                    }
+
                     android.util.Log.d("ThongTinCaNhan", "✅ User info loaded and displayed");
                 } else {
                     android.util.Log.w("ThongTinCaNhan", "API failed, using session data");
-                    // Giữ nguyên data từ session đã hiển thị
+                    // Thử load từ UserService như fallback
+                    loadAddressFromUserService();
                 }
             }
 
@@ -219,7 +232,40 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        // Reload user info khi quay lại màn hình (có thể đã cập nhật ở màn hình khác)
         loadUserInfo();
+    }
+
+    private void loadAddressFromUserService() {
+        int userId = sessionManager.getUserId();
+        if (userId == -1) {
+            return;
+        }
+
+        android.util.Log.d("ThongTinCaNhan", "Loading address from UserService.getById()");
+        Call<UserResponse> call = userService.getById(String.valueOf(userId));
+        call.enqueue(new Callback<UserResponse>() {
+            @Override
+            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    UserResponse user = response.body();
+                    if (user.getAddress() != null && !user.getAddress().isEmpty()) {
+                        txtDiaChi.setText(user.getAddress());
+                        android.util.Log.d("ThongTinCaNhan", "✅ Address loaded from UserService: " + user.getAddress());
+                    } else {
+                        android.util.Log.d("ThongTinCaNhan", "⚠️ No address in UserResponse");
+                        txtDiaChi.setText("");
+                    }
+                } else {
+                    android.util.Log.w("ThongTinCaNhan", "UserService.getById() failed");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResponse> call, Throwable t) {
+                android.util.Log.e("ThongTinCaNhan", "UserService.getById() error: " + t.getMessage());
+            }
+        });
     }
 
     @Override
@@ -232,5 +278,53 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
             loadUserInfo();
         }
     }
-}
 
+    private void handleLogout() {
+        // Hiển thị dialog xác nhận
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Đăng xuất")
+                .setMessage("Bạn có chắc chắn muốn đăng xuất?")
+                .setPositiveButton("Đăng xuất", (dialog, which) -> {
+                    performLogout();
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+    }
+
+    private void performLogout() {
+        // Gọi API logout (optional - có thể bỏ qua nếu backend không yêu cầu)
+        Call<ApiResponse<Void>> logoutCall = authService.logout();
+        logoutCall.enqueue(new Callback<ApiResponse<Void>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<Void>> call, Response<ApiResponse<Void>> response) {
+                // Dù API thành công hay thất bại, vẫn clear session và chuyển về màn đăng nhập
+                clearSessionAndRedirect();
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<Void>> call, Throwable t) {
+                // Nếu API lỗi, vẫn clear session và chuyển về màn đăng nhập
+                android.util.Log.w("ThongTinCaNhan", "Logout API failed, but still clearing session: " + t.getMessage());
+                clearSessionAndRedirect();
+            }
+        });
+    }
+
+    private void clearSessionAndRedirect() {
+        // Clear token
+        TokenStore.clearToken();
+
+        // Clear session
+        sessionManager.clearSession();
+
+        android.util.Log.d("ThongTinCaNhan", "Session cleared, redirecting to login");
+
+        // Chuyển về màn đăng nhập và clear back stack
+        Intent intent = new Intent(this, DangNhapActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+
+        Toast.makeText(this, "Đã đăng xuất thành công", Toast.LENGTH_SHORT).show();
+    }
+}

@@ -6,9 +6,10 @@
     android:gravity="center"
     android:padding="12dp"
     android:layout_margin="8dp"
-    android:background="?attr/selectableItemBackground"
+    android:background="@drawable/category_item_normal"
     android:clickable="true"
-    android:focusable="true">
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground">
 
     <ImageView
         android:id="@+id/imgDanhMuc"
@@ -31,4 +32,3 @@
         android:layout_marginTop="8dp"
         android:gravity="center" />
 </LinearLayout>
-
