@@ -1,5 +1,7 @@
 package fpoly.haideptrai.duan1.api.models;
 
+import java.util.List;
+
 public class VoucherResponse {
     private String _id;
     private String code;
@@ -13,6 +15,7 @@ public class VoucherResponse {
     private String startDate;
     private String endDate;
     private String status; // "active", "inactive", "expired"
+    private List<Object> applicableUsers; // Danh sách user ID được phép dùng voucher (có thể là string hoặc object với _id, empty = tất cả user)
     private String createdAt;
     private String updatedAt;
 
@@ -44,5 +47,8 @@ public class VoucherResponse {
     public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
     public String getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
+
+    public List<Object> getApplicableUsers() { return applicableUsers; }
+    public void setApplicableUsers(List<Object> applicableUsers) { this.applicableUsers = applicableUsers; }
 }
 

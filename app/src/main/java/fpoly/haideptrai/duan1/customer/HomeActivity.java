@@ -113,6 +113,7 @@ public class HomeActivity extends AppCompatActivity {
 
         categoryAdapter.setOnCategoryClickListener(category -> {
             // Filter products by category
+            categoryAdapter.setSelectedCategory(category.get_id());
             loadProducts(category.get_id());
         });
 
