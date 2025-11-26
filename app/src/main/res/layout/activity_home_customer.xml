@@ -1,161 +1,156 @@
-<!--<?xml version="1.0" encoding="utf-8"?>-->
-<!--<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
-<!--    xmlns:tools="http://schemas.android.com/tools"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="match_parent"-->
-<!--    android:background="@color/background_light">-->
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_light">
 
-<!--    <androidx.core.widget.NestedScrollView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:fillViewport="true">-->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
-<!--        <LinearLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="vertical">-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-<!--            &lt;!&ndash; Header &ndash;&gt;-->
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="vertical"-->
-<!--                android:background="@color/primary_blue_light"-->
-<!--                android:padding="16dp">-->
+            <!-- Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/primary_blue_light"
+                android:padding="14dp">
 
-<!--                <LinearLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:orientation="horizontal"-->
-<!--                    android:gravity="center_vertical">-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-<!--                    <ImageButton-->
-<!--                        android:id="@+id/btnMenu"-->
-<!--                        android:layout_width="48dp"-->
-<!--                        android:layout_height="48dp"-->
-<!--                        android:src="@android:drawable/ic_menu_more"-->
-<!--                        android:background="?attr/selectableItemBackgroundBorderless"-->
-<!--                        android:contentDescription="Menu" />-->
+                    <ImageButton
+                        android:id="@+id/btnMenu"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@android:drawable/ic_menu_more"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Menu" />
 
-<!--                    <LinearLayout-->
-<!--                        android:layout_width="0dp"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_weight="1"-->
-<!--                        android:orientation="vertical"-->
-<!--                        android:layout_marginStart="16dp">-->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:layout_marginStart="14dp">
 
-<!--                        <TextView-->
-<!--                            android:id="@+id/txtGreeting"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:text="Xin chào, "-->
-<!--                            android:textColor="@color/white"-->
-<!--                            android:textSize="16sp"-->
-<!--                            android:textStyle="bold" />-->
+                        <TextView
+                            android:id="@+id/txtGreeting"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Xin chào,"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
 
-<!--                        <TextView-->
-<!--                            android:id="@+id/txtSubGreeting"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:text="Bắt đầu mua sắm nào"-->
-<!--                            android:textColor="@color/white"-->
-<!--                            android:textSize="12sp" />-->
-<!--                    </LinearLayout>-->
+                        <TextView
+                            android:id="@+id/txtSubGreeting"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Bắt đầu mua sắm nào"
+                            android:textColor="@color/white"
+                            android:textSize="12sp" />
+                    </LinearLayout>
 
-<!--                    <ImageButton-->
-<!--                        android:id="@+id/btnSearch"-->
-<!--                        android:layout_width="48dp"-->
-<!--                        android:layout_height="48dp"-->
-<!--                        android:src="@android:drawable/ic_menu_search"-->
-<!--                        android:background="?attr/selectableItemBackgroundBorderless"-->
-<!--                        android:contentDescription="Tìm kiếm" />-->
-<!--                </LinearLayout>-->
-<!--            </LinearLayout>-->
+                    <ImageButton
+                        android:id="@+id/btnSearch"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@android:drawable/ic_menu_search"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Tìm kiếm" />
+                </LinearLayout>
+            </LinearLayout>
 
-<!--            &lt;!&ndash; Logo &ndash;&gt;-->
-<!--            <ImageView-->
-<!--                android:id="@+id/imgBanner"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="200dp"-->
-<!--                android:scaleType="fitCenter"-->
-<!--                android:src="@drawable/logo"-->
-<!--                android:background="@color/background_light"-->
-<!--                android:contentDescription="Logo"-->
-<!--                android:layout_margin="16dp"-->
-<!--                android:layout_marginTop="8dp"-->
-<!--                android:padding="16dp" />-->
+            <!-- Logo -->
+            <ImageView
+                android:id="@+id/imgBanner"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/logo"
+                android:background="@color/background_light"
+                android:contentDescription="Logo"
+                android:layout_margin="14dp"
+                android:padding="14dp" />
 
-<!--            &lt;!&ndash; Section: Sản phẩm &ndash;&gt;-->
-<!--            <LinearLayout-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:orientation="vertical"-->
-<!--                android:padding="16dp"-->
-<!--                android:paddingTop="8dp">-->
+            <!-- Section Sản phẩm -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="14dp">
 
-<!--                <LinearLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:orientation="horizontal"-->
-<!--                    android:gravity="center_vertical"-->
-<!--                    android:layout_marginBottom="12dp">-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
 
-<!--                    <TextView-->
-<!--                        android:layout_width="0dp"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_weight="1"-->
-<!--                        android:text="Sản phẩm"-->
-<!--                        android:textSize="18sp"-->
-<!--                        android:textStyle="bold"-->
-<!--                        android:textColor="@android:color/black" />-->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Sản phẩm"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black" />
 
-<!--                    <TextView-->
-<!--                        android:id="@+id/txtXemTatCa"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:text="xem tất cả"-->
-<!--                        android:textSize="14sp"-->
-<!--                        android:textColor="@color/primary_blue"-->
-<!--                        android:clickable="true"-->
-<!--                        android:focusable="true"-->
-<!--                        android:padding="8dp" />-->
-<!--                </LinearLayout>-->
+                    <TextView
+                        android:id="@+id/txtXemTatCa"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="xem tất cả"
+                        android:textSize="14sp"
+                        android:textColor="@color/primary_blue"
+                        android:padding="6dp" />
+                </LinearLayout>
 
-<!--                &lt;!&ndash; Danh mục sản phẩm (Horizontal Scroll) &ndash;&gt;-->
-<!--                <androidx.recyclerview.widget.RecyclerView-->
-<!--                    android:id="@+id/rvDanhMuc"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:orientation="horizontal"-->
-<!--                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"-->
-<!--                    android:nestedScrollingEnabled="false"-->
-<!--                    tools:listitem="@layout/item_danh_muc_home" />-->
+                <!-- Danh mục -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvDanhMuc"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:orientation="horizontal"
+                    tools:listitem="@layout/item_danh_muc_home" />
 
-<!--                &lt;!&ndash; Danh sách sản phẩm &ndash;&gt;-->
-<!--                <androidx.recyclerview.widget.RecyclerView-->
-<!--                    android:id="@+id/rvSanPham"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="16dp"-->
-<!--                    android:nestedScrollingEnabled="false"-->
-<!--                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"-->
-<!--                    app:spanCount="2"-->
-<!--                    tools:listitem="@layout/item_san_pham_home" />-->
-<!--            </LinearLayout>-->
+                <!-- Sản phẩm -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvSanPham"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:nestedScrollingEnabled="false"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="2"
+                    tools:listitem="@layout/item_san_pham_home" />
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-<!--        </LinearLayout>-->
-<!--    </androidx.core.widget.NestedScrollView>-->
+    <!-- Bottom Navigation -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:menu="@menu/bottom_nav_customer"
+        app:itemIconTint="@color/bottom_nav_selected"
+        app:itemTextColor="@color/bottom_nav_selected" />
 
-<!--    &lt;!&ndash; Bottom Navigation Bar &ndash;&gt;-->
-<!--    <com.google.android.material.bottomnavigation.BottomNavigationView-->
-<!--        android:id="@+id/bottomNavigation"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="bottom"-->
-<!--        app:menu="@menu/bottom_nav_customer"-->
-<!--        app:itemIconTint="@color/bottom_nav_selected"-->
-<!--        app:itemTextColor="@color/bottom_nav_selected" />-->
-
-<!--</androidx.coordinatorlayout.widget.CoordinatorLayout>-->
-
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
