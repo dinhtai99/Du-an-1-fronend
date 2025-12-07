@@ -37,7 +37,7 @@ public class ReviewImageAdapter extends RecyclerView.Adapter<ReviewImageAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String imageUrl = imageUrls.get(position);
-
+        
         if (imageUrl != null && !imageUrl.trim().isEmpty() && !imageUrl.contains("example.com")) {
             Glide.with(holder.imgReview.getContext())
                     .load(imageUrl)
@@ -78,3 +78,4 @@ public class ReviewImageAdapter extends RecyclerView.Adapter<ReviewImageAdapter.
         }
     }
 }
+

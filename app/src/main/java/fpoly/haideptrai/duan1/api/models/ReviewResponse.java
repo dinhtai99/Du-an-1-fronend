@@ -55,8 +55,8 @@ public class ReviewResponse {
     public UserInfo getUserInfo() { return userInfo; }
     public void setUserInfo(UserInfo userInfo) { this.userInfo = userInfo; }
     // Helper method to get user ID (from userInfo._id or userInfo itself)
-    public String getUser() {
-        return userInfo != null ? userInfo.get_id() : null;
+    public String getUser() { 
+        return userInfo != null ? userInfo.get_id() : null; 
     }
     public ProductInfo getProductInfo() { return productInfo; }
     public void setProductInfo(ProductInfo productInfo) { this.productInfo = productInfo; }

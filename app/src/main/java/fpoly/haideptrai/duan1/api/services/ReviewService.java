@@ -40,3 +40,4 @@ public interface ReviewService {
     @DELETE("api/reviews/{id}")
     Call<ApiResponse<Void>> deleteReview(@Path("id") String id);
 }
+

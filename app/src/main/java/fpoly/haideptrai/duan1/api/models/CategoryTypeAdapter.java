@@ -35,7 +35,7 @@ public class CategoryTypeAdapter extends TypeAdapter<CategoryResponse> {
             in.nextNull();
             return null;
         }
-
+        
         // Nếu là string (category ID), tạo CategoryResponse với chỉ _id
         if (in.peek() == JsonToken.STRING) {
             String categoryId = in.nextString();
@@ -43,7 +43,7 @@ public class CategoryTypeAdapter extends TypeAdapter<CategoryResponse> {
             category.set_id(categoryId);
             return category;
         }
-
+        
         // Nếu là object, parse bình thường
         if (in.peek() == JsonToken.BEGIN_OBJECT) {
             CategoryResponse category = new CategoryResponse();
@@ -78,7 +78,7 @@ public class CategoryTypeAdapter extends TypeAdapter<CategoryResponse> {
             in.endObject();
             return category;
         }
-
+        
         // Nếu không phải string hoặc object, skip
         in.skipValue();
         return null;

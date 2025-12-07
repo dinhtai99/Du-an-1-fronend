@@ -174,6 +174,43 @@ public class VNPayWebViewActivity extends AppCompatActivity {
                 String url = request.getUrl().toString();
                 Log.d(TAG, "Loading URL: " + url);
                 
+                // Xử lý intent:// scheme (khi VNPay QR cố mở ứng dụng ngân hàng)
+                if (url.startsWith("intent://")) {
+                    try {
+                        Log.d(TAG, "Detected intent URL, attempting to parse: " + url);
+                        
+                        // Sử dụng Intent.parseUri() để parse intent URL tự động
+                        Intent intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
+                        
+                        // Kiểm tra xem có ứng dụng nào có thể xử lý intent này không
+                        if (intent.resolveActivity(getPackageManager()) != null) {
+                            String packageName = intent.getPackage();
+                            Log.d(TAG, "Opening banking app: " + (packageName != null ? packageName : "unknown"));
+                            startActivity(intent);
+                            return true; // Đã xử lý, không cho WebView load
+                        } else {
+                            // Không có ứng dụng có thể xử lý intent
+                            String packageName = intent.getPackage();
+                            Log.w(TAG, "Banking app not installed: " + (packageName != null ? packageName : "unknown"));
+                            
+                            // Hiển thị thông báo cho user
+                            runOnUiThread(() -> {
+                                ToastManager.showToast(VNPayWebViewActivity.this, 
+                                    "Ứng dụng ngân hàng chưa được cài đặt. Vui lòng quét QR code bằng ứng dụng ngân hàng của bạn hoặc chọn phương thức thanh toán khác.", 
+                                    Toast.LENGTH_LONG);
+                            });
+                            
+                            // Không cần đóng WebView, user vẫn có thể chọn phương thức thanh toán khác
+                            return true; // Đã xử lý, bỏ qua intent URL
+                        }
+                    } catch (Exception e) {
+                        Log.e(TAG, "Error handling intent URL: " + e.getMessage(), e);
+                        // Nếu không thể parse intent, bỏ qua để tránh lỗi ERR_UNKNOWN_URL_SCHEME
+                        // Điều này không ảnh hưởng đến thanh toán, user vẫn có thể chọn phương thức khác
+                        return true; // Bỏ qua intent URL để tránh lỗi ERR_UNKNOWN_URL_SCHEME
+                    }
+                }
+                
                 // Kiểm tra nếu URL là return URL từ VNPay
                 if (url.contains("/api/payment/vnpay/return") || 
                     url.contains("vnp_ResponseCode") ||
@@ -275,6 +312,12 @@ public class VNPayWebViewActivity extends AppCompatActivity {
                 super.onReceivedError(view, errorCode, description, failingUrl);
                 Log.e(TAG, "WebView Error: " + errorCode + " - " + description + " for URL: " + failingUrl);
                 
+                // Bỏ qua lỗi ERR_UNKNOWN_URL_SCHEME cho intent:// URLs (đã xử lý trong shouldOverrideUrlLoading)
+                if (errorCode == -10 && failingUrl != null && failingUrl.startsWith("intent://")) {
+                    Log.d(TAG, "Ignoring ERR_UNKNOWN_URL_SCHEME for intent URL (already handled)");
+                    return; // Đã xử lý trong shouldOverrideUrlLoading
+                }
+                
                 // Nếu lỗi là localhost không thể truy cập, thử parse từ URL
                 if (failingUrl != null && (failingUrl.contains("localhost") || failingUrl.contains("127.0.0.1"))) {
                     if (failingUrl.contains("vnp_ResponseCode") || failingUrl.contains("vnp_TransactionStatus")) {
@@ -284,12 +327,14 @@ public class VNPayWebViewActivity extends AppCompatActivity {
                     }
                 }
                 
-                // Hiển thị thông báo lỗi cho user
-                runOnUiThread(() -> {
-                    ToastManager.showToast(VNPayWebViewActivity.this, 
-                        "Lỗi tải trang thanh toán: " + description, 
-                        Toast.LENGTH_LONG);
-                });
+                // Chỉ hiển thị thông báo lỗi cho các lỗi nghiêm trọng khác
+                if (errorCode != -10) { // -10 là ERR_UNKNOWN_URL_SCHEME, đã xử lý
+                    runOnUiThread(() -> {
+                        ToastManager.showToast(VNPayWebViewActivity.this, 
+                            "Lỗi tải trang thanh toán: " + description, 
+                            Toast.LENGTH_LONG);
+                    });
+                }
             }
         });
         

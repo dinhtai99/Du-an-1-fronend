@@ -33,7 +33,7 @@ public class UserTypeAdapter extends TypeAdapter<ReviewResponse.UserInfo> {
             in.nextNull();
             return null;
         }
-
+        
         // Nếu là string (user ID), tạo UserInfo với chỉ _id
         if (in.peek() == JsonToken.STRING) {
             String userId = in.nextString();
@@ -41,7 +41,7 @@ public class UserTypeAdapter extends TypeAdapter<ReviewResponse.UserInfo> {
             userInfo.set_id(userId);
             return userInfo;
         }
-
+        
         // Nếu là object, parse bình thường
         if (in.peek() == JsonToken.BEGIN_OBJECT) {
             ReviewResponse.UserInfo userInfo = new ReviewResponse.UserInfo();
@@ -66,9 +66,10 @@ public class UserTypeAdapter extends TypeAdapter<ReviewResponse.UserInfo> {
             in.endObject();
             return userInfo;
         }
-
+        
         // Nếu không phải string hoặc object, skip
         in.skipValue();
         return null;
     }
 }
+

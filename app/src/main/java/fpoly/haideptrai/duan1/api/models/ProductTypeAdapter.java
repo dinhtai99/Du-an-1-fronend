@@ -36,7 +36,7 @@ public class ProductTypeAdapter extends TypeAdapter<ReviewResponse.ProductInfo> 
             in.nextNull();
             return null;
         }
-
+        
         // Nếu là string (product ID), tạo ProductInfo với chỉ _id
         if (in.peek() == JsonToken.STRING) {
             String productId = in.nextString();
@@ -44,7 +44,7 @@ public class ProductTypeAdapter extends TypeAdapter<ReviewResponse.ProductInfo> 
             productInfo.set_id(productId);
             return productInfo;
         }
-
+        
         // Nếu là object, parse bình thường
         if (in.peek() == JsonToken.BEGIN_OBJECT) {
             ReviewResponse.ProductInfo productInfo = new ReviewResponse.ProductInfo();
@@ -76,9 +76,10 @@ public class ProductTypeAdapter extends TypeAdapter<ReviewResponse.ProductInfo> 
             in.endObject();
             return productInfo;
         }
-
+        
         // Nếu không phải string hoặc object, skip
         in.skipValue();
         return null;
     }
 }
+
