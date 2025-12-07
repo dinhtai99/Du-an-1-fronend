@@ -324,17 +324,18 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
         timelineAdapter.setItems(timeline);
         
         // Hiển thị nút đánh giá nếu đơn hàng đã giao thành công
-        // Kể cả khi đã hoàn hàng thành công và đã nhận hàng lần 2, vẫn có thể đánh giá
-        android.util.Log.d("ReviewButton", "Status: " + status + ", checking review button visibility");
-        if ("completed".equals(status) || "delivered".equals(status)) {
+        // Kiểm tra status (case-insensitive để đảm bảo)
+        String statusLower = status != null ? status.toLowerCase() : "";
+        android.util.Log.d("ReviewButton", "Status: " + status + " (lowercase: " + statusLower + "), checking review button visibility");
+        
+        if ("completed".equals(statusLower) || "delivered".equals(statusLower)) {
             // Hiển thị nút trước, sau đó check xem đã đánh giá chưa để ẩn nếu cần
-            android.util.Log.d("ReviewButton", "Status is completed/delivered, showing review button");
+            android.util.Log.d("ReviewButton", "Status is completed/delivered, showing review button initially");
             btnDanhGia.setVisibility(View.VISIBLE);
             // Kiểm tra xem đã đánh giá chưa (sẽ ẩn nút nếu đã đánh giá)
-            // Kể cả khi có thông tin hoàn hàng (đã đổi hàng và nhận hàng lần 2), vẫn có thể đánh giá
             checkAndShowReviewButton(invoice);
         } else {
-            android.util.Log.d("ReviewButton", "Status is not completed, hiding review button");
+            android.util.Log.d("ReviewButton", "Status is not completed/delivered (" + statusLower + "), hiding review button");
             btnDanhGia.setVisibility(View.GONE);
         }
         
@@ -366,6 +367,9 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
         String productId = firstItem.getProduct().get_id();
         android.util.Log.d("ReviewButton", "Product ID: " + productId);
         
+        // Đảm bảo nút hiển thị trước khi kiểm tra (tránh flicker)
+        btnDanhGia.setVisibility(View.VISIBLE);
+        
         // Kiểm tra xem đã đánh giá chưa
         retrofit2.Call<java.util.List<fpoly.haideptrai.duan1.api.models.ReviewResponse>> call = reviewService.getMyReviews();
         call.enqueue(new retrofit2.Callback<java.util.List<fpoly.haideptrai.duan1.api.models.ReviewResponse>>() {
@@ -374,32 +378,57 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
                                  retrofit2.Response<java.util.List<fpoly.haideptrai.duan1.api.models.ReviewResponse>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     boolean hasReviewed = false;
-                    for (fpoly.haideptrai.duan1.api.models.ReviewResponse review : response.body()) {
-                        if (review.getProduct() != null && productId.equals(review.getProduct())) {
-                            hasReviewed = true;
-                            break;
+                    java.util.List<fpoly.haideptrai.duan1.api.models.ReviewResponse> reviews = response.body();
+                    android.util.Log.d("ReviewButton", "Total reviews found: " + reviews.size());
+                    
+                    for (fpoly.haideptrai.duan1.api.models.ReviewResponse review : reviews) {
+                        // Kiểm tra cả product ID và order ID để đảm bảo đúng review cho đơn hàng này
+                        String reviewProductId = review.getProduct();
+                        String reviewOrderId = review.getOrder(); // Sử dụng getOrder() thay vì getOrderId()
+                        
+                        android.util.Log.d("ReviewButton", "Review - Product: " + reviewProductId + ", Order: " + reviewOrderId);
+                        
+                        // So sánh product ID (có thể là String hoặc object)
+                        if (reviewProductId != null) {
+                            // Nếu reviewProductId là String ID
+                            if (productId.equals(reviewProductId)) {
+                                // Nếu có orderId, kiểm tra xem có khớp với invoiceId không
+                                if (reviewOrderId != null && invoiceId != null) {
+                                    if (reviewOrderId.equals(invoiceId)) {
+                                        hasReviewed = true;
+                                        android.util.Log.d("ReviewButton", "Found review for this order and product");
+                                        break;
+                                    }
+                                } else {
+                                    // Nếu không có orderId, chỉ cần productId khớp là đủ
+                                    hasReviewed = true;
+                                    android.util.Log.d("ReviewButton", "Found review for this product");
+                                    break;
+                                }
+                            }
                         }
                     }
                     
                     android.util.Log.d("ReviewButton", "Has reviewed: " + hasReviewed);
-                    // Chỉ hiển thị nút nếu chưa đánh giá
-                    if (!hasReviewed) {
-                        btnDanhGia.setVisibility(View.VISIBLE);
-                        android.util.Log.d("ReviewButton", "Showing review button");
-                    } else {
+                    // Chỉ ẩn nút nếu đã đánh giá
+                    if (hasReviewed) {
                         btnDanhGia.setVisibility(View.GONE);
                         android.util.Log.d("ReviewButton", "Hiding review button (already reviewed)");
+                    } else {
+                        btnDanhGia.setVisibility(View.VISIBLE);
+                        android.util.Log.d("ReviewButton", "Showing review button (not reviewed yet)");
                     }
                 } else {
-                    // Nếu không load được, vẫn hiển thị nút
-                    android.util.Log.w("ReviewButton", "Failed to load reviews, showing button anyway");
+                    // Nếu không load được, vẫn hiển thị nút (mặc định là hiển thị)
+                    android.util.Log.w("ReviewButton", "Failed to load reviews (code: " + 
+                        (response != null ? response.code() : "null") + "), showing button anyway");
                     btnDanhGia.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
             public void onFailure(retrofit2.Call<java.util.List<fpoly.haideptrai.duan1.api.models.ReviewResponse>> call, Throwable t) {
-                // Nếu lỗi, vẫn hiển thị nút
+                // Nếu lỗi, vẫn hiển thị nút (mặc định là hiển thị)
                 android.util.Log.e("ReviewButton", "Error loading reviews: " + t.getMessage() + ", showing button anyway");
                 btnDanhGia.setVisibility(View.VISIBLE);
             }
@@ -437,7 +466,10 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
         request.setProductId(productId);
         request.setOrderId(orderId);
         request.setRating(rating);
-        request.setComment(comment);
+        // Set comment, nếu empty thì set null (giống DanhGiaActivity)
+        request.setComment(comment != null && !comment.trim().isEmpty() ? comment.trim() : null);
+        
+        android.util.Log.d("ReviewSubmit", "Submitting review - ProductId: " + productId + ", OrderId: " + orderId + ", Rating: " + rating);
         
         retrofit2.Call<fpoly.haideptrai.duan1.api.models.ApiResponse<fpoly.haideptrai.duan1.api.models.ReviewResponse>> call = reviewService.createReview(request);
         call.enqueue(new retrofit2.Callback<fpoly.haideptrai.duan1.api.models.ApiResponse<fpoly.haideptrai.duan1.api.models.ReviewResponse>>() {
@@ -449,18 +481,44 @@ public class TheoDoiDonHangActivity extends AppCompatActivity {
                     if (apiResponse.isSuccess()) {
                         Toast.makeText(TheoDoiDonHangActivity.this, "Đánh giá thành công!", Toast.LENGTH_SHORT).show();
                         btnDanhGia.setVisibility(View.GONE);
+                        // Reload order details để cập nhật UI
+                        loadOrderDetails();
                     } else {
-                        Toast.makeText(TheoDoiDonHangActivity.this, 
-                            apiResponse.getMessage() != null ? apiResponse.getMessage() : "Không thể gửi đánh giá", 
-                            Toast.LENGTH_SHORT).show();
+                        String errorMsg = apiResponse.getMessage() != null ? apiResponse.getMessage() : "Không thể gửi đánh giá";
+                        android.util.Log.e("ReviewSubmit", "API error: " + errorMsg);
+                        Toast.makeText(TheoDoiDonHangActivity.this, errorMsg, Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    Toast.makeText(TheoDoiDonHangActivity.this, "Không thể gửi đánh giá", Toast.LENGTH_SHORT).show();
+                    // Parse error response từ backend
+                    String errorMsg = "Không thể gửi đánh giá";
+                    if (response.errorBody() != null) {
+                        try {
+                            String errorBody = response.errorBody().string();
+                            android.util.Log.e("ReviewSubmit", "Error response body: " + errorBody);
+                            
+                            // Parse error response
+                            try {
+                                com.google.gson.Gson gson = new com.google.gson.Gson();
+                                fpoly.haideptrai.duan1.api.models.ApiResponse errorResponse = 
+                                    gson.fromJson(errorBody, fpoly.haideptrai.duan1.api.models.ApiResponse.class);
+                                if (errorResponse != null && errorResponse.getMessage() != null) {
+                                    errorMsg = errorResponse.getMessage();
+                                }
+                            } catch (Exception e) {
+                                android.util.Log.e("ReviewSubmit", "Error parsing error body", e);
+                            }
+                        } catch (Exception e) {
+                            android.util.Log.e("ReviewSubmit", "Error reading error body", e);
+                        }
+                    }
+                    android.util.Log.e("ReviewSubmit", "HTTP error code: " + response.code());
+                    Toast.makeText(TheoDoiDonHangActivity.this, errorMsg, Toast.LENGTH_LONG).show();
                 }
             }
 
             @Override
             public void onFailure(retrofit2.Call<fpoly.haideptrai.duan1.api.models.ApiResponse<fpoly.haideptrai.duan1.api.models.ReviewResponse>> call, Throwable t) {
+                android.util.Log.e("ReviewSubmit", "Network error: " + t.getMessage(), t);
                 Toast.makeText(TheoDoiDonHangActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

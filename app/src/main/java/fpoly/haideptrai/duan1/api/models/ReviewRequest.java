@@ -1,9 +1,12 @@
 package fpoly.haideptrai.duan1.api.models;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class ReviewRequest {
+    @SerializedName("productId")
     private String productId;
+    @SerializedName("orderId")
     private String orderId;
     private Integer rating;
     private String comment;
