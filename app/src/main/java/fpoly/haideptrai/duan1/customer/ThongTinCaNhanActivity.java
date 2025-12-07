@@ -15,6 +15,7 @@ import com.google.android.material.button.MaterialButton;
 
 import fpoly.haideptrai.duan1.R;
 import fpoly.haideptrai.duan1.api.ApiClient;
+import fpoly.haideptrai.duan1.api.TokenStore;
 import fpoly.haideptrai.duan1.api.models.ApiResponse;
 import fpoly.haideptrai.duan1.api.models.InvoiceListResponse;
 import fpoly.haideptrai.duan1.api.models.UserInfo;
@@ -30,7 +31,7 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
 
     private ImageView imgAvatar;
     private TextView txtHoTen, txtEmail, txtSoDienThoai, txtSoDonHang, txtDiaChi;
-    private MaterialButton btnSuaThongTin, btnDonHangCuaToi, btnSanPhamYeuThich;
+    private MaterialButton btnSuaThongTin, btnDonHangCuaToi, btnSanPhamYeuThich, btnDangXuat;
     private BottomNavigationView bottomNavigation;
     
     private UserService userService;
@@ -63,6 +64,7 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
         btnSuaThongTin = findViewById(R.id.btnSuaThongTin);
         btnDonHangCuaToi = findViewById(R.id.btnDonHangCuaToi);
         btnSanPhamYeuThich = findViewById(R.id.btnSanPhamYeuThich);
+        btnDangXuat = findViewById(R.id.btnDangXuat);
         bottomNavigation = findViewById(R.id.bottomNavigation);
 
         btnSuaThongTin.setOnClickListener(v -> {
@@ -78,6 +80,10 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
         btnSanPhamYeuThich.setOnClickListener(v -> {
             Intent intent = new Intent(this, SanPhamYeuThichActivity.class);
             startActivity(intent);
+        });
+
+        btnDangXuat.setOnClickListener(v -> {
+            handleLogout();
         });
 
         // Click vào số đơn hàng cũng mở danh sách đơn hàng
@@ -271,6 +277,55 @@ public class ThongTinCaNhanActivity extends AppCompatActivity {
             // Session đã được update trong SuaThongTinActivity
             loadUserInfo();
         }
+    }
+
+    private void handleLogout() {
+        // Hiển thị dialog xác nhận
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Đăng xuất")
+            .setMessage("Bạn có chắc chắn muốn đăng xuất?")
+            .setPositiveButton("Đăng xuất", (dialog, which) -> {
+                performLogout();
+            })
+            .setNegativeButton("Hủy", null)
+            .show();
+    }
+
+    private void performLogout() {
+        // Gọi API logout (optional - có thể bỏ qua nếu backend không yêu cầu)
+        Call<ApiResponse<Void>> logoutCall = authService.logout();
+        logoutCall.enqueue(new Callback<ApiResponse<Void>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<Void>> call, Response<ApiResponse<Void>> response) {
+                // Dù API thành công hay thất bại, vẫn clear session và chuyển về màn đăng nhập
+                clearSessionAndRedirect();
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<Void>> call, Throwable t) {
+                // Nếu API lỗi, vẫn clear session và chuyển về màn đăng nhập
+                android.util.Log.w("ThongTinCaNhan", "Logout API failed, but still clearing session: " + t.getMessage());
+                clearSessionAndRedirect();
+            }
+        });
+    }
+
+    private void clearSessionAndRedirect() {
+        // Clear token
+        TokenStore.clearToken();
+        
+        // Clear session
+        sessionManager.clearSession();
+        
+        android.util.Log.d("ThongTinCaNhan", "Session cleared, redirecting to login");
+        
+        // Chuyển về màn đăng nhập và clear back stack
+        Intent intent = new Intent(this, DangNhapActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
+        
+        Toast.makeText(this, "Đã đăng xuất thành công", Toast.LENGTH_SHORT).show();
     }
 }
 

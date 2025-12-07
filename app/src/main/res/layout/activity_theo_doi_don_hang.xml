@@ -257,7 +257,7 @@
                             android:text="0 vnd"
                             android:textSize="14sp"
                             android:textStyle="bold"
-                            android:textColor="@color/primary_blue"
+                            android:textColor="@android:color/black"
                             android:layout_marginStart="8dp" />
                     </LinearLayout>
 
@@ -327,6 +327,18 @@
                         android:layout_marginTop="8dp"
                         android:visibility="gone"
                         app:backgroundTint="@color/green" />
+
+                    <!-- Nút hủy đơn hàng - chỉ hiển thị khi đơn hàng có thể hủy -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnHuyDonHang"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Hủy đơn hàng"
+                        android:textSize="14sp"
+                        android:layout_marginTop="8dp"
+                        android:visibility="gone"
+                        app:backgroundTint="@color/red" />
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

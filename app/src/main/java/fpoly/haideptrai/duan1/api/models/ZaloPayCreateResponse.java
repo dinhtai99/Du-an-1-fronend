@@ -9,6 +9,8 @@ public class ZaloPayCreateResponse {
     private String orderId;
     private String orderNumber;
     private String error; // Nếu có lỗi
+    private Integer return_code; // Mã lỗi từ ZaloPay API
+    private Integer sub_return_code; // Mã lỗi chi tiết từ ZaloPay API
 
     public boolean isSuccess() { return success; }
     public void setSuccess(boolean success) { this.success = success; }
@@ -33,5 +35,11 @@ public class ZaloPayCreateResponse {
 
     public String getError() { return error; }
     public void setError(String error) { this.error = error; }
+
+    public Integer getReturn_code() { return return_code; }
+    public void setReturn_code(Integer return_code) { this.return_code = return_code; }
+
+    public Integer getSub_return_code() { return sub_return_code; }
+    public void setSub_return_code(Integer sub_return_code) { this.sub_return_code = sub_return_code; }
 }
 

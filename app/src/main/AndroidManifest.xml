@@ -33,7 +33,7 @@
             android:exported="false" />
         <!-- Customer Activities -->
         <activity
-            android:name=".customer.OnboardingActivity"
+            android:name=".customer.DangNhapActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -41,9 +41,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".customer.DangNhapActivity"
-            android:exported="false" />
         <activity
             android:name=".customer.DangKyActivity"
             android:exported="false" />
@@ -98,6 +95,15 @@
             android:exported="false" />
         <activity
             android:name=".customer.SanPhamYeuThichActivity"
+            android:exported="false" />
+        <activity
+            android:name=".customer.DanhSachDanhGiaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".customer.DanhGiaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".customer.VNPayWebViewActivity"
             android:exported="false" />
     </application>
 

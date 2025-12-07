@@ -14,7 +14,6 @@ public class SessionManager {
     private static final String KEY_VAI_TRO = "vai_tro";
     private static final String KEY_LOGIN_FAILED_COUNT_PREFIX = "login_failed_count_";
     private static final String KEY_LOCKED_UNTIL_PREFIX = "locked_until_";
-    private static final String KEY_ONBOARDING_COMPLETED = "onboarding_completed";
     
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
@@ -69,15 +68,6 @@ public class SessionManager {
     
     public void setUsername(String username) {
         editor.putString(KEY_USERNAME, username);
-        editor.apply();
-    }
-    
-    public boolean isOnboardingCompleted() {
-        return sharedPreferences.getBoolean(KEY_ONBOARDING_COMPLETED, false);
-    }
-    
-    public void setOnboardingCompleted(boolean completed) {
-        editor.putBoolean(KEY_ONBOARDING_COMPLETED, completed);
         editor.apply();
     }
     

@@ -3,7 +3,8 @@ package fpoly.haideptrai.duan1.api.models;
 import java.util.List;
 
 public class ZaloPayCreateRequest {
-    private ShippingAddress shippingAddress;
+    private String addressId; // ID của địa chỉ đã lưu (ưu tiên dùng)
+    private ShippingAddress shippingAddress; // Địa chỉ trực tiếp (nếu không có addressId)
     private String notes;
     private String voucherCode;
     private String orderId; // Optional: nếu đã tạo order trước
@@ -50,6 +51,8 @@ public class ZaloPayCreateRequest {
 
     public List<CartItem> getItems() { return items; }
     public void setItems(List<CartItem> items) { this.items = items; }
+    public String getAddressId() { return addressId; }
+    public void setAddressId(String addressId) { this.addressId = addressId; }
 
     // Cart item model để gửi từ client
     public static class CartItem {

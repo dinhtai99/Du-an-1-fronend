@@ -21,7 +21,7 @@ public interface FavoriteService {
     Call<FavoriteResponse> addFavorite(@Path("productId") String productId);
 
     @DELETE("api/favorites/{productId}")
-    Call<ApiResponse<Void>> removeFavorite(@Path("productId") String productId);
+    Call<FavoriteDeleteResponse> removeFavorite(@Path("productId") String productId);
 
     // Inner classes for response models
     class FavoriteCheckResponse {
@@ -54,6 +54,18 @@ public interface FavoriteService {
 
         public void setFavorite(Object favorite) {
             this.favorite = favorite;
+        }
+    }
+
+    class FavoriteDeleteResponse {
+        private String message;
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
         }
     }
 }

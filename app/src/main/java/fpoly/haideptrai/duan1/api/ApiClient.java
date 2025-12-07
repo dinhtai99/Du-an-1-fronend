@@ -13,11 +13,49 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class ApiClient {
-    // Thay đổi BASE_URL theo địa chỉ server của bạn
-    // Ví dụ: "http://192.168.1.100:3000" (local network)
-    // Hoặc: "https://your-domain.com" (production)
-    private static final String BASE_URL = "http://10.0.2.2:3000/"; // Android Emulator localhost
-    // Nếu dùng thiết bị thật, thay bằng IP máy chạy server: "http://192.168.x.x:3000/"
+    // ⚠️ QUAN TRỌNG: Thay đổi BASE_URL theo môi trường của bạn!
+    // 
+    // 📱 Android Emulator:
+    //    private static final String BASE_URL = "http://10.0.2.2:3000/";
+    //
+    // 📱 Thiết bị thật (cùng WiFi):
+    //    private static final String BASE_URL = "http://192.168.x.x:3000/"; // IP máy tính của bạn
+    //    Để lấy IP: ifconfig (Mac/Linux) hoặc ipconfig (Windows)
+    //
+    // 📱 Hotspot/Mạng di động (điện thoại tạo hotspot):
+    //    Nếu máy tính kết nối vào hotspot của điện thoại:
+    //    - Lấy IP của máy tính khi kết nối hotspot (thường là 192.168.x.x hoặc 172.20.x.x)
+    //    - Cập nhật BASE_URL với IP đó
+    //
+    // 🌐 Production:
+    //    private static final String BASE_URL = "https://your-domain.com/";
+    
+    // ⚠️ QUAN TRỌNG: Chọn đúng BASE_URL theo thiết bị bạn đang dùng!
+    // 
+    // 📱 Android Emulator:
+    //    private static final String BASE_URL = "http://10.0.2.2:3000/";
+    //
+    // 📱 Thiết bị thật (cùng WiFi):
+    //    private static final String BASE_URL = "http://172.20.10.5:3000/"; // IP máy tính của bạn
+    //    Để lấy IP: ifconfig (Mac/Linux) hoặc ipconfig (Windows)
+    //
+    // ⚠️ LƯU Ý: Điện thoại và máy tính PHẢI CÙNG MẠNG (cùng WiFi hoặc máy tính kết nối hotspot)
+    // ⚠️ Nếu IP thay đổi, cập nhật BASE_URL và rebuild app
+    // 
+    // 🔍 Để lấy IP hiện tại của máy tính:
+    //    Mac/Linux: ifconfig | grep "inet " | grep -v 127.0.0.1
+    //    Windows: ipconfig
+    //
+    // 📱 IP hiện tại: 192.168.25.104 (mạng hiện tại)
+    // 📱 Nếu dùng Emulator, đổi thành: http://10.0.2.2:3000/
+    private static final String BASE_URL = "http://192.168.25.104:3000/"; // IP hiện tại của máy tính (thiết bị thật)
+    
+    // 📝 Các IP đã dùng trước đây (để tham khảo):
+    // - http://10.24.25.34:3000/ (WiFi cũ)
+    // - http://192.168.1.126:3000/ (WiFi cũ)
+    // - http://172.20.10.3:3000/ (Hotspot cũ)
+    // - http://172.20.10.5:3000/ (Hotspot/WiFi khác mạng)
+    // - http://192.168.25.97:3000/ (WiFi hiện tại - cùng mạng với thiết bị)
 
     private static Retrofit retrofit = null;
 

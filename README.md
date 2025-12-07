@@ -116,18 +116,48 @@ Xem file `docs/guides/IMPLEMENTATION_GUIDE.md` để biết chi tiết cách ti�
 2. Code của `DangNhapActivity` - Ví dụ sử dụng Room và SessionManager
 3. Các DAO đã có sẵn - Sử dụng trực tiếp để thao tác database
 
+## 👥 Làm việc nhóm
+
+### Cấu hình Git
+
+1. **Clone repository:**
+   ```bash
+   git clone https://github.com/dinhtai99/Du-an-1-fronend.git
+   cd Du-an-1-fronend
+   ```
+
+2. **Tạo branch mới cho feature của bạn:**
+   ```bash
+   git checkout -b ten-branch-cua-ban
+   ```
+
+3. **Commit và push code:**
+   ```bash
+   git add .
+   git commit -m "Mô tả thay đổi"
+   git push origin ten-branch-cua-ban
+   ```
+
+### Lưu ý khi làm việc nhóm
+
+- **Luôn pull code mới nhất trước khi bắt đầu làm việc:**
+  ```bash
+  git checkout main
+  git pull origin main
+  git checkout ten-branch-cua-ban
+  git merge main
+  ```
+
+- **Không commit file nhạy cảm:** API keys, passwords, local.properties
+- **Commit message rõ ràng:** Mô tả ngắn gọn những gì đã thay đổi
+- **Tạo Pull Request** khi muốn merge code vào branch main
+
+### Cấu hình BASE_URL
+
+File `ApiClient.java` chứa BASE_URL cho API. Mỗi người cần cập nhật IP của máy mình:
+- **Emulator:** `http://10.0.2.2:3000/`
+- **Thiết bị thật:** `http://IP-CUA-BAN:3000/` (cùng mạng WiFi với máy chạy backend)
+
 ## 📄 License
 
 Dự án này được phát triển cho mục đích học tập và thương mại.
-
-
-
-
-
-
-
-
-
-=======
-# Du-an-1-fronend
->>>>>>> 09504f261ddf5278653b3364ff387f35520e376c

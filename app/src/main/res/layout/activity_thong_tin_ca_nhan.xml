@@ -15,7 +15,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="16dp"
+            android:paddingBottom="120dp">
 
             <!-- Header -->
             <TextView
@@ -225,6 +226,17 @@
                 android:textSize="16sp"
                 android:layout_marginTop="12dp"
                 app:backgroundTint="@color/primary_blue" />
+
+            <!-- Nút đăng xuất -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDangXuat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Đăng xuất"
+                android:textSize="16sp"
+                android:layout_marginTop="12dp"
+                app:backgroundTint="@color/red"
+                android:textColor="@android:color/white" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

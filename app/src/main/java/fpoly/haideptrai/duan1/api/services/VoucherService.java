@@ -21,5 +21,9 @@ public interface VoucherService {
 
     @GET("api/vouchers/validate/{code}")
     Call<ApiResponse<VoucherResponse>> validateCode(@Path("code") String code);
+
+    // Lấy voucher của user hiện tại (nếu backend hỗ trợ)
+    @GET("api/vouchers/my")
+    Call<ApiResponse<List<VoucherResponse>>> getMyVouchers();
 }
 

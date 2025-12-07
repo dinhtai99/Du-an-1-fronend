@@ -1,6 +1,8 @@
 package fpoly.haideptrai.duan1.api.services;
 
 import fpoly.haideptrai.duan1.api.models.ApiResponse;
+import fpoly.haideptrai.duan1.api.models.CancelOrderRequest;
+import fpoly.haideptrai.duan1.api.models.CancelOrderResponse;
 import fpoly.haideptrai.duan1.api.models.InvoiceListResponse;
 import fpoly.haideptrai.duan1.api.models.InvoiceRequest;
 import fpoly.haideptrai.duan1.api.models.InvoiceResponse;
@@ -29,7 +31,7 @@ public interface InvoiceService {
     );
 
     @GET("api/invoices/{id}")
-    Call<InvoiceResponse> getById(@Path("id") String id);
+    Call<ApiResponse<InvoiceResponse>> getById(@Path("id") String id);
 
     @POST("api/invoices")
     Call<ApiResponse<InvoiceResponse>> createInvoice(@Body InvoiceRequest request);
@@ -45,4 +47,11 @@ public interface InvoiceService {
 
     @GET("api/invoices/{id}/pdf")
     Call<ApiResponse<InvoiceResponse>> getPdf(@Path("id") String id);
+
+    /**
+     * Hủy đơn hàng
+     * PUT /api/orders/:id/cancel
+     */
+    @PUT("api/orders/{id}/cancel")
+    Call<CancelOrderResponse> cancelOrder(@Path("id") String id, @Body CancelOrderRequest request);
 }

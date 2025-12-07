@@ -73,18 +73,30 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Logo -->
-            <ImageView
-                android:id="@+id/imgBanner"
+            <!-- Banner Slider -->
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/logo"
-                android:background="@color/background_light"
-                android:contentDescription="Logo"
-                android:layout_margin="16dp"
-                android:layout_marginTop="8dp"
-                android:padding="16dp" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp">
+
+                <androidx.viewpager2.widget.ViewPager2
+                    android:id="@+id/viewPagerBanner"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"
+                    android:clipToPadding="false"
+                    android:clipChildren="false" />
+
+                <!-- Indicator Dots -->
+                <LinearLayout
+                    android:id="@+id/layoutBannerIndicators"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="16dp" />
+            </LinearLayout>
 
             <!-- Section: Sản phẩm -->
             <LinearLayout

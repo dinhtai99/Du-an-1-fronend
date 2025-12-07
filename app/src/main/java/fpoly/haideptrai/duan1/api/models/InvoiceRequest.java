@@ -9,7 +9,8 @@ public class InvoiceRequest {
     private String paymentMethod;
     private String notes;
     private String voucherCode;
-    private ShippingAddress shippingAddress;
+    private String addressId; // ID của địa chỉ đã lưu (ưu tiên dùng)
+    private ShippingAddress shippingAddress; // Địa chỉ trực tiếp (nếu không có addressId)
 
     public static class ShippingAddress {
         private String fullName;
@@ -52,5 +53,7 @@ public class InvoiceRequest {
     public void setVoucherCode(String voucherCode) { this.voucherCode = voucherCode; }
     public ShippingAddress getShippingAddress() { return shippingAddress; }
     public void setShippingAddress(ShippingAddress shippingAddress) { this.shippingAddress = shippingAddress; }
+    public String getAddressId() { return addressId; }
+    public void setAddressId(String addressId) { this.addressId = addressId; }
 }
 

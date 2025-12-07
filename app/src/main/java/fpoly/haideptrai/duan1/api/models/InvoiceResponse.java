@@ -1,9 +1,12 @@
 package fpoly.haideptrai.duan1.api.models;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
 public class InvoiceResponse {
+    @SerializedName("_id")
     private String _id;
+    @SerializedName("orderNumber")
     private String invoiceNumber;
     private CustomerResponse customer;
     private UserInfo staff;
@@ -16,6 +19,25 @@ public class InvoiceResponse {
     private ShippingAddress shippingAddress;
     private String createdAt;
     private String updatedAt;
+    
+    // Return/Exchange fields
+    @SerializedName("returnRequestedAt")
+    private String returnRequestedAt;
+    
+    @SerializedName("returnReason")
+    private String returnReason;
+    
+    @SerializedName("returnItems")
+    private List<ReturnItem> returnItems;
+    
+    @SerializedName("exchangeItems")
+    private List<ExchangeItem> exchangeItems;
+    
+    @SerializedName("returnProcessedAt")
+    private String returnProcessedAt;
+    
+    @SerializedName("returnProcessedBy")
+    private UserInfo returnProcessedBy;
 
     public static class ShippingAddress {
         private String fullName;
@@ -88,4 +110,60 @@ public class InvoiceResponse {
     public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
     public String getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
+    
+    // Return/Exchange getters and setters
+    public String getReturnRequestedAt() { return returnRequestedAt; }
+    public void setReturnRequestedAt(String returnRequestedAt) { this.returnRequestedAt = returnRequestedAt; }
+    
+    public String getReturnReason() { return returnReason; }
+    public void setReturnReason(String returnReason) { this.returnReason = returnReason; }
+    
+    public List<ReturnItem> getReturnItems() { return returnItems; }
+    public void setReturnItems(List<ReturnItem> returnItems) { this.returnItems = returnItems; }
+    
+    public List<ExchangeItem> getExchangeItems() { return exchangeItems; }
+    public void setExchangeItems(List<ExchangeItem> exchangeItems) { this.exchangeItems = exchangeItems; }
+    
+    public String getReturnProcessedAt() { return returnProcessedAt; }
+    public void setReturnProcessedAt(String returnProcessedAt) { this.returnProcessedAt = returnProcessedAt; }
+    
+    public UserInfo getReturnProcessedBy() { return returnProcessedBy; }
+    public void setReturnProcessedBy(UserInfo returnProcessedBy) { this.returnProcessedBy = returnProcessedBy; }
+    
+    // Return/Exchange nested classes
+    // Note: Backend trả về product là string ID, không phải object
+    public static class ReturnItem {
+        @SerializedName("product")
+        private String product; // Product ID (string)
+        private Integer quantity;
+        private String reason;
+        
+        public String getProduct() { return product; }
+        public void setProduct(String product) { this.product = product; }
+        
+        public Integer getQuantity() { return quantity; }
+        public void setQuantity(Integer quantity) { this.quantity = quantity; }
+        
+        public String getReason() { return reason; }
+        public void setReason(String reason) { this.reason = reason; }
+    }
+    
+    public static class ExchangeItem {
+        @SerializedName("oldProduct")
+        private String oldProduct; // Product ID (string)
+        
+        @SerializedName("newProduct")
+        private String newProduct; // Product ID (string)
+        
+        private Integer quantity;
+        
+        public String getOldProduct() { return oldProduct; }
+        public void setOldProduct(String oldProduct) { this.oldProduct = oldProduct; }
+        
+        public String getNewProduct() { return newProduct; }
+        public void setNewProduct(String newProduct) { this.newProduct = newProduct; }
+        
+        public Integer getQuantity() { return quantity; }
+        public void setQuantity(Integer quantity) { this.quantity = quantity; }
+    }
 }

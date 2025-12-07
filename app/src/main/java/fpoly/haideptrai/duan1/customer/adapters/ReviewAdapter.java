@@ -21,6 +21,7 @@ import java.util.Locale;
 
 import fpoly.haideptrai.duan1.R;
 import fpoly.haideptrai.duan1.api.models.ReviewResponse;
+import fpoly.haideptrai.duan1.customer.adapters.ReviewImageAdapter;
 
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder> {
 
@@ -30,6 +31,18 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         items.clear();
         if (list != null) items.addAll(list);
         notifyDataSetChanged();
+    }
+
+    public void addItems(List<ReviewResponse> list) {
+        if (list != null && !list.isEmpty()) {
+            int startPosition = items.size();
+            items.addAll(list);
+            notifyItemRangeInserted(startPosition, list.size());
+        }
+    }
+
+    public List<ReviewResponse> getItems() {
+        return new ArrayList<>(items);
     }
 
     @NonNull
@@ -97,7 +110,17 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
         // Images
         if (review.getImages() != null && !review.getImages().isEmpty()) {
             holder.rvReviewImages.setVisibility(View.VISIBLE);
-            // TODO: Tạo adapter cho images nếu cần
+            if (holder.rvReviewImages.getAdapter() == null) {
+                ReviewImageAdapter imageAdapter = new ReviewImageAdapter();
+                holder.rvReviewImages.setLayoutManager(new LinearLayoutManager(
+                    holder.rvReviewImages.getContext(), 
+                    LinearLayoutManager.HORIZONTAL, 
+                    false
+                ));
+                holder.rvReviewImages.setAdapter(imageAdapter);
+            }
+            ReviewImageAdapter imageAdapter = (ReviewImageAdapter) holder.rvReviewImages.getAdapter();
+            imageAdapter.setImageUrls(review.getImages());
         } else {
             holder.rvReviewImages.setVisibility(View.GONE);
         }

@@ -2,11 +2,7 @@ package fpoly.haideptrai.duan1.api.models;
 
 import java.util.List;
 
-/**
- * Request model cho MoMo Payment
- * Tái sử dụng cấu trúc tương tự ZaloPayCreateRequest
- */
-public class MoMoCreateRequest {
+public class VNPayCreateRequest {
     private String addressId; // ID của địa chỉ đã lưu (ưu tiên dùng)
     private ShippingAddress shippingAddress; // Địa chỉ trực tiếp (nếu không có addressId)
     private String notes;
@@ -55,6 +51,7 @@ public class MoMoCreateRequest {
 
     public List<CartItem> getItems() { return items; }
     public void setItems(List<CartItem> items) { this.items = items; }
+    
     public String getAddressId() { return addressId; }
     public void setAddressId(String addressId) { this.addressId = addressId; }
 

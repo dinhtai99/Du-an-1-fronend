@@ -21,6 +21,7 @@ public class CategoryHomeAdapter extends RecyclerView.Adapter<CategoryHomeAdapte
 
     private final List<CategoryResponse> items = new ArrayList<>();
     private OnCategoryClickListener onCategoryClickListener;
+    private String selectedCategoryId = null; // Track selected category
 
     public void setItems(List<CategoryResponse> list) {
         items.clear();
@@ -39,6 +40,20 @@ public class CategoryHomeAdapter extends RecyclerView.Adapter<CategoryHomeAdapte
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         CategoryResponse category = items.get(position);
         holder.txtTenDanhMuc.setText(category.getName());
+
+        // Check if this category is selected
+        boolean isSelected = category.get_id() != null && category.get_id().equals(selectedCategoryId);
+        
+        // Set background based on selection state
+        if (isSelected) {
+            holder.itemView.setBackgroundResource(R.drawable.category_item_selected);
+            holder.txtTenDanhMuc.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.primary_blue));
+            holder.txtTenDanhMuc.setTypeface(null, android.graphics.Typeface.BOLD);
+        } else {
+            holder.itemView.setBackgroundResource(R.drawable.category_item_normal);
+            holder.txtTenDanhMuc.setTextColor(holder.itemView.getContext().getResources().getColor(android.R.color.black));
+            holder.txtTenDanhMuc.setTypeface(null, android.graphics.Typeface.NORMAL);
+        }
 
         // Set beautiful gradient background based on position
         int[] gradientBackgrounds = {
@@ -69,6 +84,8 @@ public class CategoryHomeAdapter extends RecyclerView.Adapter<CategoryHomeAdapte
 
         holder.itemView.setOnClickListener(v -> {
             if (onCategoryClickListener != null) {
+                // Update selected category
+                setSelectedCategory(category.get_id());
                 onCategoryClickListener.onClick(category);
             }
         });
@@ -81,6 +98,40 @@ public class CategoryHomeAdapter extends RecyclerView.Adapter<CategoryHomeAdapte
 
     public void setOnCategoryClickListener(OnCategoryClickListener listener) {
         this.onCategoryClickListener = listener;
+    }
+    
+    /**
+     * Set selected category ID to highlight it
+     */
+    public void setSelectedCategory(String categoryId) {
+        String previousSelected = selectedCategoryId;
+        selectedCategoryId = categoryId;
+        
+        // Notify only changed items to optimize performance
+        if (previousSelected != null) {
+            for (int i = 0; i < items.size(); i++) {
+                if (items.get(i).get_id() != null && items.get(i).get_id().equals(previousSelected)) {
+                    notifyItemChanged(i);
+                    break;
+                }
+            }
+        }
+        
+        if (selectedCategoryId != null) {
+            for (int i = 0; i < items.size(); i++) {
+                if (items.get(i).get_id() != null && items.get(i).get_id().equals(selectedCategoryId)) {
+                    notifyItemChanged(i);
+                    break;
+                }
+            }
+        }
+    }
+    
+    /**
+     * Clear selected category (show all products)
+     */
+    public void clearSelection() {
+        setSelectedCategory(null);
     }
 
     private int getCategoryIcon(String categoryName) {

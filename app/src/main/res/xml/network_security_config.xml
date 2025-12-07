@@ -1,11 +1,58 @@
 <network-security-config>
+    <!-- Cho phép tất cả HTTP (cleartext) cho development -->
+    <!-- CHỈ DÙNG CHO DEVELOPMENT - XÓA TRƯỚC KHI RELEASE -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    
     <!-- Cho phép HTTP (cleartext) tới host máy phát triển -->
+        <!-- Android Emulator: 10.0.2.2 là localhost của máy host -->
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="false">10.0.2.2</domain>
     </domain-config>
-    <!-- Tuỳ chọn: cho phép cả mạng nội bộ 192.168.x.x khi test trên thiết bị thật -->
+    
+    <!-- Cho phép HTTP tới mạng nội bộ khi test trên thiết bị thật -->
+    <!-- 192.168.x.x: Mạng WiFi thông thường -->
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">192.168.0.0</domain>
         <domain includeSubdomains="true">192.168.1.0</domain>
+        <domain includeSubdomains="true">192.168.2.0</domain>
+        <domain includeSubdomains="true">192.168.25.0</domain>
+    </domain-config>
+    
+    <!-- 172.16.x.x - 172.31.x.x: Mạng nội bộ khác (hotspot, mạng di động) -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">172.16.0.0</domain>
+        <domain includeSubdomains="true">172.17.0.0</domain>
+        <domain includeSubdomains="true">172.18.0.0</domain>
+        <domain includeSubdomains="true">172.19.0.0</domain>
+        <domain includeSubdomains="true">172.20.0.0</domain>
+        <domain includeSubdomains="true">172.21.0.0</domain>
+        <domain includeSubdomains="true">172.22.0.0</domain>
+        <domain includeSubdomains="true">172.23.0.0</domain>
+        <domain includeSubdomains="true">172.24.0.0</domain>
+        <domain includeSubdomains="true">172.25.0.0</domain>
+        <domain includeSubdomains="true">172.26.0.0</domain>
+        <domain includeSubdomains="true">172.27.0.0</domain>
+        <domain includeSubdomains="true">172.28.0.0</domain>
+        <domain includeSubdomains="true">172.29.0.0</domain>
+        <domain includeSubdomains="true">172.30.0.0</domain>
+        <domain includeSubdomains="true">172.31.0.0</domain>
+    </domain-config>
+    
+    <!-- 10.x.x.x: Mạng nội bộ (ngoài 10.0.2.2 dành cho emulator) -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.0.0.0</domain>
+    </domain-config>
+    
+    <!-- IP cụ thể cho máy phát triển (real device) -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">10.24.25.34</domain>
+        <domain includeSubdomains="false">192.168.1.126</domain>
+        <domain includeSubdomains="false">192.168.25.97</domain>
+        <!-- IP điện thoại khi dùng hotspot/mạng di động -->
+        <domain includeSubdomains="false">172.20.10.4</domain>
     </domain-config>
 </network-security-config>

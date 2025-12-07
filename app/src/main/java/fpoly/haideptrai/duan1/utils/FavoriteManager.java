@@ -129,22 +129,22 @@ public class FavoriteManager {
         Log.d("FavoriteManager", "Removed favorite locally: " + productId);
         
         // Call API
-        Call<ApiResponse<Void>> call = favoriteService.removeFavorite(productId);
-        call.enqueue(new Callback<ApiResponse<Void>>() {
+        Call<FavoriteService.FavoriteDeleteResponse> call = favoriteService.removeFavorite(productId);
+        call.enqueue(new Callback<FavoriteService.FavoriteDeleteResponse>() {
             @Override
-            public void onResponse(Call<ApiResponse<Void>> call, Response<ApiResponse<Void>> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                    Log.d("FavoriteManager", "Removed favorite from server: " + productId);
+            public void onResponse(Call<FavoriteService.FavoriteDeleteResponse> call, Response<FavoriteService.FavoriteDeleteResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d("FavoriteManager", "Removed favorite from server: " + productId + ", Message: " + response.body().getMessage());
                     if (callback != null) callback.onSuccess(false);
                 } else {
                     // API failed, but keep local change
-                    Log.w("FavoriteManager", "Failed to remove favorite from server, keeping local change");
+                    Log.w("FavoriteManager", "Failed to remove favorite from server. Code: " + response.code() + ", Body is null: " + (response.body() == null));
                     if (callback != null) callback.onError("Không thể đồng bộ với server");
                 }
             }
 
             @Override
-            public void onFailure(Call<ApiResponse<Void>> call, Throwable t) {
+            public void onFailure(Call<FavoriteService.FavoriteDeleteResponse> call, Throwable t) {
                 // API failed, but keep local change
                 Log.w("FavoriteManager", "Error removing favorite from server: " + t.getMessage());
                 if (callback != null) callback.onError("Lỗi kết nối: " + t.getMessage());

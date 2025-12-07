@@ -16,7 +16,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ReviewService {
-    // Lấy đánh giá của sản phẩm
+    // Lấy đánh giá của sản phẩm (API trả về trực tiếp ReviewListResponse, không wrap trong ApiResponse)
     @GET("api/reviews/product/{productId}")
     Call<ReviewListResponse> getProductReviews(
             @Path("productId") String productId,
